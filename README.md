@@ -12,6 +12,25 @@ const myLoginForm = buildDom({'':'form.login',  // the '' key can contain the ta
 });
 ```
 
+This function was made to allow creating many DOM nodes without having to do glorified string interpolation (AKA ‘templating’):
+
+```js
+const comments = [
+	{author: "foo", email:"test@example.com", text: "bar"},
+	{author: "abc", email:"def@example.com", text: "ghi"}
+	// …
+];
+
+const commentSection = buildDom({'':'ul.comments', c: comments.map({author, email, text} => {
+	'':'li',
+	c:[
+		{'':'a.commenter', href:'mailto:'+email, c:author},
+		": ",
+		{'':'p', c: text}
+	]
+})});
+```
+
 # Syntax version
 buildDom uses the arrow function (`(…) =>`) and `for (let x of y) …` syntax of ECMAScript 6, as well as the block-scoped variable bindings (`let` and `const`).
 If you need to support older browsers, these features should be trivially converted to ES5 syntax by all of the usual ‘transpilers’.
