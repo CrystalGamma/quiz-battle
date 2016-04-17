@@ -1,6 +1,7 @@
 const buildDom = (() =>{
 	const tagRegex = new RegExp('^([\\w\\-]+)([\\.#].*)?$');
 	const sigilRegex = new RegExp('^([\\.#])([\\w\\-]+)(.*)$');
+	const contains = {}.hasOwnProperty;
 	return function buildDom(obj) {
 		if (obj instanceof Node) {return obj}
 		if (Array.isArray(obj)) {return obj.map(buildDom)}
@@ -27,11 +28,11 @@ const buildDom = (() =>{
 		const el = document.createElement(tag);
 		ids.length && (el.id = ids.join(' '));
 		classes.length && (el.className = classes.join(' '));
-		for (let attr of Object.keys(obj)) {
-			if (attr && attr !== 'c') {
+		for (let attr in obj) {
+			if (attr && attr !== 'c' && contains.call(obj, attr)) {
 				el.setAttribute(attr, obj[attr]);
 			}
-		}
+		}}
 		if (!children) {children = []}
 		if (!Array.isArray(children)) {children = [children]}
 		for (let child of children) {el.appendChild(buildDom(child))}
