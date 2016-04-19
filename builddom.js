@@ -34,8 +34,8 @@ const buildDom = (() =>{
 			}
 		}}
 		if (!children) {children = []}
-		if (!Array.isArray(children)) {children = [children]}
-		for (let child of children) {el.appendChild(buildDom(child))}
+		children = buildDom(children);
+		Array.isArray(children) ? children.forEach(el.appendChild.bind(el)): el.appendChild(children);
 		return el;
 	};
 })();
