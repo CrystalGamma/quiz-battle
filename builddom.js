@@ -32,7 +32,7 @@ const buildDom = (() =>{
 			if (attr && attr !== 'c' && contains.call(obj, attr)) {
 				el.setAttribute(attr, obj[attr]);
 			}
-		}}
+		}
 		if (!children) {children = []}
 		children = buildDom(children);
 		Array.isArray(children) ? children.forEach(el.appendChild.bind(el)): el.appendChild(children);
