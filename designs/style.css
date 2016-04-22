@@ -1,0 +1,23 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+header {color:#777;display:flex}
+header #title {flex:0 1 10em}
+header nav {flex:1 5;display:inline-flex;justify-content:space-between;flex-flow:row wrap}
+main {display:flex;flex-flow:row wrap}
+#status {flex:100%;margin:.3em 1em}
+#status ul.stat {list-style:none;display:flex;padding:0;margin:0}
+#status ul.stat li {margin:.2em .5em}
+#start-game {margin:1em;padding:.5em;border-radius:.5em;border:.2em solid #0a0;background:#0c0;color:white}
+#start-game::after {content:' \23f5';color:#ccc}
+
+#open-games, #waiting-games, #closed-games {flex:1;margin:.3em}
+
+#open-games ul, #waiting-games ul, #closed-games ul {list-style:none;display:flex;flex-flow:column nowrap;margin:1em;padding:0}
+#open-games li:nth-child(2n), #waiting-games li:nth-child(2n), #closed-games li:nth-child(2n) {background:#eee}
+#open-games li, #waiting-games li, #closed-games li {/*border-top:solid thin #777;*/padding:.5em}
+#open-games li, #waiting-games li {display:flex;align-items:flex-start}
+#open-games .status, #waiting-games .status {flex:1 3em}
+#open-games progress, #waiting-games progress {flex:3em}
+
+.winning, .win {color:#0c0}
+.tied, .tie {color: #777}
+.losing, .loss {color: #c00}

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<!-- This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+<meta charset=UTF-8>
+<title>King of the Quiz</title>
+<link rel=stylesheet href="style.css">
+<header><span id=title>King of the Quiz</span><nav><a>Startseite</a><a>Statistiken</a><a>Fragenkatalog</a></nav></header>
+<main>
+<section id=status>
+<h1 class=player>Spielername</h1>
+<ul class=stat>
+<li>Ranking: <span class=figure>123</span>
+<li>Punkte: <span class=figure>1234</span>
+</ul>
+<p><a id=start-game>Neues Spiel</a>
+</section>
+<section id=open-games>
+<h1>Weiterspielen gegen …</h1>
+<ul>
+<li><div class=status><span class=player>Spieler2</span>: <span class="game-points losing">10 – 12</span></div><progress max=10 value=7>in der vierten Runde</progress>
+<li><div class=status><span class=player>Spieler3</span>: <span class="game-points winning">15 – 8</span></div><progress max=10 value=8>in der fünften Runde</progress>
+</ul>
+</section>
+<section id=waiting-games>
+<h1>Warten auf …</h1>
+<ul>
+<li><div class=status><span class=player>Spieler4</span>: <span class="game-points tied">3 – 3</span></div><progress max=10 value=2>in der zweiten Runde</progress>
+</ul>
+</section>
+<section id=closed-games>
+<h1>Abgeschlossene Spiele</h1>
+<ul>
+<li>gegen <span class=player>Spieler3</span>: <span class="game-points loss">10 – 13</span>
+<li>gegen <span class=player>Spieler2</span>: <span class="game-points win">15 – 9</span>
+<li>gegen <span class=player>Spieler3</span>: <span class="game-points win">14 – 13</span>
+<li>gegen <span class=player>Spieler4</span>: <span class="game-points tie">12 – 12</span>
+</ul>
+</section>
+<main>
