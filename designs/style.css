@@ -11,13 +11,31 @@ main {display:flex;flex-flow:row wrap}
 
 #open-games, #waiting-games, #closed-games {flex:1;margin:.3em}
 
-#open-games ul, #waiting-games ul, #closed-games ul {list-style:none;display:flex;flex-flow:column nowrap;margin:1em;padding:0}
-#open-games li:nth-child(2n), #waiting-games li:nth-child(2n), #closed-games li:nth-child(2n) {background:#eee}
-#open-games li, #waiting-games li, #closed-games li {/*border-top:solid thin #777;*/padding:.5em}
-#open-games li, #waiting-games li {display:flex;align-items:flex-start}
-#open-games .status, #waiting-games .status {flex:1 3em}
-#open-games progress, #waiting-games progress {flex:3em}
+#open-games h1, #waiting-games h1, #closed-games h1 {color:#777}
+
+#open-games >ul, #waiting-games >ul, #closed-games >ul {list-style:none;display:flex;flex-flow:column nowrap;margin:1em;padding:1em;background:#eee}
+.game {display:flex;align-items:flex-end;padding:1em .3em;flex-flow:row wrap}
+.game .player {flex:1 0 5em}
+.game .player::after {content:': '}
+#closed-games .game .player::before {content:'gegen '}
+a.game {cursor:pointer;/*transition:all .3s;*/text-decoration:none;color:black;background:transparent}
+a.game:hover {background:#333;color:white}
+
+.game .game-points {flex:1 3em}
+
+.game-report {display:flex;list-style-type:none;flex:5 0 8em;margin:0;padding:0;height:1em;flex-flow:row nowrap;border-radius:.3em;border:thin solid black}
+.game-report li {display:block;flex:1;height:1em;border:0}
+.game-report li.gg {background:linear-gradient(to bottom, #0c0,#0c0 50%,#7c7 50%,#7c7)}
+.game-report li.bb {background:linear-gradient(to bottom, #c00,#c00 50%,#c77 50%,#c77)}
+.game-report li.gb {background:linear-gradient(to bottom, #0c0,#0c0 50%,#c77 50%,#c77)}
+.game-report li.bg {background:linear-gradient(to bottom, #c00,#c00 50%,#7c7 50%,#7c7)}
+.game-report li.-b {background:linear-gradient(to bottom, transparent,transparent 50%,#c77 50%,#c77)}
+.game-report li.-g {background:linear-gradient(to bottom, transparent,transparent 50%,#7c7 50%,#7c7)}
+.game-report li.g- {background:linear-gradient(to bottom, #0c0,#0c0 50%,transparent 50%,transparent)}
+.game-report li.b- {background:linear-gradient(to bottom, #c00,#c00 50%,transparent 50%,transparent)}
 
 .winning, .win {color:#0c0}
 .tied, .tie {color: #777}
 .losing, .loss {color: #c00}
+
+progress {border:thin solid black;border-radius:.3em}
