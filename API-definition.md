@@ -46,7 +46,8 @@ Spielerstatistiken
 {
 	"": "/schema/player",
 	"name": "Spielername",
-	"games_": ["/games/<id>"],
+	"activegames_": ["/games/<id>"],
+	"oldgames_": "<pid>/oldgames"
 	"categorystats": [{
 			"category": {"": "/categories/<id>", "name": "Kategorie"},
 			"correct": 100,
@@ -57,6 +58,23 @@ Spielerstatistiken
 
 ### image/*
 Avatar; derzeit noch nicht vorgesehen
+
+# alte Spiele eines Spielers: /players/<id>/games
+## GET
+Paginated
+
+### application/json
+```json
+{
+	"": "/schema/games",
+	"count": 1234,
+	"start": 0,
+	"end": 10,
+	"next_": "?start=10",
+	"prev_": null,
+	"games": ["/games/<id>"]
+}
+```
 
 # Spiele: /games/
 ## POST (Spiel erstellen)
