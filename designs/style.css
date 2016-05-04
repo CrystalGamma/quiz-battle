@@ -2,18 +2,18 @@
 header {color:#777;display:flex}
 header #title {flex:0 1 10em}
 header nav {flex:1 5;display:inline-flex;justify-content:space-between;flex-flow:row wrap}
-main {display:flex;flex-flow:row wrap}
-#status {flex:100%;margin:.3em 1em}
-#status ul.stat {list-style:none;display:flex;padding:0;margin:0}
-#status ul.stat li {margin:.2em .5em}
+#status {flex:100%;margin:.3em 1em;display:flex;flex-flow:row wrap}
+ul.stat {list-style:none;display:flex;padding:0;margin:0}
+ul.stat li {margin:.2em .5em}
 #start-game {margin:1em;padding:.5em;border-radius:.5em;border:.2em solid #0a0;background:#0c0;color:white}
 #start-game::after {content:' \23f5';color:#ccc}
 
 #open-games, #waiting-games, #closed-games {flex:1;margin:.3em}
 
-#open-games h1, #waiting-games h1, #closed-games h1 {color:#777}
+section >h1 {color:#777}
+section >:not(h1) {margin:1em;padding:1em;background:#eee}
 
-#open-games >ul, #waiting-games >ul, #closed-games >ul {list-style:none;display:flex;flex-flow:column nowrap;margin:1em;padding:1em;background:#eee}
+#open-games >ul, #waiting-games >ul, #closed-games >ul {list-style:none;display:flex;flex-flow:column nowrap}
 .game {display:flex;align-items:flex-end;padding:1em .3em;flex-flow:row wrap}
 .game .player {flex:1 0 5em}
 .game .player::after {content:': '}
@@ -38,4 +38,8 @@ a.game:hover {background:#333;color:white}
 .tied, .tie {color: #777}
 .losing, .loss {color: #c00}
 
+.figure {font-weight:bold}
+
 progress {border:thin solid black;border-radius:.3em}
+
+table th {padding: .3em}
