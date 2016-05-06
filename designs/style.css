@@ -2,12 +2,13 @@
 header {color:#777;display:flex}
 header #title {flex:0 1 10em}
 header nav {flex:1 5;display:inline-flex;justify-content:space-between;flex-flow:row wrap}
-#status {flex:100%;margin:.3em 1em;display:flex;flex-flow:row wrap}
+#status, #stats {flex:100%;margin:.3em 1em}
 ul.stat {list-style:none;display:flex;padding:0;margin:0}
 ul.stat li {margin:.2em .5em}
 #start-game {margin:1em;padding:.5em;border-radius:.5em;border:.2em solid #0a0;background:#0c0;color:white}
 #start-game::after {content:' \23f5';color:#ccc}
 
+main {display:flex;flex-flow:row wrap}
 #open-games, #waiting-games, #closed-games {flex:1;margin:.3em}
 
 section >h1 {color:#777}
