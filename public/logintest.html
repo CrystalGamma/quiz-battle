@@ -3,8 +3,14 @@
 <meta charset=UTF-8>
 <title>Login Testseite</title>
 <link rel=stylesheet href=static/style.css>
-<header><span id=title>Quiz Battle</span><nav><a href>Startseite</a><a href>Statistiken</a><a href>Meine Fragen</a><a href>Rangliste</a></nav><span class=login></span></header>
+<header><span id=title>Quiz Battle</span><nav><a href>Startseite</a><a href>Statistiken</a><a href>Meine Fragen</a><a href>Rangliste</a></nav><span class=login data-auth="authorization.php"></span></header>
 <main></main>
 <script src=static/makexhr.js></script>
 <script src=static/builddom.js></script>
 <script src=static/login.js></script>
+<script>let login=localStorage.getItem("login");
+if (login){
+   let token=JSON.parse(login).token;
+   makeXHR("get","checkAuthorization.php",{Authorization:token},xhr=>console.log(xhr)).send();
+}
+</script>

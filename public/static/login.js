@@ -16,21 +16,23 @@ if (!login) {
 		ev.preventDefault();
 		makeXHR('POST', container.dataset.auth, {'Content-Type':'application/json'}, xhr => {
 			if (xhr.status === 200 && xhr.getResponseHeader('Content-Type') === 'text/plain; charset=UTF-8') {
-				localStorage.setItem('login', JSON.stringify({user: ev.target.user.value}));
+				localStorage.setItem('login', JSON.stringify({user: ev.target.user.value,token:xhr.responseText}));
 				location.reload();
 			} else if (xhr.status >= 200 && xhr.status <300) {
 				alert(`Interner Fehler: Unerwartetes Anmeldetoken-Format: Status ${xhr.status}, ${xhr.getResponseHeader('Content-Type')}`);
 			} else if (xhr.status === 404) {
 				alert("Kein Account mit diesem Namen vorhanden");
+			} else if (xhr.status === 403) {
+				alert(`Anmeldung fehlgeschlagen: ${xhr.responseText}`);
 			} else {
-				alert(`Anmeldung fehlgeschlagen (${xhr.statusText}): ${xhr.body}`);
+				alert(`Anmeldung fehlgeschlagen (${xhr.statusText}): ${xhr.responseText}`);
 			}
-		}).send(JSON.stringify({user:ev.target.user.value, password: ev.target.password}));
+		}).send(JSON.stringify({user:ev.target.user.value, password: ev.target.password.value}));
 	});
 } else {
 	login = JSON.parse(login);
 	for (let el of loginBoxes) {
-		el.appendChild(buildDom({'':'p', c:["Hallo, ", {'':'a.user', c: login.user}, {'':'button.logout', type:'button', c:"Logout"}]}));
+		el.appendChild(buildDom({'':'span', c:["Hallo, ", {'':'a.user', c: login.user}, {'':'button.logout', type:'button', c:"Logout"}]}));
 	}
 	document.addEventListener('click', ev => {
 		if (!ev.target.classList.contains('logout')) {return}
