@@ -1,6 +1,8 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 header {color:#777;display:flex}
 header #title {flex:0 1 10em}
+header .login {margin-left: 2em}
+header input, header button {padding:0;border:thin solid #777;border-radius:.3em}
 header nav {flex:1 5;display:inline-flex;justify-content:space-between;flex-flow:row wrap}
 header a {color:inherit;text-decoration:none}
 header a:hover {color:black}
