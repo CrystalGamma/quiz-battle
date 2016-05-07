@@ -2,6 +2,8 @@
 header {color:#777;display:flex}
 header #title {flex:0 1 10em}
 header nav {flex:1 5;display:inline-flex;justify-content:space-between;flex-flow:row wrap}
+header a {color:inherit;text-decoration:none}
+header a:hover {color:black}
 #status, #stats {flex:100%;margin:.3em 1em}
 ul.stat {list-style:none;display:flex;padding:0;margin:0}
 ul.stat li {margin:.2em .5em}
