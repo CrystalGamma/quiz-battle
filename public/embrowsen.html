@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<meta charset=UTF-8>
+<style>
+ol,ul{list-style-type:none;margin:0;padding:0;display:inline}
+ul::before{content:'{'}
+ul::after{content:'}'}
+ol::before{content:'['}
+ol::after{content:']'}
+li::after{content:','}
+li{margin-left:1em}
+li em::after{content:':'}
+</style>
+<script src=builddom.js></script>
+<br>
+<script src=embrowsen.js data-json="{&quot;test&quot;:[1,2,3],&quot;link_&quot;:&quot;&quot;}"></script>
