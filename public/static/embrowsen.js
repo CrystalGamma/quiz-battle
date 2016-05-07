@@ -1,4 +1,4 @@
-(()=>{
+(()=>{"use strict";// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 const data = JSON.parse(document.currentScript.dataset.json);
 const convert = (x, isLink) => (
 	Array.isArray(x) ? {'':'ol', c:x.map(function(y){return{'':'li', c:convert(y, isLink)}})} :
