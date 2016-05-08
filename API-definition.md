@@ -114,11 +114,11 @@ Spielansicht
 	"rounds": [{
 		"category_": "/category/<id>",
 		"dealer": {"": "/player/<id>", "name": "Spielername"},
-		"age": 3600
+		"started": "2016-05-08T10:33:52Z"
 	}, {
 		"candidates_": ["/category/<id>"],
 		"dealer": {"": "/player/<id>", "name": "Spielername"},
-		"age": 30
+		"started": "2016-05-08T11:33:52Z"
 	}, {}, {}, {}],
 	"turns": 3,
 	"timelimit": 10,
@@ -132,7 +132,6 @@ Spielansicht
 `turns`: Anzahl Fragen pro Runde
 `timelimit`: Antwortzeit in Sekunden
 `roundlimit`: max. Dauer einer Runde (Sekunden)
-`age`: Zeit (Sekunden), seit die Runde eröffnet wurde
 `dealer`: Spieler, der die Kategorie der Runde bestimmt hat/bestimmen darf (wenn noch nicht gewählt)
 `dealingrule`: URL für verschiedene Regeln, wer die nächste Runde bestimmen darf (`/dealing/firstanswer`: der erste Spieler, der nicht Dealer der letzten Runde war und alle Fragen der Runde beantwortet hat). Kann ggf. auch eine Spieler-URL sein, damit ein Spieler alle Runden bestimmen darf.
 
@@ -235,6 +234,7 @@ Fragenkatalog
 ```json
 {
 	"": "/schema/category",
+	"name": "Kategoriename",
 	"count": 1234,
 	"start": 0,
 	"end": 10,
