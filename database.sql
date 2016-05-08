@@ -1,75 +1,88 @@
 create table kategorie(
-	id serial primary key not null,
+	id int auto_increment primary key not null,
 	name varchar(255) not null
 );
 
 create table frage(
-	id serial primary key not null,
+	id int auto_increment primary key not null,
 	frage varchar(255) not null,
 	richtig varchar(50) not null,
 	falsch1 varchar(50) not null,
 	falsch2 varchar(50) not null,
 	falsch3 varchar(50) not null,
-	bild bytea null,
+	bild blob null,
 	erklaerung varchar(255) not null	-- nicht vorhanden, wenn leerer string
 );
 
 create table frage_kategorie(
-	frage int references frage(id) not null,
-	kategorie int references kategorie(id) not null,
-	primary key (frage, kategorie)
+	frage int not null,
+	kategorie int not null,
+	primary key (frage, kategorie),
+	FOREIGN KEY(frage) REFERENCES frage(id),
+	FOREIGN KEY(kategorie) REFERENCES kategorie(id)
 );
 
 create table spieler(
-	id serial primary key not null,
+	id int auto_increment primary key not null,
 	name varchar(255) unique not null, -- nick
 	passwort varchar(255) not null,
 	punkte int not null
 );
 
 create table spiel(
-	id serial primary key not null,
+	id int auto_increment primary key not null,
 	einsatz int not null,
-	dealer int references spieler(id) null,
+	dealer int null,
 	runden int not null,
 	fragen_pro_runde int not null,
 	fragenzeit int not null,
-	rundenzeit int not null
+	rundenzeit int not null,
+	foreign key(dealer) references spieler(id)
 );
 
 create table teilnahme(
-	spiel int references spiel(id) not null,
-	spieler int references spieler(id) not null,
+	spiel int not null,
+	spieler int not null,
 	akzeptiert boolean not null,
-	primary key(spiel, spieler)
+	primary key(spiel, spieler),
+	foreign Key(spiel) references spiel(id),
+	foreign Key(spieler) references spieler(id)
 );
 
 create table runde(
-	spiel int references spiel(id) not null,
+	spiel int not null,
 	rundennr int not null,
 	start timestamp not null,
-	dealer int references spieler(id) not null,
-	kategorie int references kategorie(id) null,
-	primary key (spiel, rundennr)
+	dealer int not null,
+	kategorie int null,
+	primary key (spiel, rundennr),
+	foreign Key(spiel) references spiel(id),
+	foreign Key(dealer) references spieler(id),
+	foreign Key(kategorie) references kategorie(id)
 );
 
 create table spiel_frage(
-	spiel int references spiel(id) not null,
+	spiel int not null,
 	fragennr int not null,
-	frage int references frage(id) not null,
+	frage int not null,
 	primary key(spiel, fragennr),
-	unique(spiel, frage)
+	unique(spiel, frage),
+	foreign Key(spiel) references spiel(id),
+	foreign Key(frage) references frage(id)
 );
 
 create table antwort(
-	spiel int references spiel(id) not null,
-	spieler int references spieler(id) not null,
+	spiel int not null,
+	spieler int not null,
 	fragennr int not null,
 	antwort int null,
 	startzeit timestamp not null,
 	foreign key (spiel, fragennr) references spiel_frage(spiel, fragennr),
 	foreign key (spiel, spieler) references teilnahme(spiel, spieler),
-	primary key (spiel, spieler, fragennr)
+	primary key (spiel, spieler, fragennr),
+	foreign Key(spiel) references spiel(id),
+	foreign Key(spieler) references spieler(id)
+	
 );
 
 create index ranking on spieler(punkte);
