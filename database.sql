@@ -66,5 +66,10 @@ create table antwort(
 	spieler int references spieler(id) not null,
 	fragennr int not null,
 	antwort int null,
-	startzeit datetime not null
+	startzeit datetime not null,
+	foreign key (spiel, fragennr) references spiel_frage(spiel, fragennr),
+	foreign key (spiel, spieler) references teilnahme(spiel, spieler),
+	primary key (spiel, spieler, fragennr)
 );
+
+create index ranking on spieler(punkte);
