@@ -26,7 +26,7 @@ function checkAuthToken($token){
     $stmt= $conn->prepare("Select passwort from spieler where name= ?");
     $stmt->execute([$username]);
     $row=$stmt->fetch();
-    if(!$row or $password!==$row[0]){
+    if(!$row or !password_verify($password, $row[0])){
         return false;
     }
     return $username;
@@ -38,4 +38,3 @@ if(checkAuthToken(getAuthToken())===false){
 }
 ?>
 Authorization not failed
-

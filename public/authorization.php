@@ -19,10 +19,9 @@ if(!$password){
     http_response_code(404);
     die("Username wurde nicht gefunden");
 }
-if($requestBody["password"]!==$password[0]){
+if(!password_verify($requestBody["password"], $password[0])){
     http_response_code(403);
     die("Passwort ist inkorrekt");
 }
 echo("Token ".base64_encode($requestBody["user"].":".$requestBody["password"]));
-
 ?>
