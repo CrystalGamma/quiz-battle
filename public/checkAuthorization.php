@@ -1,26 +1,41 @@
 <?php
+require_once "../connection.php";
 header("Content-Type: text/plain; charset=UTF-8");
-$headers=getallheaders();
-$auth=$headers{"Authorization"};
-if (!$auth)
+function getAuthToken()
 {
-    http_response_code(401);
-    header("WWW-Authenticate: Token");
-    die("Nicht authorisiert1");
+    $headers=getallheaders();
+    $auth=$headers{"Authorization"};
+    if (!$auth)
+    {
+        http_response_code(401);
+        header("WWW-Authenticate: Token");
+        die("Nicht authorisiert1");
+    }
+    if(substr($auth,0,6)!=="Token "){
+        http_response_code(400);
+        die("Falscher Authorisierungsheader");
+    }
+    return substr($auth,6); 
 }
-if(substr($auth,0,6)!=="Token "){
-    http_response_code(400);
-    die("Falscher Authorisierungsheader");
+function checkAuthToken($token){
+    global $conn;
+    $tokenDecoded=base64_decode($token);
+    $pos=strpos($tokenDecoded,":");
+    $username=substr($tokenDecoded,0,$pos);
+    $password=substr($tokenDecoded,$pos+1);
+    $stmt= $conn->prepare("Select passwort from spieler where name= ?");
+    $stmt->execute([$username]);
+    $row=$stmt->fetch();
+    if(!$row or $password!==$row[0]){
+        return false;
+    }
+    return $username;
 }
-$tokenDecoded=base64_decode(substr($auth,6));
-$pos=strpos($tokenDecoded,":");
-$username=substr($tokenDecoded,0,$pos);
-$password=substr($tokenDecoded,$pos+1);
-if($username!=="admin" or $password!=="admin"){
+if(checkAuthToken(getAuthToken())===false){
     http_response_code(401);
     header("WWW-Authenticate: Token");
     die("Nicht authorisiert $username $password");
 }
-
 ?>
 Authorization not failed
+
