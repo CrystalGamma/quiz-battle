@@ -1,0 +1,8 @@
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /
+
+RewriteRule ^players/(.*)/games$ scripts/games.php?pid=$1 [QSA]
+RewriteRule ^games/(.*)/(.*)$ scripts/games.php?id=$1&qid=$2 [QSA]
+RewriteRule ^(categories|games|players|questions)/(.*)$ scripts/$1.php?id=$2 [QSA]
+</IfModule>

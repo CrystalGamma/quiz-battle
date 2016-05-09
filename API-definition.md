@@ -59,7 +59,7 @@ Spielerstatistiken
 ### image/*
 Avatar; derzeit noch nicht vorgesehen
 
-# alte Spiele eines Spielers: /players/<id>/games
+# alte Spiele eines Spielers: /players/\<id\>/games
 ## GET
 Paginated
 
@@ -95,7 +95,7 @@ Felder analog zu `GET /games/<id>/` als `application/json`.
 Wenn ein Spieler als Dealer angegeben ist, muss es der angemeldete Spieler sein.
 Wenn der Spieler am Spiel teilnimmt, hat er automatisch angenommen.
 
-# Spiel: /games/<id>/
+# Spiel: /games/\<id\>/
 ## GET
 Ggf. Zugriff nur für Beteiligte (`Vary: Authorization`).
 
@@ -160,7 +160,7 @@ Response Code ist `200 OK`, `202 Accepted`, `204 No Content` oder `205 Reset Con
 
 Wählt die Kategorie für die erste Kategorie im Spiel, die man dealen darf.
 
-# Frage im Spiel: /games/<gid>/<qid>
+# Frage im Spiel: /games/\<gid\>/\<qid\>
 ## GET
 Solange Spiel läuft, muss der Zugriff von Spielern, die die Frage nicht beantwortet haben, verboten sein (`Vary: Authorization`).
 
