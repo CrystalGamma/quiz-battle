@@ -83,12 +83,12 @@ Request-Body (`application/json`):
 ```json
 {
 	"": "/schema/game?new",
-	"players_": ["/player/<id>"],
+	"players_": ["/players/<id>"],
 	"rounds": 5,
 	"turns": 3,
 	"timelimit": 10,
 	"roundlimit": 172800,
-	"dealingrule": "/player/<id>"
+	"dealingrule": "/players/<id>"
 }
 ```
 Felder analog zu `GET /games/<id>/` als `application/json`.
@@ -109,14 +109,14 @@ Spielansicht
 {
 	"": "/schema/game",
 	"players": [
-		{"": "/player/<id>", "name": "Spielername", "accepted": true}
+		{"": "/players/<id>", "name": "Spielername", "accepted": true}
 	],
 	"rounds": [{
-		"category_": "/category/<id>",
-		"dealer": {"": "/player/<id>", "name": "Spielername"},
+		"category_": "/categories/<id>",
+		"dealer": {"": "/players/<id>", "name": "Spielername"},
 		"started": "2016-05-08T10:33:52Z"
 	}, {
-		"candidates_": ["/category/<id>"],
+		"candidates_": ["/categories/<id>"],
 		"dealer": {"": "/player/<id>", "name": "Spielername"},
 		"started": "2016-05-08T11:33:52Z"
 	}, {}, {}, {}],
@@ -154,7 +154,7 @@ Response Code ist `200 OK`, `202 Accepted`, `204 No Content` oder `205 Reset Con
 ```json
 {
 	"": "/schema/deal"
-	"category_": "/category/<id>"
+	"category_": "/categories/<id>"
 }
 ```
 
