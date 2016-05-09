@@ -173,7 +173,7 @@ Solange Spiel läuft, muss der Zugriff von Spielern, die die Frage nicht beantwo
 		"question": "Fragetext",
 		"picture": null,
 		"explanation": "Erklärung",
-		"answers": ["Antwort 1", "Antwort 2 (richtig)", "Antwort 3", "Antwort 4"],
+		"answers": ["Antwort 1 (richtig)", "Antwort 2", "Antwort 3", "Antwort 4"],
 		"correct": 1
 	}
 	"answers": [
