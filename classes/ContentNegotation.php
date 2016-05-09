@@ -15,8 +15,8 @@ class ContentNegotation{
 		return $preference;
 	}
     public static function getContent($accept, $server_Accept){
-        $client=Parser::parse_Accept($accept);
-        $server=Parser::parse_Accept($server_Accept);
+        $client=ContentNegotation::parse_Accept($accept);
+        $server=ContentNegotation::parse_Accept($server_Accept);
         $content=[];
         if(!empty($accept)){
             foreach($client as $client_String => $client_Content){
@@ -27,14 +27,23 @@ class ContentNegotation{
                 }
             }
             if(array_key_exists("*/*",$client) && count($content)!= count($server)){
+                $q;
+                if($client["*/*"]==1){
+                    $q=0.1;
+                }else{
+                    $q=$client["*/*"];
+                }
                 foreach($server as $key => $value){
                     if(!array_key_exists($key, $content)){
-                        $content[$key]=($value*0.1);
+                        $content[$key]=($value*$q);
                     }
                 }
             }
         }else{
             $content=$server;
+        }
+        if(empty($content)){
+            http_response_code(406);
         }
         arsort($content);
 		return $content;
