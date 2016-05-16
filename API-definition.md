@@ -34,7 +34,7 @@ Ranking-Liste
 Spieler hinzufügen
 Format wie in `GET /players/<id>` als `application/json`.
 
-# Spieler: /players/<id>
+# Spieler: /players/\<id\>
 ## GET
 Ggf. müssen für verschiedene Nutzer verschiedene Informationen sichtbar sein (bspw. Ranking für alle, Spiele nur für alle Spieler die beteiligt sind; impliziert `Vary: Authorization`).
 
@@ -228,7 +228,7 @@ Fragenkatalog
 }
 ```
 
-# Kategorie: /categories/<id>
+# Kategorie: /categories/\<id\>
 ## GET
 ### application/json
 ```json
@@ -246,7 +246,7 @@ Fragenkatalog
 }
 ```
 
-# Katalog-Frage: /questions/<id>
+# Katalog-Frage: /questions/\<id\>
 ## GET
 ### application/json
 ```json
