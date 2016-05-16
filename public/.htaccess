@@ -8,6 +8,7 @@ RewriteRule ^(categories|games|players|questions)/(\d+)$ scripts/$1.php?id=$2
 RewriteRule ^(categories|games|players|questions)/$ scripts/$1.php [QSA]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^scripts/(.*)$ /static/$1.js [QSA]
-RewriteRule ^styles/$ static/style.css [QSA]
+RewriteRule ^styles/?$ static/style.css [QSA]
 RewriteRule ^styles/(.*)$ static/$1.css [QSA]
+RewriteRule ^auth$ authorization.php
 </IfModule>

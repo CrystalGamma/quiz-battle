@@ -27,5 +27,5 @@ if(!password_verify($requestBody["password"], $row[0])){
     die("Passwort ist inkorrekt");
 }
 header("Content-Type: application/json");
-echo("{\"player_\":\"/players/".$row["id"]."\",\"token\":\"$Token ".base64_encode($requestBody["user"].":".$requestBody["password"])."\"}");
+echo("{\"player_\":\"/players/".$row["id"]."\",\"token\":\"Token ".base64_encode($requestBody["user"].":".$requestBody["password"])."\"}");
 ?>
