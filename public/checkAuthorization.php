@@ -36,5 +36,4 @@ if(checkAuthToken(getAuthToken())===false){
     header("WWW-Authenticate: Token");
     die("Nicht authorisiert $username $password");
 }
-?>
-Authorization not failed
+
