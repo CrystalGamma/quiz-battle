@@ -1,4 +1,4 @@
-(() => {"use strict";// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+const loginPromise = (() => {"use strict";// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 const loginBoxes = Array.from(document.querySelectorAll('.login'));
 if (!localStorage) {return}
 let login = localStorage.getItem('login');
@@ -15,8 +15,10 @@ if (!login) {
 		if (!container.classList.contains('login')) {return}
 		ev.preventDefault();
 		makeXHR('POST', container.dataset.auth, {'Content-Type':'application/json'}, xhr => {
-			if (xhr.status === 200 && xhr.getResponseHeader('Content-Type') === 'text/plain; charset=UTF-8') {
-				localStorage.setItem('login', JSON.stringify({user: ev.target.user.value,token:xhr.responseText}));
+			if (xhr.status === 200 && xhr.getResponseHeader('Content-Type') === 'application/json') {
+				const login = JSON.parse(xhr.responseText);
+				login.user = ev.target.user.value;
+				localStorage.setItem('login', JSON.stringify(login));
 				location.reload();
 			} else if (xhr.status >= 200 && xhr.status <300) {
 				alert(`Interner Fehler: Unerwartetes Anmeldetoken-Format: Status ${xhr.status}, ${xhr.getResponseHeader('Content-Type')}`);
@@ -29,15 +31,17 @@ if (!login) {
 			}
 		}).send(JSON.stringify({user:ev.target.user.value, password: ev.target.password.value}));
 	});
+	return Promise.reject("nicht angemeldet");
 } else {
 	login = JSON.parse(login);
 	for (let el of loginBoxes) {
-		el.appendChild(buildDom({'':'span', c:["Hallo, ", {'':'a.user', c: login.user}, {'':'button.logout', type:'button', c:"Logout"}]}));
+		el.appendChild(buildDom({'':'span', c:["Hallo, ", {'':'a.user', href: login.player_, c: login.user}, {'':'button.logout', type:'button', c:"Logout"}]}));
 	}
 	document.addEventListener('click', ev => {
 		if (!ev.target.classList.contains('logout')) {return}
 		localStorage.removeItem('login');
 		location.reload();
 	});
+	return Promise.resolve(login);
 }
 })();
