@@ -8,7 +8,13 @@ class ContentNegotation{
 			if(count($temp)==1){
 				$preference[$temp[0]]=1;
 			}else{
-				$preference[$temp[0]]=explode("=",$temp[1])[1];
+				$number=trim(explode("=",$temp[1])[1]);
+				if(preg_match("/^[0-9]+(.[0-9]+)?$/",$number)){
+					$preference[trim($temp[0])]=$number;
+				}else{
+					http_response_code(406); //Error-Handling?
+					//echo "?";
+				}
 			}
 		}
 		arsort($preference);
@@ -43,10 +49,10 @@ class ContentNegotation{
             $content=$server;
         }
         if(empty($content)){
-            http_response_code(406);
+            http_response_code(406); //Error-Handling?
         }
         arsort($content);
-		return $content;
+		return key($content);
     }
 }
 ?>
