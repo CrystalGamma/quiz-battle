@@ -20,12 +20,11 @@ require_once __DIR__."/../checkAuthorization.php";
 require_once __DIR__."/../../classes/ContentNegotation.php";
 
 $contentType=ContentNegotation::getContent($_SERVER['HTTP_ACCEPT'],"text/html,application/json;q=0.9");
-print_r($contentType);
 //Spielername holen
 $stmt= $conn->prepare('select spieler.name from spieler where spieler.id=?');
 $anzuzeigendeUserID=$_GET['id'];
 $stmt->execute([$anzuzeigendeUserID]);
-$anzuzeigenderUsername=$stmt->fetchall();
+$anzuzeigenderUsername=$stmt->fetch()['name'];
 $username=getAuthorizationUser();
 if($username!==false)
 {
