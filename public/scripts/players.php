@@ -2,7 +2,7 @@
 require_once('../../connection.php');
 
 $stmt = $conn->query('SELECT COUNT(*) FROM spieler');
-$count = $stmt->fetchColumn();
+$count = (int) $stmt->fetchColumn();
 if ($_GET['start'] > $count || $_GET['end'] > $count) {
     http_response_code(404);
     die();
@@ -18,12 +18,16 @@ $stmt->bindValue(':offset', (int) $_GET['start'], PDO::PARAM_INT);
 $stmt->execute();
 $players = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+foreach($players as &$player) {
+    $player['points'] = (int) $player['points'];
+}
+
 $array = array(
     '' => '/schema/players',
     'count' => $count,
     'start' => (int) $_GET['start'],
-    'end' => $_GET['end'],
-    'next_' => $_GET['end'] > $count ? null : '?start='.$_GET['end'],
+    'end' => (int) $_GET['end'],
+    'next_' => $_GET['end'] >= $count ? null : '?start='.$_GET['end'],
     'prev_' => $_GET['start'] == 0 ? null : '?start='.$_GET['start'],
     'players' => $players,
 );
