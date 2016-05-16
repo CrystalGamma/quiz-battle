@@ -1,6 +1,5 @@
 <?php
-require_once "../connection.php";
-header("Content-Type: text/plain; charset=UTF-8");
+require_once __DIR__."/../connection.php";
 function getAuthToken()
 {
     $headers=getallheaders();
@@ -18,6 +17,7 @@ function getAuthToken()
     return substr($auth,6); 
 }
 function checkAuthToken($token){
+    error_log($token);
     global $conn;
     $tokenDecoded=base64_decode($token);
     $pos=strpos($tokenDecoded,":");
@@ -31,9 +31,11 @@ function checkAuthToken($token){
     }
     return $username;
 }
-if(checkAuthToken(getAuthToken())===false){
-    http_response_code(401);
-    header("WWW-Authenticate: Token");
-    die("Nicht authorisiert $username $password");
+function getAuthorizationUser(){
+    if (!array_key_exists("Authorization",getallheaders())){ 
+    return false;
+    } else {
+    return checkAuthToken(getAuthToken());
+    }
 }
 
