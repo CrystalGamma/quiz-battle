@@ -1,5 +1,9 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-header {color:#777;display:flex}
+* {margin:0;padding:0}
+a {text-decoration:none;color:inherit}
+a:hover {color:#05c}
+
+header {color:#777;display:flex;padding:.5em }
 header #title {flex:0 1 10em}
 header .login {margin-left: 2em}
 header input, header button {padding:0;border:thin solid #777;border-radius:.3em}
@@ -9,8 +13,8 @@ header a:hover {color:black}
 #status, #stats {flex:100%;margin:.3em 1em}
 ul.stat {list-style:none;display:flex;padding:0;margin:0}
 ul.stat li {margin:.2em .5em}
-#start-game {margin:1em;padding:.5em;border-radius:.5em;border:.2em solid #0a0;background:#0c0;color:white}
-#start-game::after {content:' \23f5';color:#ccc}
+.start-game {margin:1em;padding:.5em;border-radius:.5em;border:.2em solid #0a0;background:#0c0;color:white}
+.start-game::after {content:' \23f5';color:#ccc}
 
 main {display:flex;flex-flow:row wrap}
 #open-games, #waiting-games, #closed-games {flex:1;margin:.3em}
@@ -48,3 +52,12 @@ a.game:hover {background:#333;color:white}
 progress {border:thin solid black;border-radius:.3em}
 
 table th {padding: .3em}
+
+input {margin:0 .3em}
+
+form.signup label {display:flex;justify-content:space-between;padding:.3em}
+form.signup label.dense {justify-content:flex-start}
+form.signup input:not([type="checkbox"]) {width:20em}
+
+.notification {padding:1.5em;border:thin solid #777;border-radius:.3em;transition:height 0.5s}
+.notification.new {height:0}
