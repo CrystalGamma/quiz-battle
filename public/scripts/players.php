@@ -51,7 +51,7 @@ $array = array(
     'end' => (int) $_GET['end'],
     'next_' =>  $next,
     'prev_' =>  $prev,
-    'players' => $players,
+    'players' => $players
 );
 
 $json = json_encode($array);
