@@ -9,7 +9,7 @@ class PaginationHelper {
             die();
         }
         
-		if (max(-1, $_GET['start']) >= $count || $_GET['end'] > $count) {
+        if (max(-1, $_GET['start']) >= $count || $_GET['end'] > $count) {
             http_response_code(404);
             die();
         }
