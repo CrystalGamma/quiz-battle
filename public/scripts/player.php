@@ -54,7 +54,7 @@ $stmt= $conn->prepare(
 ) As falscheAntwort, s.name
 From spiel, spieler s, spiel_frage sf, antwort a, frage f, frage_kategorie fk, kategorie k, teilnahme t, teilnahme t2
 Where spiel.status="beendet" And sf.spiel=spiel.id And sf.frage=f.id And f.id=fk.frage And fk.kategorie=k.id 
-And a.spiel=spiel.id And a.spieler=s.id and a.fragennr=sf.fragennr
+And a.spiel=spiel.id And a.spieler=:statsfor and a.fragennr=sf.fragennr
 And spiel.id=t.spiel And s.id=t.spieler And s.name=:authorized
 And t2.spiel=spiel.id And t2.spieler=:statsfor
 Group By k.id;');
