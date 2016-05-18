@@ -37,7 +37,7 @@ create table spiel(
 	fragen_pro_runde int not null,
 	fragenzeit int not null,
 	rundenzeit int not null,
-	status varchar(50) not null;
+	status varchar(50) not null,
 	foreign key(dealer) references spieler(id)
 );
 
