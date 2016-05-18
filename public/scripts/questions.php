@@ -1,5 +1,9 @@
 <?php
-require_once('../../connection.php');
+require_once __DIR__."/../../connection.php";
+require_once __DIR__."/../checkAuthorization.php";
+require_once __DIR__."/../../classes/ContentNegotation.php";
+
+$contentType=ContentNegotation::getContent($_SERVER['HTTP_ACCEPT'],"text/html,application/json;q=0.9");
 
 if (empty($_GET['id'])) {
     http_response_code(404);
@@ -9,6 +13,10 @@ $stmt = $conn->prepare('SELECT id AS "", frage AS question, erklaerung AS explan
 $stmt->bindValue(':id', $_GET['id'], PDO::PARAM_INT);
 $stmt->execute();
 $question = $stmt->fetch(PDO::FETCH_ASSOC);
+if(empty($question)) {
+    http_response_code(404);
+    die();
+}
 
 $question['answers'] = array(
     $question["richtig"],
@@ -31,7 +39,14 @@ foreach ($categories as $category) {
     array_push($question['categories_'], '/categories/'.$category['kategorie']);
 }
 
-header('Content-Type: application/json; charset: utf-8');
 $question[''] = '/schema/question';
-echo json_encode($question);
+
+$json = json_encode($question);
+
+if ($contentType === "application/json"){
+    header("Content-Type: $contentType; charset: utf-8");
+    echo $json;
+} else {
+    require_once __DIR__."/../embrowsen.php";
+}
 ?>
