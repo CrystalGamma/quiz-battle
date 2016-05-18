@@ -1,9 +1,9 @@
 <?php
-require_once __DIR__."/../../connection.php";
-require_once __DIR__."/../checkAuthorization.php";
-require_once __DIR__."/../../classes/ContentNegotation.php";
+require_once __DIR__.'/../../connection.php';
+require_once __DIR__.'/../checkAuthorization.php';
+require_once __DIR__.'/../../classes/ContentNegotation.php';
 
-$contentType=ContentNegotation::getContent($_SERVER['HTTP_ACCEPT'],"text/html,application/json;q=0.9");
+$contentType = ContentNegotation::getContent($_SERVER['HTTP_ACCEPT'], 'text/html,application/json;q=0.9');
 
 if (empty($_GET['id'])) {
     http_response_code(404);
@@ -13,13 +13,13 @@ $stmt = $conn->prepare('SELECT id AS "", frage AS question, erklaerung AS explan
 $stmt->bindValue(':id', $_GET['id'], PDO::PARAM_INT);
 $stmt->execute();
 $question = $stmt->fetch(PDO::FETCH_ASSOC);
-if(empty($question)) {
+if (empty($question)) {
     http_response_code(404);
     die();
 }
 
 $question['answers'] = array(
-    $question["richtig"],
+    $question['richtig'],
     $question['falsch1'],
     $question['falsch2'],
     $question['falsch3']
@@ -43,10 +43,10 @@ $question[''] = '/schema/question';
 
 $json = json_encode($question);
 
-if ($contentType === "application/json"){
+if ($contentType === 'application/json') {
     header("Content-Type: $contentType; charset: utf-8");
     echo $json;
 } else {
-    require_once __DIR__."/../embrowsen.php";
+    require_once __DIR__.'/../embrowsen.php';
 }
 ?>

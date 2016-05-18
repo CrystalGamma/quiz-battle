@@ -1,4 +1,6 @@
 <?php
+error_reporting( E_ALL );
+
 require_once __DIR__.'/../../connection.php';
 require_once __DIR__.'/../checkAuthorization.php';
 require_once __DIR__.'/../../classes/ContentNegotation.php';

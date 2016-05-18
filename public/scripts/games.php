@@ -1,10 +1,10 @@
 <?php
-require_once __DIR__."/../../connection.php";
-require_once __DIR__."/../checkAuthorization.php";
-require_once __DIR__."/../../classes/ContentNegotation.php";
-require_once __DIR__."/../../classes/PaginationHelper.php";
+require_once __DIR__.'/../../connection.php';
+require_once __DIR__.'/../checkAuthorization.php';
+require_once __DIR__.'/../../classes/ContentNegotation.php';
+require_once __DIR__.'/../../classes/PaginationHelper.php';
 
-$contentType=ContentNegotation::getContent($_SERVER['HTTP_ACCEPT'],"text/html,application/json;q=0.9");
+$contentType = ContentNegotation::getContent($_SERVER['HTTP_ACCEPT'], 'text/html,application/json;q=0.9');
 
 if (isset($_GET['pid'])) {
     $stmt = $conn->prepare('SELECT COUNT(*) FROM spiel s, teilnahme t WHERE s.id = t.spiel AND t.spieler = :player');
@@ -34,16 +34,16 @@ if (isset($_GET['pid'])) {
         'games_' => array_values($games)
     );
 } else {
-    echo "Not yet implemented.";
+    echo 'Not yet implemented.';
     die();
 }
 
 $json = json_encode($array);
 
-if ($contentType === "application/json"){
+if ($contentType === 'application/json') {
     header("Content-Type: $contentType; charset: utf-8");
     echo $json;
 } else {
-    require_once __DIR__."/../embrowsen.php";
+    require_once __DIR__.'/../embrowsen.php';
 }
 ?>
