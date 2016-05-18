@@ -56,8 +56,7 @@ if (isset($_GET['pid'])) {
         'games' => array_values($games)
     );
 } else {
-    echo "Not yet implemented.";
-    die();
+    require_once __DIR__."/createGame.php";
 }
 
 $json = json_encode($array);
