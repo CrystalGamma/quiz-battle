@@ -13,12 +13,15 @@ if ($_GET['start'] > $count || $_GET['end'] > $count) {
 }
 
 if (empty($_GET['end'])) {
-    if ($count < $_GET['start'] + 10) $_GET['end'] = $count;
-    else $_GET['end'] = $_GET['start'] + 10;
+    $steps = 10;
+    if ($count < $_GET['start'] + $steps) $_GET['end'] = $count;
+    else $_GET['end'] = $_GET['start'] + $steps;
+} else {
+    $steps = $_GET['end'] - $_GET['start'];
 }
 
 $stmt = $conn->prepare('SELECT id AS "", name, punkte AS points FROM spieler ORDER BY points DESC LIMIT :limit OFFSET :offset');
-$stmt->bindValue(':limit', (int) $_GET['end'], PDO::PARAM_INT);
+$stmt->bindValue(':limit', (int) $steps, PDO::PARAM_INT);
 $stmt->bindValue(':offset', (int) $_GET['start'], PDO::PARAM_INT);
 $stmt->execute();
 $players = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -27,13 +30,27 @@ foreach($players as &$player) {
     $player['points'] = (int) $player['points'];
 }
 
+$next = $_GET['end'] >= $count ? null : $_GET['end'];
+if(!is_null($next)) {
+    if ($steps != 10)
+        $next .= "&end=".($next + $steps);
+    $next = "?start=$next";
+}
+
+$prev = $_GET['start'] == 0 ? null : max(0, $_GET['start'] - $steps);
+if (!is_null($prev)) {
+    if ($steps != 10)
+        $prev .= "&end=".($prev + $steps);
+    $prev = "?start=$prev";
+}
+
 $array = array(
     '' => '/schema/players',
     'count' => $count,
     'start' => (int) $_GET['start'],
     'end' => (int) $_GET['end'],
-    'next_' => $_GET['end'] >= $count ? null : '?start='.$_GET['end'],
-    'prev_' => $_GET['start'] == 0 ? null : '?start='.$_GET['start'],
+    'next_' =>  $next,
+    'prev_' =>  $prev,
     'players' => $players,
 );
 
