@@ -28,13 +28,13 @@ if (isset($requestBody)) {
     $stmt = $conn->prepare('SELECT id FROM spieler WHERE name = ?');
     $stmt->execute([$requestBody['name']]);
     $player = $stmt->fetch();
-    if ($player){
+    if ($player) {
         http_response_code(400);
         die('Username ist bereits vergeben.');
     } else {
         $stmt = $conn->prepare('INSERT INTO spieler (name, passwort, punkte) VALUES (:name, :password, :points)');
         $stmt->bindValue(':name', $requestBody['name']);
-        $stmt->bindValue(':password', $requestBody['password']);
+        $stmt->bindValue(':password', password_hash($requestBody['password'], PASSWORD_DEFAULT));
         $stmt->bindValue(':points', 0, PDO::PARAM_INT);
         if ($stmt->execute())
             die('Erfolgreich.');
@@ -67,7 +67,7 @@ if (isset($requestBody)) {
 
     $json = json_encode($array);
 
-    if ($contentType === 'application/json'){
+    if ($contentType === 'application/json') {
         header("Content-Type: $contentType; charset: utf-8");
         echo $json;
     } else {
