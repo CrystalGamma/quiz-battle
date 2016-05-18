@@ -33,7 +33,6 @@ class ContentNegotation{
                 }
             }
             if(array_key_exists("*/*",$client) && count($content)!= count($server)){
-                $q;
                 if($client["*/*"]==1){
                     $q=0.1;
                 }else{

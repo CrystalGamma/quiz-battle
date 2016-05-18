@@ -2,6 +2,7 @@
 const data = JSON.parse(document.currentScript.dataset.json);
 const convert = (x, isLink) => (
 	Array.isArray(x) ? {'':'ol', c:x.map(function(y){return{'':'li', c:convert(y, isLink)}})} :
+	x === null ? 'null' :
 	typeof x === 'object' ? {'':'ul', c:Object.keys(x).map(function(key){
 		return{'':'li',c:[{'':'em', c:JSON.stringify(key)}, convert(x[key], !key || key.endsWith('_'))]};
 	})} :
