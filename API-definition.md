@@ -3,7 +3,7 @@
 ### text/html
 Startseite
 
-# Spielerliste: /players/
+# Spielerliste: /players/ (Florian)
 ## GET
 Paginated: Query-Parameter
 • `start` für Offset in der Liste (Default 0)
@@ -38,10 +38,10 @@ Format wie in `GET /players/<id>` als `application/json`.
 ## GET
 Ggf. müssen für verschiedene Nutzer verschiedene Informationen sichtbar sein (bspw. Ranking für alle, Spiele nur für alle Spieler die beteiligt sind; impliziert `Vary: Authorization`).
 
-### text/html
+### text/html (Jona)
 Spielerstatistiken
 
-### application/json
+### application/json (Leon)
 ```json
 {
 	"": "/schema/player",
@@ -59,7 +59,7 @@ Spielerstatistiken
 ### image/*
 Avatar; derzeit noch nicht vorgesehen
 
-# alte Spiele eines Spielers: /players/\<id\>/oldgames
+# alte Spiele eines Spielers: /players/\<id\>/oldgames (Florian)
 ## GET
 Paginated
 
@@ -76,7 +76,7 @@ Paginated
 }
 ```
 
-# Spiele: /games/
+# Spiele: /games/ (Arthur)
 ## POST (Spiel erstellen)
 Request-Body (`application/json`):
 
@@ -101,10 +101,10 @@ Ggf. Zugriff nur für Beteiligte (`Vary: Authorization`).
 
 Solange das Spiel noch läuft, sind für alle Fragen, die der Betrachter noch nicht beantwortet hat, nicht die Antworten angegeben (auch `Vary: Authorization`).
 
-### text/html
+### text/html (Jona)
 Spielansicht
 
-### application/json
+### application/json (Leon)
 ```json
 {
 	"": "/schema/game",
@@ -137,7 +137,7 @@ Spielansicht
 
 `questions.status`: Antwortstatus in der Reihenfolge der Spielerliste: `null` wenn noch nicht beantwortet, `true` wenn richtig, `false` wenn falsch, `""` wenn Zeit abgelaufen.
 
-## PUT (Spiel annehmen/ablehnen)
+## PUT (Spiel annehmen/ablehnen) (Arthur)
 Request-Body (`application/json`):
 
 ```json
@@ -150,7 +150,7 @@ Akzeptiert das Spiel/lehnt es ab (je nach `accept`) im Namen des angemeldeten Sp
 Response-Body ist leer.
 Response Code ist `200 OK`, `202 Accepted`, `204 No Content` oder `205 Reset Content` (TBD).
 
-## POST (Kategorie auswählen)
+## POST (Kategorie auswählen) (Arthur)
 ```json
 {
 	"": "/schema/deal"
@@ -164,7 +164,7 @@ Wählt die Kategorie für die erste Kategorie im Spiel, die man dealen darf.
 ## GET
 Solange Spiel läuft, muss der Zugriff von Spielern, die die Frage nicht beantwortet haben, verboten sein (`Vary: Authorization`).
 
-### application/json
+### application/json (Leon)
 ```json
 {
 	"": "/schema/game-question",
@@ -182,7 +182,7 @@ Solange Spiel läuft, muss der Zugriff von Spielern, die die Frage nicht beantwo
 }
 ```
 
-## POST (Frage beginnen)
+## POST (Frage beginnen) (Jona)
 Request-Body:
 
 ```json
@@ -199,7 +199,7 @@ Response (`application/json`):
 }
 ```
 
-### PUT (Antwort eintragen)
+### PUT (Antwort eintragen) (Jona)
 Request-Body (`application/json`):
 
 ```json
@@ -213,7 +213,7 @@ Response wie für GET (mit `Content-Location` auf eigene URL).
 
 Zeitlimit vorbei ⇒ 403 Forbidden
 
-# Kategorienliste: /categories/
+# Kategorienliste: /categories/ (Birk)
 ## GET
 ### text/html
 Fragenkatalog
@@ -228,7 +228,7 @@ Fragenkatalog
 }
 ```
 
-# Kategorie: /categories/\<id\>
+# Kategorie: /categories/\<id\> (Birk)
 ## GET
 ### application/json
 ```json
