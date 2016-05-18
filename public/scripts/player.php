@@ -23,8 +23,16 @@ $contentType=ContentNegotation::getContent($_SERVER['HTTP_ACCEPT'],"text/html,ap
 //Spielername holen
 $stmt= $conn->prepare('select spieler.name from spieler where spieler.id=?');
 $anzuzeigendeUserID=$_GET['id'];
+//Überprüfen ob eine ID mitgegeben wurde-- nicht benötigt
 $stmt->execute([$anzuzeigendeUserID]);
-$anzuzeigenderUsername=$stmt->fetch()['name'];
+$row = $stmt->fetch();
+//Überprüfung ob es einen User gibt
+echo $anzuzeigenderUsername;
+if($row===false){
+    http_response_code(404);
+    die("Der Player mit der ID".$anzuzeigendeUserID." exisitiert nicht");
+}
+$anzuzeigenderUsername=$row['name'];
 $username=getAuthorizationUser();
 if($username!==false)
 {
