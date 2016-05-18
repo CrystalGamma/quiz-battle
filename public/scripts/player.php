@@ -27,7 +27,6 @@ $anzuzeigendeUserID=$_GET['id'];
 $stmt->execute([$anzuzeigendeUserID]);
 $row = $stmt->fetch();
 //Überprüfung ob es einen User gibt
-echo $anzuzeigenderUsername;
 if($row===false){
     http_response_code(404);
     die("Der Player mit der ID".$anzuzeigendeUserID." exisitiert nicht");
