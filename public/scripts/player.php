@@ -20,72 +20,71 @@ require_once __DIR__."/../checkAuthorization.php";
 require_once __DIR__."/../../classes/ContentNegotation.php";
 
 $contentType=ContentNegotation::getContent($_SERVER['HTTP_ACCEPT'],"text/html,application/json;q=0.9");
-//Spielername holen
-$stmt= $conn->prepare('select spieler.name from spieler where spieler.id=?');
-$anzuzeigendeUserID=$_GET['id'];
-//Überprüfen ob eine ID mitgegeben wurde-- nicht benötigt
-$stmt->execute([$anzuzeigendeUserID]);
-$row = $stmt->fetch();
-//Überprüfung ob es einen User gibt
-if($row===false){
-    http_response_code(404);
-    die("Der Player mit der ID".$anzuzeigendeUserID." exisitiert nicht");
-}
-$anzuzeigenderUsername=$row['name'];
-$username=getAuthorizationUser();
-if($username!==false)
-{
-    //JSON Element activegames_ wird zusammengebaut
-    $stmt= $conn->prepare('select spiel.id, spieler.id from spieler left join teilnahme on spieler.id=teilnahme.spieler, spiel where spiel.id=teilnahme.spiel and spieler.name=? and spiel.status="laufend" order by status DESC;');
-    $stmt->execute([$username]);
-    $RueckgabeDaten=$stmt->fetchall();
-    $laufendeSpiele=array();
-    $spielerID=$RueckgabeDaten[0][1];
-    foreach ($RueckgabeDaten as &$value){
-        array_push($laufendeSpiele,"/games/".$value[0]);
-    }
 
-    //JSON-Element categorystats wird zusammengebaut
-    /*Erklärung: erstes inner select alle im Spiel verwendeten kategorien mit anz richtigen und falschen, 
-                    zweites inneres selct alle kategorien ausgeben
-                    das union davon nach den katego1rien gruppieren*/ 
-    $stmt= $conn->prepare('Select * from (select kategorie.name as katName, kategorie.id as katID, Sum(case when antwort.antwort=1 then 1 else 0 end) as richtigeAntwort, Sum(case when antwort.antwort!=1 then 1 else 0 end) as falscheAntwort, spiel.id as SpielID, spieler.name  from spiel, spieler, spiel_frage, antwort, frage, frage_kategorie, kategorie, teilnahme where spiel_frage.spiel=spiel.id and antwort.spiel=spiel.id and antwort.spieler=spieler.id and antwort.fragennr=spiel_frage.fragennr and spiel_frage.frage=frage.id and frage.id=frage_kategorie.frage and frage_kategorie.kategorie=kategorie.id and spieler.name="admin" and spiel.status="beendet" and spiel.id=teilnahme.spiel and spieler.id=teilnahme.spieler and teilnahme.akzeptiert=1 group by kategorie.name union select kategorie.name, kategorie.id, 0, 0,"NULL", "NULL" from kategorie) as tmp group by katName;');
-    $stmt->execute([$username]);
-    $RueckgabeDaten=$stmt->fetchall();
-    //print_r($RueckgabeDaten);
-    $Kategorie=array();
-    foreach ($RueckgabeDaten as &$value){
-        array_push($Kategorie,
-            array(
-                "category"=>array(
-                    ""=>"/categories/".$value['katID'],
-                    "name"=>$value['katName']
-                ),
-                "correct" => $value['richtigeAntwort'],
-                "incorrect" => $value['falscheAntwort']
-            )
-        );
-    }
-}else{
-    $username=$anzuzeigenderUsername;
-    $laufendeSpiele="";
-    $spielerID=$anzuzeigendeUserID;
-    $Kategorie="";
+$stmt= $conn->prepare('select id, name, punkte from spieler where spieler.id=?');
+$stmt->execute([$_GET['id']]);
+$user = $stmt->fetch();
+//Überprüfung ob es den User gibt
+if($user===false){
+    http_response_code(404);
+    die("Der Spieler mit der ID ".$user['id']." exisitiert nicht");
 }
-//JSON array wird zusammengebaut
-$array = array(
-    ""=>"/schema/player",
-    "name" =>$username,
-    "activegames_" => $laufendeSpiele,
-    "oldgames_"=> $spielerID."/oldgames",
-    "categorystats"=>$Kategorie
-);
-$json= json_encode($array);
+$anzuzeigenderUsername=$user['name'];
+$username=getAuthorizationUser();
+if ($username === false) {$username = NULL;}
+if($username === $anzuzeigenderUsername)
+{
+	//JSON Element activegames_ wird zusammengebaut
+	$stmt= $conn->prepare('Select spiel.id From spiel, teilnahme Where teilnahme.spiel = spiel.id And spiel.status != \'beendet\' And teilnahme.spieler = :uid');
+	$stmt->execute(['uid' => $user['id']]);
+	$laufendeSpiele=array();
+	foreach ($stmt->fetchall() as $value){
+		array_push($laufendeSpiele,"/games/".$value[0]);
+	}
+} else {
+	$laufendeSpiele = NULL;
+}
+
+//JSON-Element categorystats wird zusammengebaut
+$stmt= $conn->prepare(
+'Select k.name As katName, k.id As katID, Sum(
+	Case When a.antwort=0 Then 1 Else 0 End
+) As richtigeAntwort, Sum(
+	Case When a.antwort!=0 Then 1 Else 0 End
+) As falscheAntwort, s.name
+From spiel, spieler s, spiel_frage sf, antwort a, frage f, frage_kategorie fk, kategorie k, teilnahme t, teilnahme t2
+Where spiel.status="beendet" And sf.spiel=spiel.id And sf.frage=f.id And f.id=fk.frage And fk.kategorie=k.id 
+And a.spiel=spiel.id And a.spieler=s.id and a.fragennr=sf.fragennr
+And spiel.id=t.spiel And s.id=t.spieler And s.name=:authorized
+And t2.spiel=spiel.id And t2.spieler=:statsfor
+Group By k.id;');
+$stmt->execute(["authorized" => $username, "statsfor" => $user['id']]);
+$kategorie=[];
+foreach ($stmt->fetchall() as $value){
+	array_push($kategorie, [
+		"category"=>[
+			""=>"/categories/".$value['katID'],
+			"name"=>$value['katName']
+		],
+		"correct" => (int) $value['richtigeAntwort'],
+		"incorrect" => (int) $value['falscheAntwort']
+	]);
+}
+$oldGameCount = $conn->prepare("Select Count(spiel.id) From spiel, teilnahme where teilnahme.spieler = ? And spiel.status = 'beendet' And spiel.id = teilnahme.spiel");
+$oldGameCount->execute([$user['id']]);
+$numOldGames = (int)$oldGameCount->fetchall()[0][0];
 if($contentType==="application/json"){
     header('Content-Type: application/json');
-    echo $json;
+    echo json_encode([
+	""=>"/schema/player",
+        "name" =>$user['name'],
+        "score" =>$user['punkte'],
+        "activegames_" => $laufendeSpiele,
+        "oldgames_"=> ['' => $user['id']."/oldgames", 'count' => $numOldGames],
+        "categorystats"=>$kategorie
+    ]);
 }else{
-    require_once __DIR__."/../embrowsen.php";
+    require_once __DIR__."/../playerstats.html.php";
 }
 
 ?>
