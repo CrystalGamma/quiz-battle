@@ -1,5 +1,9 @@
 <?php
-require_once('../../connection.php');
+require_once __DIR__."/../../connection.php";
+require_once __DIR__."/../checkAuthorization.php";
+require_once __DIR__."/../../classes/ContentNegotation.php";
+
+$contentType=ContentNegotation::getContent($_SERVER['HTTP_ACCEPT'],"text/html,application/json;q=0.9");
 
 $stmt = $conn->query('SELECT COUNT(*) FROM spieler');
 $count = (int) $stmt->fetchColumn();
@@ -32,5 +36,12 @@ $array = array(
     'players' => $players,
 );
 
-header('Content-Type: application/json');
-echo json_encode($array);
+$json = json_encode($array);
+
+if ($contentType === "application/json"){
+    header("Content-Type: $contentType; charset: utf-8");
+    echo $json;
+} else {
+    require_once __DIR__."/../embrowsen.php";
+}
+?>
