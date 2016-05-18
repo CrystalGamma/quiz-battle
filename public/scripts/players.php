@@ -16,7 +16,8 @@ if (empty($_GET['end'])) {
     if ($count < $_GET['start'] + 10) $_GET['end'] = $count;
     else $_GET['end'] = $_GET['start'] + 10;
 }
-$stmt = $conn->prepare('SELECT id AS "", name, punkte AS points FROM spieler LIMIT :limit OFFSET :offset');
+
+$stmt = $conn->prepare('SELECT id AS "", name, punkte AS points FROM spieler ORDER BY points DESC LIMIT :limit OFFSET :offset');
 $stmt->bindValue(':limit', (int) $_GET['end'], PDO::PARAM_INT);
 $stmt->bindValue(':offset', (int) $_GET['start'], PDO::PARAM_INT);
 $stmt->execute();
