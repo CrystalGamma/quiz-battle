@@ -6,7 +6,7 @@ ul::before{content:'{'}
 ul::after{content:'}'}
 ol::before{content:'['}
 ol::after{content:']'}
-li::after{content:','}
+li:not(:last-of-type)::after{content:','}
 li{margin-left:1em}
 li em::after{content:':'}
 </style>
