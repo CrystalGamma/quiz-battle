@@ -7,5 +7,5 @@ Insert into spiel(einsatz, dealer, runden, fragen_pro_runde,	fragenzeit, rundenz
 Insert into teilnahme(spiel, spieler, akzeptiert) values(1,2,true),(2,1,true),(1,1,true),(2,2,true),(3,1,true),(3,2,false);
 Insert into runde(spiel, rundennr, dealer, kategorie, start) values (1,1,1,1,current_date),(1,2,2,2,current_date),(2,1,1,3,current_date);
 Insert into spiel_frage(spiel, fragennr, frage) values(1,1,1),(1,2,2),(2,1,3);
-insert into antwort(spiel, spieler, fragennr, antwort, startzeit) values(1,1,1,1,current_date),(1,2,1,2,current_date),(1,1,2,1,current_date),(1,1,2,2,current_date),(2,1,1,3,current_date);
+insert into antwort(spiel, spieler, fragennr, antwort, startzeit) values(1,1,1,1,current_date),(1,2,1,2,current_date),(1,1,2,1,current_date),(1,2,2,2,current_date),(2,1,1,3,current_date);
 
