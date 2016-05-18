@@ -7,11 +7,14 @@ require_once __DIR__."/../../classes/PaginationHelper.php";
 $contentType=ContentNegotation::getContent($_SERVER['HTTP_ACCEPT'],"text/html,application/json;q=0.9");
 
 if (isset($_GET['pid'])) {
-    $stmt = $conn->query('SELECT COUNT(*) FROM spiel s, teilnahme t WHERE s.id = t.spiel');
+    $stmt = $conn->prepare('SELECT COUNT(*) FROM spiel s, teilnahme t WHERE s.id = t.spiel AND t.spieler = :player');
+    $stmt->bindValue(':player', (int) $_GET['pid'], PDO::PARAM_INT);
+    $stmt->execute();
     $count = (int) $stmt->fetchColumn();
     $pagination = PaginationHelper::getHelper($count);
     
-    $stmt = $conn->prepare('SELECT s.id AS id FROM spiel s, teilnahme t WHERE s.id = t.spiel LIMIT :limit OFFSET :offset');
+    $stmt = $conn->prepare('SELECT s.id AS id FROM spiel s, teilnahme t WHERE s.id = t.spiel AND t.spieler = :player LIMIT :limit OFFSET :offset');
+    $stmt->bindValue(':player', (int) $_GET['pid'], PDO::PARAM_INT);
     $stmt->bindValue(':limit', $pagination->getSteps(), PDO::PARAM_INT);
     $stmt->bindValue(':offset', $pagination->getStart(), PDO::PARAM_INT);
     $stmt->execute();
