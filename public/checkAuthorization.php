@@ -17,7 +17,6 @@ function getAuthToken()
     return substr($auth,6); 
 }
 function checkAuthToken($token){
-    error_log($token);
     global $conn;
     $tokenDecoded=base64_decode($token);
     $pos=strpos($tokenDecoded,":");
