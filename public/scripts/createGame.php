@@ -31,7 +31,6 @@
                 die();
             }
         }
-        
         //TODO: Kontroller dealer angemeldet, Dealer automatische Annahme, Transaktion drumherum
     }else{
         http_response_code(405);
