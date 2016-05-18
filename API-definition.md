@@ -124,7 +124,7 @@ Spielansicht
 	"timelimit": 10,
 	"roundlimit": 172800,
 	"questions": [
-		{"": "<qid>", "status": [true]}
+		{"": "<qid>", "answers": [0]}
 	],
 	"dealingrule": "/dealing/firstanswer"
 }
@@ -135,7 +135,7 @@ Spielansicht
 `dealer`: Spieler, der die Kategorie der Runde bestimmt hat/bestimmen darf (wenn noch nicht gewählt)
 `dealingrule`: URL für verschiedene Regeln, wer die nächste Runde bestimmen darf (`/dealing/firstanswer`: der erste Spieler, der nicht Dealer der letzten Runde war und alle Fragen der Runde beantwortet hat). Kann ggf. auch eine Spieler-URL sein, damit ein Spieler alle Runden bestimmen darf.
 
-`questions.status`: Antwortstatus in der Reihenfolge der Spielerliste: `null` wenn noch nicht beantwortet, `true` wenn richtig, `false` wenn falsch, `""` wenn Zeit abgelaufen.
+`questions.answers`: Antwortstatus in der Reihenfolge der Spielerliste: `null` wenn noch nicht beantwortet, 0 wenn richtig, 1–3 für die jeweilige falsche Antwort, `""` wenn Zeit abgelaufen.
 
 ## PUT (Spiel annehmen/ablehnen) (Arthur)
 Request-Body (`application/json`):
