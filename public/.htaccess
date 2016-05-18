@@ -12,4 +12,9 @@ RewriteRule ^scripts/(.*)$ /static/$1.js [QSA]
 RewriteRule ^styles/?$ static/style.css [QSA]
 RewriteRule ^styles/(.*)$ static/$1.css [QSA]
 RewriteRule ^auth$ authorization.php
+
+# Prevent direct access for specific file extensions
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteCond %{ENV:REDIRECT_STATUS} ^$
+RewriteRule \.(css|js|php)$ - [F]
 </IfModule>
