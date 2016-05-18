@@ -8,14 +8,26 @@ class PaginationHelper {
             http_response_code(400);
             die();
         }
-                
-		if ($_GET['start'] >= $count || $_GET['end'] > $count) {
+        
+        if (!isset($_GET['start'])) $start = NULL;
+        else $start = $_GET['start'];
+        
+        if (!isset($_GET['end'])) {
+            $steps = self::$DEFAULT_STEPS;
+            if ($count < $start + $steps) $end = $count;
+            else $end = $start + $steps;
+        } else {
+            $end = $_GET['end'];
+            $steps = $end - $start;
+        }
+        
+        if (max(-1, $start) >= $count || $end > $count) {
             http_response_code(404);
             die();
         }
         
-        return new PaginationHelper($_GET['start'], $_GET['end'], $count); 
-	}
+        return new PaginationHelper($start, $end, $steps, $count); 
+    }
     
     public static function isRequestValid() {
         if (isset($_GET['start']))
@@ -29,28 +41,18 @@ class PaginationHelper {
         return true;
     }
     
-    private function __construct($start, $end, $count) {
-        if (is_null($start))
-            $start = 0;
-        
-        if (is_null($end)) {
-            $steps = self::$DEFAULT_STEPS;
-            if ($count < $start + $steps) $end = $count;
-            else $end = $start + $steps;
-        } else
-            $steps = $end - $start;
-        
+    private function __construct($start, $end, $steps, $count) {
         $next = $end >= $count ? null : $end;
         if (!is_null($next)) {
             if ($steps != self::$DEFAULT_STEPS)
-                $next .= "&end=".min($count, ($next + $steps));
+                $next .= '&end='.max($count, ($next + $steps));
             $next = "?start=$next";
         }
 
-        $prev = $_GET['start'] == 0 ? null : max(0, $_GET['start'] - $steps);
+        $prev = $start == 0 ? null : max(0, $start - $steps);
         if (!is_null($prev)) {
             if ($steps != self::$DEFAULT_STEPS)
-                $prev .= "&end=".($prev + $steps);
+                $prev .= '&end='.($prev + $steps);
             $prev = "?start=$prev";
         }
         
