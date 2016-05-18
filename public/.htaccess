@@ -2,12 +2,11 @@
 RewriteEngine On
 RewriteBase /
 
-RewriteRule ^players/(\d+)/oldgames$ scripts/games.php?pid=$1 [QSA]
-RewriteRule ^games/(\d+)/(\d+)$ scripts/games.php?id=$1&qid=$2
-RewriteRule ^(categories|games|questions)/(\d+)$ scripts/$1.php?id=$2
-RewriteRule ^players/(\d+)$ scripts/player.php?id=$1
-RewriteRule ^(categories|games|players|questions)/$ scripts/$1.php [QSA]
-RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^players/(\d+)/oldgames$ scripts/games.php?pid=$1 [END,QSA]
+RewriteRule ^games/(\d+)/(\d+)$ scripts/games.php?id=$1&qid=$2 [END]
+RewriteRule ^(categories|games|questions)/(\d+)$ scripts/$1.php?id=$2 [END]
+RewriteRule ^players/(\d+)$ scripts/player.php?id=$1 [END]
+RewriteRule ^(categories|games|players|questions)/$ scripts/$1.php [END,QSA]
 RewriteRule ^scripts/(.*)$ /static/$1.js [QSA]
 RewriteRule ^styles/?$ static/style.css [QSA]
 RewriteRule ^styles/(.*)$ static/$1.css [QSA]
