@@ -31,7 +31,7 @@ if (isset($_GET['pid'])) {
         'end' => $pagination->getEnd(),
         'next_' => $pagination->getNext(),
         'prev_' => $pagination->getPrevious(),
-        'games' => array_values($games)
+        'games_' => array_values($games)
     );
 } else {
     echo "Not yet implemented.";

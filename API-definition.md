@@ -72,7 +72,7 @@ Paginated
 	"end": 10,
 	"next_": "?start=10",
 	"prev_": null,
-	"games": ["/games/<id>"]
+	"games_": ["/games/<id>"]
 }
 ```
 
