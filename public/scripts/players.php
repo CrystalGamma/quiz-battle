@@ -1,6 +1,4 @@
 <?php
-error_reporting( E_ALL );
-
 require_once __DIR__.'/../../connection.php';
 require_once __DIR__.'/../checkAuthorization.php';
 require_once __DIR__.'/../../classes/ContentNegotation.php';
@@ -73,7 +71,8 @@ if (isset($requestBody)) {
         header("Content-Type: $contentType; charset: utf-8");
         echo $json;
     } else {
-        require_once __DIR__.'/../embrowsen.php';
+        header('Content-Type: text/html; charset=utf-8');
+        require_once __DIR__.'/../ranking.php';
     }
 }
 ?>
