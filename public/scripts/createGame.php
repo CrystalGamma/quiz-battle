@@ -9,8 +9,10 @@
         $roundlimit=$input["roundlimit"];
         $dealingrule=explode("/",$input["dealingrule"])[2];
         
+        try{
+        $conn->beginTransaction();
         $stmt = $conn->prepare("Insert Into spiel (einsatz, dealer, runden, fragen_pro_runde, fragenzeit, rundenzeit, status) Values (100, :dealer, :runden, :fragen_pro_runde, :fragenzeit, :rundenzeit, 'Offen')");
-        $stmt->bindValue(':dealer', $dealingrule);
+        $stmt->bindValue(':dealer', (int) $dealingrule, PDO::PARAM_INT);
         $stmt->bindValue(':runden', (int) turns, PDO::PARAM_INT);
         $stmt->bindValue(':fragen_pro_runde', (int) $turns, PDO::PARAM_INT);
         $stmt->bindValue(':fragenzeit', (int) $timelimit, PDO::PARAM_INT);
@@ -31,7 +33,12 @@
                 die();
             }
         }
-        //TODO: Kontroller dealer angemeldet, Dealer automatische Annahme, Transaktion drumherum
+        $conn->commit();
+        }catch(Exception $e){
+            $conn->rollBack();
+            http_response_code(500);
+        }
+        //TODO: Kontroller dealer angemeldet, Dealer automatische Annahme
     }else{
         http_response_code(405);
         die();
