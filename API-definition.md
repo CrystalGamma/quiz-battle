@@ -59,7 +59,7 @@ Spielerstatistiken
 ### image/*
 Avatar; derzeit noch nicht vorgesehen
 
-# alte Spiele eines Spielers: /players/\<id\>/games
+# alte Spiele eines Spielers: /players/\<id\>/oldgames
 ## GET
 Paginated
 
