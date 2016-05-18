@@ -25,6 +25,7 @@ if (isset($requestBody)) {
         die('Username und Passwort müssen ein String sein.');
     }
     
+    $conn->beginTransaction();
     $stmt = $conn->prepare('SELECT id FROM spieler WHERE name = ?');
     $stmt->execute([$requestBody['name']]);
     $player = $stmt->fetch();
@@ -36,8 +37,14 @@ if (isset($requestBody)) {
         $stmt->bindValue(':name', $requestBody['name']);
         $stmt->bindValue(':password', password_hash($requestBody['password'], PASSWORD_DEFAULT));
         $stmt->bindValue(':points', 0, PDO::PARAM_INT);
-        if ($stmt->execute())
+        if ($stmt->execute()) {
+            $conn->commit();
             die('Erfolgreich.');
+        } else {
+            $conn->rollBack();
+            http_response_code(400);
+            die('Nicht erfolgreich.'); // Error-Handling?
+        }
     }
 } else {
 // GET ranking
