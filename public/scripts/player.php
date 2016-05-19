@@ -39,7 +39,7 @@ if($username === $anzuzeigenderUsername)
 	$stmt->execute(['uid' => $user['id']]);
 	$laufendeSpiele=array();
 	foreach ($stmt->fetchall() as $value){
-		array_push($laufendeSpiele,"/games/".$value[0]);
+		array_push($laufendeSpiele,"/games/".$value[0].'/');
 	}
 } else {
 	$laufendeSpiele = NULL;

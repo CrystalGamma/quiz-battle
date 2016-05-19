@@ -86,28 +86,28 @@ if($request=='GET'){
     $stmt= $conn->prepare('select spiel_frage.fragennr,teilnahme.spieler, (case when antwort.startzeit+spiel.fragenzeit < now() then "" else antwort.antwort end) as antwort from spiel_frage left join antwort on (spiel_frage.fragennr=antwort.fragennr and antwort.spiel=spiel_frage.spiel), spiel, teilnahme where spiel_frage.spiel=? and teilnahme.spiel=spiel_frage.spiel and teilnahme.spiel=spiel.id order by spiel_frage.fragennr,teilnahme.spieler');
     $stmt->execute([$anzuzeigendesSpielID]);
     $RueckgabeWert=$stmt->fetchall();
-    $fragen=array();
-    $tmp=array();
-    $fragenID=$RueckgabeWert[0]['fragennr'];
-    foreach ($RueckgabeWert as $value){
-            if($value['fragennr']===$fragenID){
-                array_push($tmp, $value['antwort']);
-            }else{       
-            array_push($fragen,
-               [
-                   ""=> $fragenID,
-                   "answers"=>$tmp 
-               ]
-           );
-           $fragenID=$value['fragennr'];
-           $tmp=array();
-           array_push($tmp, $value['antwort']);
-           };
+    $fragen = [];
+    $tmp = [];
+    if (count($RueckgabeWert) > 0) {
+	$fragenID=$RueckgabeWert[0]['fragennr'];
+	foreach ($RueckgabeWert as $value) {
+		if ($value['fragennr'] === $fragenID) {
+			array_push($tmp, $value['antwort']);
+		} else {
+			array_push($fragen, [
+				"" => $fragenID,
+				"answers" => $tmp
+			]);
+			$fragenID=$value['fragennr'];
+			$tmp=array();
+			array_push($tmp, $value['antwort']);
+		};
+	}
+	array_push($fragen, [
+		"" => $fragenID,
+		"answers" => $tmp
+	]);
     }
-    array_push($fragen,[
-           ""=> $fragenID,
-           "answers"=>$tmp 
-    ]);
     $array=[
        "" =>"/schema/game",
        "players" =>$spieler,
@@ -142,7 +142,7 @@ if($request=='GET'){
     $stmt->bindValue(':kategorie', (int) $categorie, PDO::PARAM_INT);
     $stmt->bindValue(':spieler', (int) $player, PDO::PARAM_INT); //Woher kriege ich hier den aktuell angemeldten Spieler?
     $stmt->bindValue(':spiel', (int) $anzuzeigendesSpielID, PDO::PARAM_INT);
-    $stmt->bindValue(':rundennr', (int) $round; PDO::PARAM_INT); //Woher kenne ich die Runde? Einfach die höchste für das Spiel?
+    $stmt->bindValue(':rundennr', (int) $round, PDO::PARAM_INT); //Woher kenne ich die Runde? Einfach die höchste für das Spiel?
     if(!$stmt->execute()){
         var_dump($stmt->errorInfo());
         die();
