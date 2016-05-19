@@ -61,7 +61,7 @@ if($request=='GET'){
     http_response_code(403);
     die("Sie müssen angemeldet sein");
     }
-    //TODO was soll angezeigt werden wenn noch nicht beantwortet wurde- null für diese fragenrunde oder nichts???
+    //TODO was soll angezeigt werden wenn der angemeldete user noch nicht beantwortet wurde- null für diese fragenrunde oder nichts???
     $stmt= $conn->prepare('select spieler.name, antwort.antwort from spiel_frage, antwort, spieler where spiel_frage.fragennr=antwort.fragennr and spiel_frage.spiel=antwort.spiel and antwort.spieler=spieler.id and spiel_frage.spiel=? and spieler.name=?;');
     $stmt->execute([$anzuzeigendesSpielID,$nutzername]);
     $row = $stmt->fetch();
@@ -77,7 +77,7 @@ if($request=='GET'){
 }else if($_SERVER['REQUEST_METHOD']=='PUT'){
 	$inputJSON = file_get_contents('php://input');
 	$input= json_decode( $inputJSON, TRUE ); //convert JSON into array
-	if ($input['schema'] !=== '/schema/response') {
+	if ($input[''] !== '/schema/response') {
 		http_response_code(400);
 		die('Falsches Datenformat');
 	}
@@ -161,7 +161,7 @@ function getGame (){
         $stmt= $conn->prepare('select spiel.runden, spiel.fragenzeit, spiel.rundenzeit, (case when spiel.dealer=NULL then "firstanswer" else spiel.dealer end) as dealingrule from spiel where spiel.id=?');
         $stmt->execute([$anzuzeigendesSpielID]);
         $spiel=$stmt->fetchall();
-        $stmt= $conn->prepare('select spiel_frage.fragennr,teilnahme.spieler, (case when antwort.startzeit+spiel.fragenzeit < now() then "" else antwort.antwort end) as antwort from spiel_frage left join antwort on (spiel_frage.fragennr=antwort.fragennr and antwort.spiel=spiel_frage.spiel), spiel, teilnahme where spiel_frage.spiel=? and teilnahme.spiel=spiel_frage.spiel and teilnahme.spiel=spiel.id order by spiel_frage.fragennr,teilnahme.spieler');
+        $stmt= $conn->prepare('select spiel_frage.fragennr,teilnahme.spieler, (case when antwort.startzeit+spiel.fragenzeit < now() then "" else antwort.antwort end) as antwort from (spiel, teilnahme, spiel_frage) left join antwort on (spiel_frage.fragennr=antwort.fragennr and antwort.spiel=spiel_frage.spiel and teilnahme.spieler=antwort.spieler) where spiel_frage.spiel=? and teilnahme.spiel=spiel_frage.spiel and teilnahme.spiel=spiel.id order by spiel_frage.fragennr, teilnahme.spieler');
         $stmt->execute([$anzuzeigendesSpielID]);
         $RueckgabeWert=$stmt->fetchall();
         $fragen = [];
