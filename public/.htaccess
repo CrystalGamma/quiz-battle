@@ -5,7 +5,7 @@ RewriteBase /
 RewriteRule ^players/(\d+)/oldgames$ scripts/games.php?pid=$1 [END,QSA]
 RewriteRule ^games/(\d+)/(\d+)$ scripts/games.php?id=$1&qid=$2 [END]
 RewriteRule ^(categories|questions)/(\d+)$ scripts/$1.php?id=$2 [END]
-RewriteRule ^games/(\d+)/?$ scripts/game.php?id=$1 [END]
+RewriteRule ^games/(\d+)/$ scripts/game.php?id=$1 [END]
 RewriteRule ^players/(\d+)/?$ scripts/player.php?id=$1 [END]
 RewriteRule ^(categories|games|players|questions)/?$ scripts/$1.php [END,QSA]
 RewriteCond %{REQUEST_FILENAME} !-f
@@ -13,6 +13,7 @@ RewriteRule ^scripts/(.*)$ /static/$1.js [END,QSA]
 RewriteRule ^styles/?$ static/style.css [END,QSA]
 RewriteRule ^styles/(.*)$ static/$1.css [END,QSA]
 RewriteRule ^auth$ authorization.php [END]
+RewriteRule ^$ /static/index.html [END]
 
 # Prevent direct access for specific file extensions
 RewriteCond %{REQUEST_FILENAME} -f
