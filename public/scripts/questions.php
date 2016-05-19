@@ -9,9 +9,8 @@ if (empty($_GET['id'])) {
     http_response_code(404);
     die();
 }
-$stmt = $conn->prepare('SELECT id AS "", frage AS question, erklaerung AS explanation, richtig, falsch1, falsch2, falsch3, bild AS picture FROM frage WHERE id = :id');
-$stmt->bindValue(':id', $_GET['id'], PDO::PARAM_INT);
-$stmt->execute();
+$stmt = $conn->prepare('SELECT id AS "", frage AS question, erklaerung AS explanation, richtig, falsch1, falsch2, falsch3, bild AS picture FROM frage WHERE id = ?');
+$stmt->execute([$_GET['id']]);
 $question = $stmt->fetch(PDO::FETCH_ASSOC);
 if (empty($question)) {
     http_response_code(404);
@@ -29,9 +28,8 @@ unset($question['falsch1']);
 unset($question['falsch2']);
 unset($question['falsch3']);
 
-$stmt = $conn->prepare('SELECT * FROM frage_kategorie WHERE frage = :frage');
-$stmt->bindParam(':frage', $question[''], PDO::PARAM_INT);
-$stmt->execute();
+$stmt = $conn->prepare('SELECT * FROM frage_kategorie WHERE frage = ?');
+$stmt->execute([$question['']]);
 $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $question['categories_'] = array();

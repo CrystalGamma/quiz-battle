@@ -5,9 +5,8 @@ require_once __DIR__.'/../../classes/ContentNegotation.php';
 require_once __DIR__.'/../../classes/PaginationHelper.php';
 $contentType = ContentNegotation::getContent($_SERVER['HTTP_ACCEPT'], 'text/html,application/json;q=0.9');
 if (isset($_GET['pid'])) {
-    $stmt = $conn->prepare('SELECT COUNT(*) FROM spiel s, teilnahme t WHERE s.id = t.spiel AND t.spieler = :player');
-    $stmt->bindValue(':player', (int) $_GET['pid'], PDO::PARAM_INT);
-    $stmt->execute();
+    $stmt = $conn->prepare('SELECT COUNT(*) FROM spiel s, teilnahme t WHERE s.id = t.spiel AND t.spieler = ?');
+    $stmt->execute([$_GET['pid']]);
     $count = (int) $stmt->fetchColumn();
     $pagination = PaginationHelper::getHelper($count);
     
