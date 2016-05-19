@@ -86,7 +86,7 @@ function spiel_erstellen() {
         for ($frage = 0; $frage < $fragen_pro_runde; $frage++) {
             $stmtfragen->execute([
                 'spiel' => $spiel,
-                'fragennr' => $frage,
+                'fragennr' => $frage + ($runden * $fragen_pro_runde),
                 'frage' => rand(1, $fragen-1)
             ]);
             
