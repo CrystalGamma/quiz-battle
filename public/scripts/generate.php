@@ -95,7 +95,7 @@ function spiel_erstellen() {
                 $stmtantworten->execute([
                     'spiel' => $spiel,
                     'spieler' => $spieler,
-                    'fragennr' => $frage,
+                    'fragennr' => $frage + ($runden * $fragen_pro_runde),
                     'antwort' => rand(0, 3)
                 ]);
             }
