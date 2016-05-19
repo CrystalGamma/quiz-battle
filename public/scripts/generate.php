@@ -1,52 +1,66 @@
 <?php
 require_once __DIR__.'/../../connection.php';
+header("Cache-Control: no-store");
 srand($_GET['seed']);
 
 // TODO Punkte zufällig verteilen (Rangliste)
 
 $stmt = $conn->query('SELECT COUNT(*) FROM spieler');
-$spieler = (int) $stmt->fetchColumn();
+$anzahlspieler = (int) $stmt->fetchColumn();
 $stmt = $conn->query('SELECT COUNT(*) FROM frage');
 $fragen = (int) $stmt->fetchColumn();
 $stmt = $conn->query('SELECT COUNT(*) FROM kategorie');
 $kategorien = (int) $stmt->fetchColumn();
+$stmt = $conn->query('SELECT COUNT(*) FROM kategorie');
+$kategorien = (int) $stmt->fetchColumn();
 
-$stmtspiel = $conn->prepare("INSERT INTO spiel (einsatz, dealer, runden, fragen_pro_runde, fragenzeit, rundenzeit, status) Values (:einsatz, :dealer, :runden, :fragen_pro_runde, :fragenzeit, :rundenzeit, 'Offen')");
+$stmtspiel = $conn->prepare("INSERT INTO spiel (einsatz, dealer, runden, fragen_pro_runde, fragenzeit, rundenzeit, status) Values (:einsatz, :dealer, :runden, :fragen_pro_runde, :fragenzeit, :rundenzeit, :status)");
 $stmtteilnahme = $conn->prepare("INSERT INTO teilnahme (spiel, spieler, akzeptiert) Values (:spiel, :spieler, 1)");
 $stmtrunden = $conn->prepare("INSERT INTO runde (spiel, rundennr, dealer, kategorie) Values (:spiel, :rundennr, :dealer, :kategorie)");
 $stmtfragen = $conn->prepare("INSERT INTO spiel_frage (spiel, fragennr, frage) Values (:spiel, :fragennr, :frage)");
+$stmtantworten = $conn->prepare("INSERT INTO antwort (spiel, spieler, fragennr, antwort) Values (:spiel, :spieler, :fragennr, :antwort)");
 
 for ($i = 1; $i <= $_GET['seed']; $i++) {
     spiel_erstellen();
     $conn->commit();
     echo "Spiel $i erstellt.";
+    flush();
+    $conn->beginTransaction();
 }
 
 function spiel_erstellen() {
-    global $conn, $spieler, $fragen;
-    global $stmtspiel, $stmtteilnahme, $stmtrunden, $stmtfragen;
-    
-    $status = 0; //?? 
+    global $conn, $anzahlspieler, $fragen;
+    global $stmtspiel, $stmtteilnahme, $stmtrunden, $stmtfragen, $stmtantworten;
     
     $runden = rand(1, 3);
-    $fragen_pro_runde = min(rand(1, 3), ($fragen / $runden));
-    $dealer = rand(1, $spieler);
+    $fragen_pro_runde =  min(rand(1, 6), ($fragen / $runden));
+    $dealer = rand(1, $anzahlspieler);
+    $status = rand(0, 5);
+    switch ($status) {
+        case 0: $statustext = 'offen'; break;
+        case 1: $statustext = 'laufend'; break;
+        default: $statustext = 'beendet';
+    }
+        
     $stmtspiel->execute([
         'einsatz' => rand(1, 100),
         'dealer' => $dealer,
         'runden' => $runden,
         'fragen_pro_runde' => $fragen_pro_runde,
-        'fragenzeit' => rand(2,5),
-        'rundenzeit' => rand(2,5)
+        'fragenzeit' => 300,
+        'rundenzeit' => 300 * $fragen_pro_runde,
+        'status' => $statustext
     ]);
     $spiel = $conn->lastInsertId();
     
     // Teilnahmen hinzufügen
-    for($i = 1; $i <= rand(2,5); $i++) {
+    $teilnehmer = array();
+    for ($i = 0; $i <= rand(2, 5); $i++) {
         $spieler = $dealer;
-        while($spieler == $dealer) {
-            $spieler = rand(1, $spieler);
+        while ($spieler == $dealer) {
+            $spieler = rand(1, $anzahlspieler);
         }
+        array_push($teilnehmer, $spieler);
         
         $stmtteilnahme->execute([
             'spiel' => $spiel,
@@ -55,7 +69,13 @@ function spiel_erstellen() {
     }
     
     // Runden erstellen
-    for($runde = 1; $runde <= $runden; $runde++) {
+    $anzahlrunden = 0;
+    switch ($status) {
+        case 0: $anzahlrunden = 0; break;
+        case 1: $anzahlrunden = rand(1, $runden); break;
+        default: $anzahlrunden = $runden; 
+    }
+    for ($runde = 0; $runde < $anzahlrunden; $runde++) {
         $kategorie = rand(1, $kategorien);
         $stmtrunden->execute([
             'spiel' => $spiel,
@@ -63,16 +83,25 @@ function spiel_erstellen() {
             'dealer' => $dealer,
             'kategorie' => $kategorie
         ]);
-    }
-    
-    // Fragen hinzufügen
-    for($frage = 1; $frage <= $runden * $fragen_pro_runde; $runde++) {
-        $kategorie = rand(1, $kategorien);
-        $stmtfragen->execute([
-            'spiel' => $spiel,
-            'fragennr' => $frage,
-            'frage' => rand(1, $fragen)
-        ]);
+        
+        // Fragen hinzufügen
+        for ($frage = 0; $frage < $fragen_pro_runde; $frage++) {
+            $stmtfragen->execute([
+                'spiel' => $spiel,
+                'fragennr' => $frage,
+                'frage' => rand(1, $fragen)
+            ]);
+            
+            // Antworten hinzufügen
+            foreach ($teilnehmer as $spieler) {
+                $stmtantworten->execute([
+                    'spiel' => $spiel,
+                    'spieler' => $spieler,
+                    'fragennr' => $frage,
+                    'antwort' => rand(0, 3)
+                ]);
+            }
+        }
     }
 }
 
