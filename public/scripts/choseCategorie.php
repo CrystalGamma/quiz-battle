@@ -17,7 +17,11 @@
         die();
 	}
 	$id=array_shift($stmt->fetchAll(PDO::FETCH_ASSOC))['id'];
-    $categorie = explode('/',$input['category_'])[2];
+	if (substr($input['category_'], 0, 12) !== '/categories/') {
+			http_response_code(400);
+			die('Ungültiger Spielerverweis');
+		}
+    $categorie = (int) substr($input['category_'], 12);
 	$stmt=$conn->prepare("SELECT rundennr FROM runde WHERE spiel=? ORDER BY rundennr DESC LIMIT 1");
 	if(!$stmt->execute([$anzuzeigendesSpielID])){
 		var_dump($stmt->errorInfo());
@@ -48,5 +52,10 @@
 	$keys=array_rand($questions,$questionCount);
 	foreach($keys as $key){
 		echo $questions[$key]['frage']; //Wohin mit den Fragen?
+	}
+	if (!$conn->commit()) {
+		http_response_code(500);
+		header('Retry-After: 3');
+		die('Transaktion fehlgeschlagen');
 	}
 ?>
