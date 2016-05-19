@@ -11,7 +11,7 @@ if (isset($_GET['pid'])) {
     $count = (int) $stmt->fetchColumn();
     $pagination = PaginationHelper::getHelper($count);
     
-    $stmt = $conn->prepare('SELECT s.id AS id FROM spiel s, teilnahme t WHERE s.id = t.spiel AND t.spieler = :player LIMIT :limit OFFSET :offset');
+    $stmt = $conn->prepare('SELECT s.id AS id FROM spiel s, teilnahme t WHERE s.status = \'beendet\' AND s.id = t.spiel AND t.spieler = :player LIMIT :limit OFFSET :offset');
     $stmt->bindValue(':player', (int) $_GET['pid'], PDO::PARAM_INT);
     $stmt->bindValue(':limit', $pagination->getSteps(), PDO::PARAM_INT);
     $stmt->bindValue(':offset', $pagination->getStart(), PDO::PARAM_INT);
@@ -19,7 +19,7 @@ if (isset($_GET['pid'])) {
     $games = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
     foreach($games as &$game) {
-        $game = '/games/'.$game['id'];
+        $game = '/games/'.$game['id'].'/';
     }
     
     $array = array(
