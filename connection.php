@@ -4,4 +4,5 @@ if (!$conn){
     http_response_code(500);
     die('Datenbank nicht erreichbar');
 }
+$conn->beginTransaction();
 ?>
