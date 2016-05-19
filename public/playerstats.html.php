@@ -24,3 +24,4 @@ header('Content-Type: text/html; charset=UTF-8');
 <script src=/scripts/game-report></script>
 <script async src=/scripts/load-stats></script>
 <script async src=/scripts/load-oldgames></script>
+<script async src=/scripts/challenge-player data-submit="/games/"></script>
