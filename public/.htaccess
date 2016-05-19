@@ -8,6 +8,7 @@ RewriteRule ^(categories|questions)/(\d+)$ scripts/$1.php?id=$2 [END]
 RewriteRule ^games/(\d+)/$ scripts/game.php?id=$1 [END]
 RewriteRule ^players/(\d+)/?$ scripts/player.php?id=$1 [END]
 RewriteRule ^(categories|games|players|questions)/?$ scripts/$1.php [END,QSA]
+RewriteRule ^generate/(\d+)$ scripts/generate.php?seed=$1 [END,QSA]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^scripts/(.*)$ /static/$1.js [END,QSA]
 RewriteRule ^styles/?$ static/style.css [END,QSA]
