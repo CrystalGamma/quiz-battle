@@ -34,7 +34,7 @@ function spiel_erstellen() {
     
     $runden = rand(1, 3);
     $fragen_pro_runde =  min(rand(1, 6), ($fragen / $runden));
-    $dealer = rand(1, $anzahlspieler);
+    $dealer = rand(1, $anzahlspieler-1);
     $status = rand(0, 5);
     switch ($status) {
         case 0: $statustext = 'offen'; break;
@@ -58,7 +58,7 @@ function spiel_erstellen() {
     for ($i = 0; $i <= rand(2, 5); $i++) {
         $spieler = $dealer;
         while ($spieler == $dealer || in_array($spieler, $teilnehmer)) {
-            $spieler = rand(1, $anzahlspieler);
+            $spieler = rand(1, $anzahlspieler-1);
         }
         array_push($teilnehmer, $spieler);
         
@@ -72,11 +72,11 @@ function spiel_erstellen() {
     $anzahlrunden = 0;
     switch ($status) {
         case 0: $anzahlrunden = 0; break;
-        case 1: $anzahlrunden = rand(1, $runden); break;
+        case 1: $anzahlrunden = rand(1, $runden-1); break;
         default: $anzahlrunden = $runden; 
     }
     for ($runde = 0; $runde < $anzahlrunden; $runde++) {
-        $kategorie = rand(1, $kategorien);
+        $kategorie = rand(1, $kategorien-1);
         $stmtrunden->execute([
             'spiel' => $spiel,
             'rundennr' => $runde,
@@ -89,7 +89,7 @@ function spiel_erstellen() {
             $stmtfragen->execute([
                 'spiel' => $spiel,
                 'fragennr' => $frage,
-                'frage' => rand(1, $fragen)
+                'frage' => rand(1, $fragen-1)
             ]);
             
             // Antworten hinzufügen
