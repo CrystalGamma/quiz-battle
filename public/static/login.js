@@ -39,7 +39,7 @@ if (!login) {
 } else {
 	login = JSON.parse(login);
 	for (let el of loginBoxes) {
-		el.appendChild(buildDom({'':'span', c:["Hallo, ", {'':'a.user', href: login.player_, c: login.user}, {'':'button.logout', type:'button', c:"Logout"}]}));
+		el.appendChild(buildDom({'':'span', c:["Hallo, ", {'':'a.user', href: login.player_, c: login.user||login.player['name']}, {'':'button.logout', type:'button', c:"Logout"}]}));
 	}
 	document.addEventListener('click', ev => {
 		if (!ev.target.classList.contains('logout')) {return}
