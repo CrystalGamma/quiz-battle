@@ -11,9 +11,10 @@
 			}
 		}).send();
 		const $section = document.getElementById('closed-games');
+		if (!$section) {return}
 		const $link = $section.querySelector('a[rel=next]');
 		const $list = $section.querySelector('ul');
-		if (!$link) return;
+		if (!$link) {return}
 		loadMore();
 		$link.addEventListener('click', ev => {ev.preventDefault();loadMore()});
 	});
