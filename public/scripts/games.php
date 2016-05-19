@@ -31,14 +31,14 @@ if (isset($_GET['pid'])) {
         'prev_' => $pagination->getPrevious(),
         'games_' => array_values($games)
     );
+	$json = json_encode($array);
+	if ($contentType === 'application/json') {
+		header("Content-Type: $contentType; charset: utf-8");
+		echo $json;
+	} else {
+		require_once __DIR__.'/../embrowsen.php';
+	}
 } else {
     require_once __DIR__.'/createGame.php';
-}
-$json = json_encode($array);
-if ($contentType === 'application/json') {
-    header("Content-Type: $contentType; charset: utf-8");
-    echo $json;
-} else {
-    require_once __DIR__.'/../embrowsen.php';
 }
 ?>
