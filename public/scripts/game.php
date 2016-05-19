@@ -35,6 +35,7 @@
 
 require_once __DIR__."/../../connection.php";
 require_once __DIR__."/../../classes/ContentNegotation.php";
+require_once __DIR__.'/../checkAuthorization.php';
 
 $contentType=ContentNegotation::getContent($_SERVER['HTTP_ACCEPT'],"text/html,application/json;q=0.9");
 //Spielername holen
@@ -154,18 +155,7 @@ if($request=='GET'){
 		die('Transaktion gescheitert');
 	}
 }else if($_SERVER['REQUEST_METHOD']=='POST'){
-    $inputJSON = file_get_contents('php://input');
-    $input= json_decode( $inputJSON, TRUE ); //convert JSON into array
-    $categorie = explode('/',$input['category_'])[2];
-    $stmt=$conn->prepare("UPDATE runde SET kategorie=:kategorie WHERE spiel=:spiel AND dealer=:spieler AND rundennr=:rundennr");
-    $stmt->bindValue(':kategorie', (int) $categorie, PDO::PARAM_INT);
-    $stmt->bindValue(':spieler', (int) $player, PDO::PARAM_INT); //Woher kriege ich hier den aktuell angemeldten Spieler?
-    $stmt->bindValue(':spiel', (int) $anzuzeigendesSpielID, PDO::PARAM_INT);
-    $stmt->bindValue(':rundennr', (int) $round, PDO::PARAM_INT); //Woher kenne ich die Runde? Einfach die höchste für das Spiel?
-    if(!$stmt->execute()){
-        var_dump($stmt->errorInfo());
-        die();
-    }
+    require_once(__DIR__."/choseCategorie.php");
 }else{
     http_response_code(405);
     die();

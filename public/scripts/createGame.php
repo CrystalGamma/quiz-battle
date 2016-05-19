@@ -13,7 +13,11 @@
 			die('Zum Annehmen oder Ablehnen von Spielen muss ein gültiger Authentifikationstoken vorliegen');
 		}
 		$stmt=$conn->prepare('SELECT id FROM spieler WHERE name= ?');
-		$id=(int) $stmt->execute([$username]);
+		if(!$stmt->execute([$username])){
+			var_dump($stmt->errorInfo());
+			die();
+		}
+		$id=array_shift($stmt->fetchAll(PDO::FETCH_ASSOC))['id'];
         $rounds=array_key_exists('rounds', $input) ? (int) $input["rounds"] : 6;
         $turns=array_key_exists('turns', $input) ? (int) $input["turns"] : 3;
         $timelimit= array_key_exists('timelimit', $input) ? (int) $input["timelimit"] : 10;
@@ -39,7 +43,16 @@
 			die('Ungültiger Spielerverweis');
 		}
 		$playerid= (int) substr($player, 9);
-		// FIXME: testen, ob der Spieler auch existiert
+		$stmt=$conn->prepare('SELECT * FROM spieler WHERE id=?');
+		if(!$stmt->execute([$playerid])){
+			var_dump($stmt->errorInfo());
+			die();
+		}
+		$erg=$stmt->fetchAll(PDO::FETCH_ASSOC);
+		if(count($erg)!==1){
+			http_response_code(400);
+			die('Spieler mit der ID '.$playerid.' nicht vorhanden.');
+		}
 		if(!$insertPlayer->execute(['id' => $gameid, 'spieler' => $playerid, 'teilnahme' => $playerid === $id ? 1 : 0])){
 			var_dump($stmt->errorInfo());
 			die();
