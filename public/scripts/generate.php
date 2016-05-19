@@ -57,7 +57,7 @@ function spiel_erstellen() {
     $teilnehmer = array();
     for ($i = 0; $i <= rand(2, 5); $i++) {
         $spieler = $dealer;
-        while ($spieler == $dealer) {
+        while ($spieler == $dealer || in_array($spieler, $teilnehmer)) {
             $spieler = rand(1, $anzahlspieler);
         }
         array_push($teilnehmer, $spieler);
