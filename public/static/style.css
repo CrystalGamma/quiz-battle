@@ -18,6 +18,7 @@ ul.stat li {margin:.2em .5em}
 
 main {display:flex;flex-flow:row wrap}
 #open-games, #waiting-games, #closed-games {flex:1;margin:.3em}
+main >h1 {flex:100%}
 
 section >h1 {color:#777}
 section >:not(h1) {margin:1em;padding:1em;background:#eee}

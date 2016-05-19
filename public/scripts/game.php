@@ -122,7 +122,7 @@ if($request=='GET'){
 }else if($_SERVER['REQUEST_METHOD']=='PUT'){
 	$inputJSON = file_get_contents('php://input');
 	$input= json_decode( $inputJSON, TRUE ); //convert JSON into array
-	if ($input['schema'] !=== '/schema/response') {
+	if ($input['schema'] !== '/schema/response') {
 		http_response_code(400);
 		die('Falsches Datenformat');
 	}
