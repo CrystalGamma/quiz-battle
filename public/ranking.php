@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <title>Ranking – Quiz Battle</title>
-<link rel=stylesheet href=/styles>
-<header><span id=title>Quiz Battle</span><nav><a href="/">Startseite</a><a href="/players/">Rangliste</a></nav><span class=login data-auth="/auth"></span></header>
+<?php require(__DIR__.'/header.html') ?>
 <main>
 <h1>Rangliste</h1>
 <?php if($array['prev_']) {?><a rel=prev href="<?=htmlspecialchars($array['prev_'])?>">Vorherige</a><?php } ?>

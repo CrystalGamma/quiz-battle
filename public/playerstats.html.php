@@ -2,7 +2,7 @@
 header('Content-Type: text/html; charset=UTF-8');
 ?><!DOCTYPE html>
 <title>Statistiken für <?=$user['name']?> – Quiz Battle</title>
-<link rel=stylesheet href=/styles>
+<?php require(__DIR__.'/header.html') ?>
 <main>
 <section id=stats>
 <h1><span class=player><?=$user['name']?></span> – Statistiken</h1>
