@@ -11,8 +11,6 @@ $stmt = $conn->query('SELECT COUNT(*) FROM frage');
 $fragen = (int) $stmt->fetchColumn();
 $stmt = $conn->query('SELECT COUNT(*) FROM kategorie');
 $kategorien = (int) $stmt->fetchColumn();
-$stmt = $conn->query('SELECT COUNT(*) FROM kategorie');
-$kategorien = (int) $stmt->fetchColumn();
 
 $stmtspiel = $conn->prepare("INSERT INTO spiel (einsatz, dealer, runden, fragen_pro_runde, fragenzeit, rundenzeit, status) Values (:einsatz, :dealer, :runden, :fragen_pro_runde, :fragenzeit, :rundenzeit, :status)");
 $stmtteilnahme = $conn->prepare("INSERT INTO teilnahme (spiel, spieler, akzeptiert) Values (:spiel, :spieler, 1)");
@@ -88,7 +86,7 @@ function spiel_erstellen() {
         for ($frage = 0; $frage < $fragen_pro_runde; $frage++) {
             $stmtfragen->execute([
                 'spiel' => $spiel,
-                'fragennr' => $frage,
+                'fragennr' => $frage + ($runden * $fragen_pro_runde),
                 'frage' => rand(1, $fragen-1)
             ]);
             
