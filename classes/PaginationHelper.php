@@ -21,8 +21,8 @@ class PaginationHelper {
             $steps = $end - $start;
         }
         
-        if (max(-1, $start) >= $count || $end > $count) {
-            http_response_code(404);
+        if ($steps > 1000 || max(-1, $start) >= $count || $end > $count) {
+            http_response_code(416);
             die();
         }
         
