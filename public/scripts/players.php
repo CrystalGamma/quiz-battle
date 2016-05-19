@@ -38,8 +38,9 @@ if (isset($requestBody)) {
             'password' => password_hash($requestBody['passworD'], PASSWORD_DEFAULT),
             'points' => 0
         ));
+        $id = $conn->lastInsertId();
         if ($conn->commit()) {
-            header('Location: /players/'.$conn->lastInsertId());
+            header("Location: /players/$id");
             http_response_code(201);
             die('Erfolgreich.');
         } else {
