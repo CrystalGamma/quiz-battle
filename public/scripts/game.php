@@ -75,20 +75,39 @@ if($request=='GET'){
 }
     
 }else if($_SERVER['REQUEST_METHOD']=='PUT'){
-    $inputJSON = file_get_contents('php://input');
-    $input= json_decode( $inputJSON, TRUE ); //convert JSON into array
-    $stmt = $conn->prepare("UPDATE teilnahme SET akzeptiert=:akzeptiert WHERE spieler=:spieler AND spiel=:spiel");
-    if($input['accept']){
-        $stmt->bindValue(':akzeptiert', (int) 1, PDO::PARAM_INT); // 1=akzeptiert
-    }else{
-        $stmt->bindValue(':akzeptiert', (int) 2, PDO::PARAM_INT); // 2=abgelehnt
-    }
-    $stmt->bindValue(':spieler', (int) $player, PDO::PARAM_INT); //Woher kriege ich hier den aktuell angemeldten Spieler?
-    $stmt->bindValue(':spiel', (int) $anzuzeigendesSpielID, PDO::PARAM_INT);
-    if(!$stmt->execute()){
-        var_dump($stmt->errorInfo());
-        die();
-    }
+	$inputJSON = file_get_contents('php://input');
+	$input= json_decode( $inputJSON, TRUE ); //convert JSON into array
+	if ($input['schema'] !=== '/schema/response') {
+		http_response_code(400);
+		die('Falsches Datenformat');
+	}
+	$username = getAuthorizationUser();
+	if ($username === false) {
+		http_response_code(401);
+		header('WWW-Authenticate: Token');
+		die('Zum Annehmen oder Ablehnen von Spielen muss ein gültiger Authentifikationstoken vorliegen');
+	}
+	if ($input['accept'] === true) {
+		$stmt = $conn->prepare('UPDATE teilnahme t, spieler s SET t.akzeptiert=1 WHERE t.spieler=s.id AND spiel=:spiel AND s.name = :spieler');
+		if (!$stmt->execute(['spiel' => $anzuzeigendesSpielID, 'spieler' => $username])) {
+			http_response_code(500);
+			var_dump($stmt->errorInfo());
+			die();
+		}
+	} else {
+		// TODO: should games only be deleted if there are less than 2 participants?
+		$stmt = $conn->prepare('DELETE FROM spiel where id = ?');
+		if (!$stmt->execute([$anzuzeigendesSpielID])) {
+			http_response_code(500);
+			var_dump($stmt->errorInfo());
+			die();
+		}
+	}
+	if (!$conn->commit()) {
+		http_response_code(500);
+		header('Retry-After: 3');
+		die('Transaktion gescheitert');
+	}
 }else if($_SERVER['REQUEST_METHOD']=='POST'){
     $inputJSON = file_get_contents('php://input');
     $input= json_decode( $inputJSON, TRUE ); //convert JSON into array

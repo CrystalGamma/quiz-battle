@@ -25,7 +25,6 @@ if (isset($requestBody)) {
         die('Username und Passwort müssen ein String sein.');
     }
     
-    $conn->beginTransaction();
     $stmt = $conn->prepare('SELECT id FROM spieler WHERE name = ?');
     $stmt->execute([$requestBody['name']]);
     $player = $stmt->fetch();
@@ -34,16 +33,20 @@ if (isset($requestBody)) {
         die('Username ist bereits vergeben.');
     } else {
         $stmt = $conn->prepare('INSERT INTO spieler (name, passwort, punkte) VALUES (:name, :password, :points)');
-        $stmt->bindValue(':name', $requestBody['name']);
-        $stmt->bindValue(':password', password_hash($requestBody['password'], PASSWORD_DEFAULT));
-        $stmt->bindValue(':points', 0, PDO::PARAM_INT);
-        if ($stmt->execute()) {
-            $conn->commit();
+        $stmt->execute(array(
+            'name' => $requestBody['name'],
+            'password' => password_hash($requestBody['passworD'], PASSWORD_DEFAULT),
+            'points' => 0
+        ));
+        $id = $conn->lastInsertId();
+        if ($conn->commit()) {
+            header("Location: /players/$id");
+            http_response_code(201);
             die('Erfolgreich.');
         } else {
-            $conn->rollBack();
-            http_response_code(400);
-            die('Nicht erfolgreich.'); // Error-Handling?
+            http_response_code(500);
+            header('Retry-After: 3');
+            die('Transaktion gescheitert.');
         }
     }
 } else {
