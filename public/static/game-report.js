@@ -31,6 +31,5 @@ const showGame = login => url => {
 		);
 		$game.appendChild(buildDom({'':'ul.game-report', c:game.questions.map(({answers}) => ({'':'li.'+lookup(answers[selfPlayer])+lookup(answers[bestPlayer])}))}));
 	}).send();
-	const res = buildDom({'':'li', c:$game});
-	return res;
+	return buildDom({'':'li', c:$game});
 };
