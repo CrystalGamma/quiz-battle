@@ -12,7 +12,7 @@ const buildDom = (() =>{
 		} = obj;
 		const match = selector && tagRegex.exec(selector);
 		let tag = match ? match[1] : 'div';
-		selector = match ? match[2] : '';
+		selector = match ? match[2] : selector||'';
 		const ids = [], classes = [];
 		while (selector) {
 			const match = sigilRegex.exec(selector);
