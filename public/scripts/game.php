@@ -34,6 +34,7 @@
 */
 
 require_once __DIR__."/../../connection.php";
+require_once __DIR__."/../checkAuthorization.php";
 require_once __DIR__."/../../classes/ContentNegotation.php";
 
 $contentType=ContentNegotation::getContent($_SERVER['HTTP_ACCEPT'],"text/html,application/json;q=0.9");
@@ -125,10 +126,10 @@ if($request=='GET'){
 	}else{
 		require_once __DIR__."/../game.html.php";
 	}
-}else if($_SERVER['REQUEST_METHOD']=='PUT'){
+}else if($_SERVER['REQUEST_METHOD'] === 'PUT'){
 	$inputJSON = file_get_contents('php://input');
-	$input= json_decode( $inputJSON, TRUE ); //convert JSON into array
-	if ($input['schema'] !== '/schema/response') {
+	$input = json_decode($inputJSON, TRUE); //convert JSON into array
+	if ($input[''] !== '/schema/response') {
 		http_response_code(400);
 		die('Falsches Datenformat');
 	}
@@ -147,6 +148,7 @@ if($request=='GET'){
 		}
 	} else {
 		// TODO: should games only be deleted if there are less than 2 participants?
+		// FIXME: cascading deletes
 		$stmt = $conn->prepare('DELETE FROM spiel where id = ?');
 		if (!$stmt->execute([$anzuzeigendesSpielID])) {
 			http_response_code(500);
@@ -158,6 +160,14 @@ if($request=='GET'){
 		http_response_code(500);
 		header('Retry-After: 3');
 		die('Transaktion gescheitert');
+	}
+	if ($input['accept'] === true) {
+		http_response_code(205);
+		die();
+	} else {
+		http_response_code(200);
+		header('Location: /');
+		die();
 	}
 }else if($_SERVER['REQUEST_METHOD']=='POST'){
     $inputJSON = file_get_contents('php://input');

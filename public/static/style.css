@@ -19,7 +19,7 @@ ul.stat li {margin:.2em .5em}
 main {display:flex;flex-flow:row wrap}
 #open-games, #waiting-games, #closed-games, #challenges {flex:1;margin:.3em}
 #open-games:empty, #waiting-games:empty, #closed-games:empty, #challenges:empty {display:none}
-main >h1 {flex:100%}
+main >h1, main .dialog {flex:100%}
 
 section >h1 {color:#777}
 section >:not(h1) {margin:1em;padding:1em;background:#eee}
@@ -63,3 +63,5 @@ form.signup input:not([type="checkbox"]) {width:20em}
 
 .notification {padding:1.5em;border:thin solid #777;border-radius:.3em;transition:height 0.5s}
 .notification.new {height:0}
+
+.dialog {display:flex;flex-flow:column nowrap;align-items:center}

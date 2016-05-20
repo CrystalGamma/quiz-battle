@@ -24,3 +24,7 @@ echo htmlspecialchars(implode(', ', $othernames));
 }?>
 </tbody>
 </main>
+<script src=/scripts/builddom></script>
+<script src=/scripts/makexhr></script>
+<script src=/scripts/login></script>
+<script src=/scripts/game></script>
