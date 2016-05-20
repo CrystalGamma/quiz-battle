@@ -6,7 +6,7 @@ require_once __DIR__.'/../../classes/PaginationHelper.php';
 
 $contentType = ContentNegotation::getContent($_SERVER['HTTP_ACCEPT'], 'text/html,application/json;q=0.9');
 
-$stmt = $conn->prepare('name AS name FROM kategorie WHERE id = :id');
+$stmt = $conn->prepare('select name as name FROM kategorie WHERE id = :id');
 $stmt->bindValue(':id', (int) $_GET['id'], PDO::PARAM_INT);
 $stmt->execute();
 $nameyy = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -26,7 +26,7 @@ $name = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $array = array(
         '' => '/schema/category',
-		'name' => $nameyy,
+		'name' => $nameyy['name'],
         'count' => $count,
         'start' => $pagination->getStart(),
         'end' => $pagination->getEnd(),
