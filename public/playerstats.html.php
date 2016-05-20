@@ -8,7 +8,7 @@ header('Content-Type: text/html; charset=UTF-8');
 <h1><span class=player><?=htmlspecialchars($user['name'])?></span> – Statistiken</h1>
 <ul class=stat>
 <li><span class=figure><?=$numOldGames?></span> Spiele
-<li><span class=figure><?=$user['punkte']?></span> Punkte
+<li><span class=figure><?=$user['points']?></span> Punkte
 </ul>
 </section>
 <?php if ($numOldGames > 0) { ?>
