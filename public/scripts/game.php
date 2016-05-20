@@ -74,6 +74,7 @@ if ($request === 'GET') {
 			var_dump($stmt->errorInfo());
 			die();
 		}
+		// FIXME: collect bets from players
 	} else {
 		// TODO: should games only be deleted if there are less than 2 participants?
 		// FIXME: cascading deletes
@@ -118,17 +119,10 @@ function getGame (){
                 [
                 ""=> "/players/".$value['id'],
                 "name"=> $value['name'],
-                "accepted"=>(bool)$value['akzeptiert']
+                "accepted"=> (bool)$value['akzeptiert']
                 ]
             );
         };
-        //bestimme die Stelle des angemeldeten Nutzers in dem Array
-        $playerPos;
-        foreach ($spieler as $key => $value) {
-            if($value['name']===$nutzername) {
-                $playerPos=$key;
-            }
-        }
         $stmt= $conn->prepare('select runde.rundennr, runde.kategorie as kategorieID, kategorie.name as kategorieName, spieler.id as dealerID, spieler.name as dealerName, runde.start from runde, kategorie, spieler where runde.dealer=spieler.id and runde.kategorie=kategorie.id and runde.spiel=? group by runde.rundennr order by runde.rundennr;');
         $stmt->execute([$anzuzeigendesSpielID]);
         $runden=array();
@@ -234,7 +228,6 @@ function getGame (){
 		echo json_encode($array);
 	}else{
 		// TODO: looks horrible
-		error_log('output');
 		$GLOBALS['array'] = $array;
 		require_once __DIR__."/../game.html.php";
 	}

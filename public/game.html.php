@@ -12,7 +12,7 @@ echo htmlspecialchars(implode(', ', $othernames));
 <main>
 <table>
 <thead><tr><th>Kategorie<?php foreach ($array['players'] as $player) {
-	?><th><a class=player href=<?=$player['']?> data-accepted=<?=$player['accepted']?>><?=htmlspecialchars($player['name'])?></a><?php
+	?><th><a class=player href=<?=$player['']?> data-accepted=<?=$player['accepted'] ? 'true' : 'false' ?>><?=htmlspecialchars($player['name'])?></a><?php
 } ?></thead>
 <tbody><?php foreach ($array['rounds'] as $round) {
 	?><tr><th><?php
