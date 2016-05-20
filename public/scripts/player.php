@@ -5,6 +5,7 @@
 {
     "": "/schema/player",
     "name": "Spielername",
+    rankingposition
     "activegames_": ["/games/<id>"],
     "oldgames_": "<pid>/oldgames"
     "categorystats": [{
@@ -21,7 +22,7 @@ require_once __DIR__."/../../classes/ContentNegotation.php";
 
 $contentType=ContentNegotation::getContent($_SERVER['HTTP_ACCEPT'],"text/html,application/json;q=0.9");
 
-$stmt= $conn->prepare('select id, name, punkte from spieler where spieler.id=?');
+$stmt= $conn->prepare('select id, name, punkte as points,(select count(spieler.id)+1 from spieler where punkte > points)as rang from spieler where spieler.id=?');
 $stmt->execute([$_GET['id']]);
 $user = $stmt->fetch();
 //Überprüfung ob es den User gibt
@@ -73,12 +74,14 @@ foreach ($stmt->fetchall() as $value){
 $oldGameCount = $conn->prepare("Select Count(spiel.id) From spiel, teilnahme where teilnahme.spieler = ? And spiel.status = 'beendet' And spiel.id = teilnahme.spiel");
 $oldGameCount->execute([$user['id']]);
 $numOldGames = (int)$oldGameCount->fetchall()[0][0];
+	
 if($contentType==="application/json"){
     header('Content-Type: application/json');
     echo json_encode([
 	""=>"/schema/player",
         "name" =>$user['name'],
-        "score" =>$user['punkte'],
+        "score" =>$user['points'],
+        "rang" =>$user['rang'],
         "activegames_" => $laufendeSpiele,
         "oldgames_"=> ['' => $user['id']."/oldgames", 'count' => $numOldGames],
         "categorystats"=>$kategorie
