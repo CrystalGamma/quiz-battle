@@ -118,7 +118,13 @@ if($request=='GET'){
        "questions"=>$fragen,
        "dealingrule"=>"/dealingrule/".$spiel[0]['dealingrule']
        ];
-    $json= json_encode($array);
+       header('Vary: Accept, Authorization');
+	if($contentType==="application/json"){
+		header('Content-Type: application/json');
+		echo json_encode($array);
+	}else{
+		require_once __DIR__."/../game.html.php";
+	}
 }else if($_SERVER['REQUEST_METHOD']=='PUT'){
 	$inputJSON = file_get_contents('php://input');
 	$input= json_decode( $inputJSON, TRUE ); //convert JSON into array
@@ -170,10 +176,4 @@ if($request=='GET'){
     http_response_code(405);
     die();
 }
-if($contentType==="application/json"){
-    header('Content-Type: application/json');
-    echo $json;
-}else{
-    require_once __DIR__."/../embrowsen.php";
-}    
 ?>
