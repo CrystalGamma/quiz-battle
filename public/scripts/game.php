@@ -36,7 +36,6 @@
 require_once __DIR__."/../../connection.php";
 require_once __DIR__."/../checkAuthorization.php";
 require_once __DIR__."/../../classes/ContentNegotation.php";
-require_once __DIR__.'/../checkAuthorization.php';
 
 
 //Spielername holen
@@ -183,7 +182,7 @@ function getGame (){
                             }
                     } else {
                             array_push($fragen, [
-                                    "" => (int)$fragenID,
+                                    "" => $fragenID,
                                     "answers" => $tmp
                             ]);
                             $fragenID=$value['fragennr'];
@@ -202,12 +201,12 @@ function getGame (){
                     };
             }
             array_push($fragen, [
-                    "" => (int)$fragenID,
+                    "" => $fragenID,
                     "answers" => $tmp
             ]);
         }
-        //Noch nciht beantwortete Fragen werden mit NULL belegt
-        $stmt= $conn->prepare('select spiel.runden, spiel.fragen_pro_runde,(spiel.runden*spiel.fragen_pro_runde) as gesAnzFragen, count(teilnahme.spieler) as anzSpieler from spiel, teilnahme where teilnahme.spiel=spiel.id and teilnahme.akzeptiert=true and spiel.id=1;');
+        //Noch nicht beantwortete Fragen werden mit NULL belegt
+        $stmt= $conn->prepare('select spiel.runden as AnzRunden, (spiel.runden*spiel.fragen_pro_runde) as gesAnzFragen, count(teilnahme.spieler) as anzSpieler from spiel, teilnahme where teilnahme.spiel=spiel.id and teilnahme.akzeptiert=true and spiel.id=1;');
         $stmt->execute([$anzuzeigendesSpielID]);
         $RueckgabeDaten=$stmt->fetchall();
         $anzVorhandenerFragen=count($fragen);
@@ -215,7 +214,7 @@ function getGame (){
             for($i=0; $i<($RueckgabeDaten[0]['gesAnzFragen']-$anzVorhandenerFragen);$i++) {
                 $tmp2=array();
                 for($j=0;$j<$RueckgabeDaten[0]['anzSpieler'];$j++) {
-                    array_push($tmp2, "NULL");
+                    array_push($tmp2, null);
                 }
                 array_push($fragen,[
                     ""=>$i,
@@ -223,6 +222,13 @@ function getGame (){
                 ]);
             }
         }
+        $anzVorhandenerRunden= count($runden);
+        if($anzVorhandenerRunden<$RueckgabeDaten[0]['AnzRunden']){
+            for($k=0; $k<($RueckgabeDaten[0]['AnzRunden']-$anzVorhandenerRunden);$k++) {
+            array_push($runden,null);    
+            }
+        }    
+        print_r($runden);
         $array=[
         "" =>"/schema/game",
         "players" =>$spieler,
