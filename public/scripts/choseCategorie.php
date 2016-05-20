@@ -50,8 +50,13 @@
 		die("Es existieren nicht genügend Fragen in dieser Kategorie");
 	}
 	$keys=array_rand($questions,$questionCount);
-	foreach($keys as $key){
-		echo $questions[$key]['frage']; //Wohin mit den Fragen?
+	$stmt=$conn->prepare("INSERT INTO spiel_frage (fragennr, spiel, frage) VALUES (:fragennr, :spiel, :frage)");
+	$base=($round-1)*$questionCount;
+	for($i=0;$i < $questionCount; $i++){
+		if(!$stmt->execute(['fragennr' => ($base+$i+1), 'spiel' => $anzuzeigendesSpielID, 'frage' => $questions[$keys[$i]]['frage']])){
+			var_dump($stmt->errorInfo());
+			die();
+		}
 	}
 	if (!$conn->commit()) {
 		http_response_code(500);
