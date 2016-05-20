@@ -74,7 +74,7 @@ foreach ($stmt->fetchall() as $value){
 $oldGameCount = $conn->prepare("Select Count(spiel.id) From spiel, teilnahme where teilnahme.spieler = ? And spiel.status = 'beendet' And spiel.id = teilnahme.spiel");
 $oldGameCount->execute([$user['id']]);
 $numOldGames = (int)$oldGameCount->fetchall()[0][0];
-	
+header('Vary: Authorization, Accept');
 if($contentType==="application/json"){
     header('Content-Type: application/json');
     echo json_encode([

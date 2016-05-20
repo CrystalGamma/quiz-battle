@@ -17,12 +17,14 @@ ul.stat li {margin:.2em .5em}
 .start-game::after {content:' \23f5';color:#ccc}
 
 main {display:flex;flex-flow:row wrap}
-#open-games, #waiting-games, #closed-games {flex:1;margin:.3em}
+#open-games, #waiting-games, #closed-games, #challenges {flex:1;margin:.3em}
+#open-games:empty, #waiting-games:empty, #closed-games:empty, #challenges:empty {display:none}
+main >h1 {flex:100%}
 
 section >h1 {color:#777}
 section >:not(h1) {margin:1em;padding:1em;background:#eee}
 
-#open-games >ul, #waiting-games >ul, #closed-games >ul {list-style:none;display:flex;flex-flow:column nowrap}
+#open-games >ul, #waiting-games >ul, #closed-games >ul, #challenges >ul {list-style:none;display:flex;flex-flow:column nowrap}
 .game {display:flex;align-items:flex-end;padding:1em .3em;flex-flow:row wrap}
 .game .player {flex:1 0 5em}
 .game .player::after {content:': '}

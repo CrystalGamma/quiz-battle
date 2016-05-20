@@ -24,6 +24,7 @@ if (isset($requestBody)) {
         http_response_code(400);
         die('Username und Passwort müssen ein String sein.');
     }
+    // TODO: do checks on contents of name and password
     
     $stmt = $conn->prepare('SELECT id FROM spieler WHERE name = ?');
     $stmt->execute([$requestBody['name']]);
@@ -35,14 +36,14 @@ if (isset($requestBody)) {
         $stmt = $conn->prepare('INSERT INTO spieler (name, passwort, punkte) VALUES (:name, :password, :points)');
         $stmt->execute(array(
             'name' => $requestBody['name'],
-            'password' => password_hash($requestBody['passworD'], PASSWORD_DEFAULT),
+            'password' => password_hash($requestBody['password'], PASSWORD_DEFAULT),
             'points' => 0
         ));
         $id = $conn->lastInsertId();
         if ($conn->commit()) {
             header("Location: /players/$id");
             http_response_code(201);
-            die('Erfolgreich.');
+            die(json_encode(['token' => 'Token '.base64_encode($requestBody['name'].':'.$requestBody['password']), 'player' => ['name' => $requestBody['name'], '' => "/players/$id"]]));
         } else {
             http_response_code(500);
             header('Retry-After: 3');

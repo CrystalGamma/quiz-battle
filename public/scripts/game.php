@@ -36,6 +36,7 @@
 require_once __DIR__."/../../connection.php";
 require_once __DIR__."/../checkAuthorization.php";
 require_once __DIR__."/../../classes/ContentNegotation.php";
+require_once __DIR__.'/../checkAuthorization.php';
 
 
 //Spielername holen
@@ -75,54 +76,41 @@ if($request=='GET'){
 }
     
 }else if($_SERVER['REQUEST_METHOD']=='PUT'){
-       $inputJSON = file_get_contents('php://input');
-       $input= json_decode( $inputJSON, TRUE ); //convert JSON into array
-       if ($input[''] !== '/schema/response') {
-               http_response_code(400);
-               die('Falsches Datenformat');
-       }
-       $username = getAuthorizationUser();
-       if ($username === false) {
-               http_response_code(401);
-               header('WWW-Authenticate: Token');
-               die('Zum Annehmen oder Ablehnen von Spielen muss ein gültiger Authentifikationstoken vorliegen');
-       }
-       if ($input['accept'] === true) {
-               $stmt = $conn->prepare('UPDATE teilnahme t, spieler s SET t.akzeptiert=1 WHERE t.spieler=s.id AND spiel=:spiel AND s.name = :spieler');
-               if (!$stmt->execute(['spiel' => $anzuzeigendesSpielID, 'spieler' => $username])) {
-                       http_response_code(500);
-                       var_dump($stmt->errorInfo());
-                       die();
-               }
-       } else {
-               // TODO: should games only be deleted if there are less than 2 participants?
-               $stmt = $conn->prepare('DELETE FROM spiel where id = ?');
-               if (!$stmt->execute([$anzuzeigendesSpielID])) {
-                       http_response_code(500);
-                       var_dump($stmt->errorInfo());
-                       die();
-               }
-       }
-       if (!$conn->commit()) {
-               http_response_code(500);
-               header('Retry-After: 3');
-               die('Transaktion gescheitert');
-       }
-//require_once  __DIR__."/answerRequest.php";
+	$inputJSON = file_get_contents('php://input');
+	$input= json_decode( $inputJSON, TRUE ); //convert JSON into array
+	if ($input['schema'] !== '/schema/response') {
+		http_response_code(400);
+		die('Falsches Datenformat');
+	}
+	$username = getAuthorizationUser();
+	if ($username === false) {
+		http_response_code(401);
+		header('WWW-Authenticate: Token');
+		die('Zum Annehmen oder Ablehnen von Spielen muss ein gültiger Authentifikationstoken vorliegen');
+	}
+	if ($input['accept'] === true) {
+		$stmt = $conn->prepare('UPDATE teilnahme t, spieler s SET t.akzeptiert=1 WHERE t.spieler=s.id AND spiel=:spiel AND s.name = :spieler');
+		if (!$stmt->execute(['spiel' => $anzuzeigendesSpielID, 'spieler' => $username])) {
+			http_response_code(500);
+			var_dump($stmt->errorInfo());
+			die();
+		}
+	} else {
+		// TODO: should games only be deleted if there are less than 2 participants?
+		$stmt = $conn->prepare('DELETE FROM spiel where id = ?');
+		if (!$stmt->execute([$anzuzeigendesSpielID])) {
+			http_response_code(500);
+			var_dump($stmt->errorInfo());
+			die();
+		}
+	}
+	if (!$conn->commit()) {
+		http_response_code(500);
+		header('Retry-After: 3');
+		die('Transaktion gescheitert');
+	}
 }else if($_SERVER['REQUEST_METHOD']=='POST'){
-    $inputJSON = file_get_contents('php://input');
-    $input= json_decode( $inputJSON, TRUE ); //convert JSON into array
-    $categorie = explode('/',$input['category_'])[2];
-    $stmt=$conn->prepare("UPDATE runde SET kategorie=:kategorie WHERE spiel=:spiel AND dealer=:spieler AND rundennr=:rundennr");
-    $stmt->bindValue(':kategorie', (int) $categorie, PDO::PARAM_INT);
-    $stmt->bindValue(':spieler', (int) $player, PDO::PARAM_INT); //Woher kriege ich hier den aktuell angemeldten Spieler?
-    $stmt->bindValue(':spiel', (int) $anzuzeigendesSpielID, PDO::PARAM_INT);
-    $stmt->bindValue(':rundennr', (int) $round, PDO::PARAM_INT); //Woher kenne ich die Runde? Einfach die höchste für das Spiel?
-    if(!$stmt->execute()){
-        var_dump($stmt->errorInfo());
-        die();
-    }
-//require_once  __DIR__."/chooseRequest.php";
+    require_once(__DIR__."/choseCategorie.php");
 }else{
     http_response_code(405);
     die();

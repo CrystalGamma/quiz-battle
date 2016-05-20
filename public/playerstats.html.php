@@ -2,7 +2,7 @@
 header('Content-Type: text/html; charset=UTF-8');
 ?><!DOCTYPE html>
 <title>Statistiken für <?=$user['name']?> – Quiz Battle</title>
-<link rel=stylesheet href=/styles>
+<?php require(__DIR__.'/header.html') ?>
 <main>
 <section id=stats>
 <h1><span class=player><?=$user['name']?></span> – Statistiken</h1>
@@ -21,5 +21,7 @@ header('Content-Type: text/html; charset=UTF-8');
 <script src=/scripts/makexhr></script>
 <script src=/scripts/builddom></script>
 <script src=/scripts/login></script>
+<script src=/scripts/game-report></script>
 <script async src=/scripts/load-stats></script>
 <script async src=/scripts/load-oldgames></script>
+<script async src=/scripts/challenge-player data-submit="/games/"></script>
