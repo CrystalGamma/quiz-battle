@@ -112,7 +112,7 @@ Spielansicht
 		{"": "/players/<id>", "name": "Spielername", "accepted": true}
 	],
 	"rounds": [{
-		"category_": "/categories/<id>",
+		"category": {"":"/categories/<id>", "name":"Kategoriename"},
 		"dealer": {"": "/players/<id>", "name": "Spielername"},
 		"started": "2016-05-08T10:33:52Z"
 	}, {
