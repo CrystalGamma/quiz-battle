@@ -16,8 +16,8 @@ RewriteRule ^auth$ authorization.php [END]
 RewriteRule ^$ /static/index.html [END]
 
 # Only for testing purposes. These have to be disabled during productive mode.
-RewriteRule ^generate/(\d+)$ scripts/generate.php?seed=$1 [END,QSA]
-RewriteRule ^install$ scripts/install.php [END,QSA]
+#RewriteRule ^generate/(\d+)$ scripts/generate.php?seed=$1 [END,QSA]
+#RewriteRule ^install$ scripts/install.php [END,QSA]
 
 # Prevent direct access for specific file extensions
 RewriteCond %{REQUEST_FILENAME} -f

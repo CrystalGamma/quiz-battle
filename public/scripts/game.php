@@ -74,7 +74,6 @@ if ($request === 'GET') {
 	}
 	$id=array_shift($stmt->fetchAll(PDO::FETCH_ASSOC))['id'];
 	if ($input['accept'] === true) {
-		// FIXME: check if player accepted already
 		$stmt= $conn->prepare('SELECT akzeptiert FROM teilnahme WHERE spiel=:spiel AND spieler=:spieler');
 		if(!$stmt->execute(['spiel' => $anzuzeigendesSpielID, 'spieler' => $id])){
 			http_response_code(500);
