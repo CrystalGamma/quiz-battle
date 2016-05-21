@@ -18,6 +18,12 @@
 */
 require_once __DIR__."/../../connection.php";
 require_once __DIR__."/../checkAuthorization.php";
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+	require_once(__DIR__.'/askme.php');
+	die();
+}
+
   //Prüfung auf exisitenz und daten holen
 $stmt= $conn->prepare('select spiel.status from spiel, spiel_frage where spiel_frage.spiel=spiel.id and spiel_frage.spiel = ? and spiel_frage.fragennr=?; ');
 
@@ -31,28 +37,7 @@ if($row===false){
     http_response_code(404);
     die("Das Spiel mit der ID ".$anzuzeigendesSpielID." und der fragennr ".$anzuzeigendeFragennr." exisitiert nicht");
 }
-if($row['status']==="beendet") {
-    frageInSpiel();
-}else if($row['status']==="laufend"){
-    $nutzername=getAuthorizationUser();
-    if($nutzername===false){
-    http_response_code(403);
-    die("Sie müssen angemeldet sein");
-    }
-    $stmt= $conn->prepare('select spieler.name, antwort.antwort from spiel_frage, antwort, spieler where spiel_frage.fragennr=antwort.fragennr and spiel_frage.spiel=antwort.spiel and antwort.spieler=spieler.id and spiel_frage.spiel=? and spiel_frage.fragennr=? and spieler.name=?;');
-    $stmt->execute([$anzuzeigendesSpielID, $anzuzeigendeFragennr,$nutzername]);
-    $row = $stmt->fetch();
-    //Überprüfen ob beantwortete
-    if($row===false){
-    http_response_code(403);
-    die("Sie haben die Frage noch nicht beantwortet");
-    }else{
-        frageInSpiel();
-    }
-    
-}
-
-//
+frageInSpiel();
 
 function frageInSpiel(){
     require_once __DIR__."/../../classes/ContentNegotation.php";
@@ -95,6 +80,7 @@ function frageInSpiel(){
         echo $json;
     }else{
         require_once __DIR__."/../embrowsen.php";
-    }    
+    }
+    die();
 }
 ?>
