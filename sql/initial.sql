@@ -1,5 +1,8 @@
-Insert into spieler(name, passwort, punkte) values('admin', '$2y$10$/Itd6yBRda9zB8zdlIIhguhDMPqJd9IOcEcYyD./xFtOkULJePZAu', 0);
-Insert into spieler(name, passwort, punkte) values('admin2', '$2y$10$/Itd6yBRda9zB8zdlIIhguhDMPqJd9IOcEcYyD./xFtOkULJePZAu', 1);
+Insert into spieler(name, passwort, punkte) values('admin', '$2y$10$/Itd6yBRda9zB8zdlIIhguhDMPqJd9IOcEcYyD./xFtOkULJePZAu', 0); -- Passwort="admin" als hash
+Insert into spieler(name, passwort, punkte) values('player2', '$2y$10$4QMfrcxre1wb9TsTfSIDwOhLmZWZVoNq80z9GyUohaYENVn5BSZ9m', 1); -- Passwort="player" als hash
+Insert into spieler(name, passwort, punkte) values('player3', '$2y$10$4QMfrcxre1wb9TsTfSIDwOhLmZWZVoNq80z9GyUohaYENVn5BSZ9m', 1);
+Insert into spieler(name, passwort, punkte) values('player4', '$2y$10$4QMfrcxre1wb9TsTfSIDwOhLmZWZVoNq80z9GyUohaYENVn5BSZ9m', 1);
+Insert into spieler(name, passwort, punkte) values('player5', '$2y$10$4QMfrcxre1wb9TsTfSIDwOhLmZWZVoNq80z9GyUohaYENVn5BSZ9m', 1);
 Insert into kategorie(name) values ('kat1'), ('kat2'), ('kat3');
 Insert into frage(frage, richtig, falsch1, falsch2, falsch3, erklaerung) values ('frage1', 'richtig', 'falsch1', 'falsch2', 'falsch3', 'erklaerung'), ('frage2', 'richtig', 'falsch1', 'falsch2', 'falsch3', 'erklaerung'), ('frage3', 'richtig', 'falsch1', 'falsch2', 'falsch3', 'erklaerung');
 Insert into frage_kategorie(frage, kategorie) values(1,1),(2,2),(3,3);
