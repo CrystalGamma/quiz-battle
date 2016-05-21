@@ -39,23 +39,25 @@
         die();
 	}
 	$questionCount=array_shift($stmt->fetchAll(PDO::FETCH_ASSOC))['fragen_pro_runde'];
-	$stmt=$conn->prepare("SELECT frage FROM frage_kategorie WHERE kategorie=?");
-	if(!$stmt->execute([$categorie])){
+	$stmt=$conn->prepare("SELECT frage FROM frage_kategorie fk WHERE kategorie=:category AND NOT EXISTS(SELECT * FROM spiel_frage sf WHERE sf.frage=fk.frage)");
+	if(!$stmt->execute(['category' => $categorie])){
 		var_dump($stmt->errorInfo());
-        die();
+		die();
 	}
 	// TODO: don't fetch all questions into memory
-	$questions=$stmt->fetchAll(PDO::FETCH_ASSOC);
+	$questions=$stmt->fetchAll(PDO::FETCH_COLUMN);
 	if(count($questions)<$questionCount){
 		http_response_code(500);
 		die("Es existieren nicht genügend Fragen in dieser Kategorie");
 	}
+	require(__DIR__.'/hashPick.php');
 	// FIXME: this fails (Warning: Second argument has to be between 1 and the number of elements in the array)
-	$keys=array_rand($questions,$questionCount);
+	$keys=skyrimShuffle($anzuzeigendesSpielID.';'.$round.';'.$categorie, $questionCount, $questions);
+	error_log(implode(',', $keys));
 	$stmt=$conn->prepare("INSERT INTO spiel_frage (fragennr, spiel, frage) VALUES (:fragennr, :spiel, :frage)");
-	$base=($round-1)*$questionCount;
-	for($i=0;$i < $questionCount; $i++){
-		if(!$stmt->execute(['fragennr' => ($base+$i+1), 'spiel' => $anzuzeigendesSpielID, 'frage' => $questions[$keys[$i]]['frage']])){
+	$base = $round*$questionCount;
+	for($i = 0; $i < $questionCount; $i++){
+		if(!$stmt->execute(['fragennr' => ($base+$i), 'spiel' => $anzuzeigendesSpielID, 'frage' => $keys[$i]])){
 			http_response_code(500);
 			var_dump($stmt->errorInfo());
 			die();
