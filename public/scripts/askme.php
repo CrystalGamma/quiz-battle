@@ -48,11 +48,11 @@ if (!$fetchQuestion->execute(['gid' => $gid, 'qid' => $qid])) {
 }
 $question = $fetchQuestion->fetch(PDO::FETCH_NUM);
 
-/*if (!$conn->commit()) {
+if (!$conn->commit()) {
 	http_response_code(500);
 	header('Retry-After: 3');
 	die('Transaktion gescheitert');
-}*/
+}
 
 $text = $question[1];
 error_log(implode(',', array_slice($question, 2)));

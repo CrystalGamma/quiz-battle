@@ -22,6 +22,9 @@ require_once __DIR__."/../checkAuthorization.php";
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	require_once(__DIR__.'/askme.php');
 	die();
+} else if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
+	require_once(__DIR__.'/myanswer.php');
+	die();
 }
 
   //Prüfung auf exisitenz und daten holen

@@ -83,9 +83,31 @@
 				if (xhr.status >= 200 && xhr.status < 300) {
 					const json = JSON.parse(xhr.responseText);
 					const $dialog = ev.target.parentNode;
-					$dialog.removeChild(ev.target);
+					$dialog.innerHTML='';
 					// FIXME: show timer of some sort
 					buildDom([json.question, ...json.answers.map((ans, idx) => ({'':'button.answer', 'data-value':''+idx, c:ans}))]).forEach(x => $dialog.appendChild(x));
+					const handler = ev => {
+						if (!ev.target.classList.contains('answer')) {return}
+						const tryAnswer = attempt => makeXHR('PUT', xhr.responseURL, {'Content-Type':'application/json', Accept: 'application/json', Authorization: login.token}, xhr => {
+							if (xhr.status >= 200 && xhr.status < 300) {
+								const json = JSON.parse(xhr.responseText);
+								Array.from($dialog.querySelectorAll('button.answer')).forEach(x => {x.disabled = true});
+								ev.target.classList.add('incorrect');
+								const $correct = $dialog.children[json.answer];
+								$correct.classList.remove('incorrect');
+								$correct.classList.add('correct');
+							} else if (xhr.status === 403 && xhr.getResponseHeader('Content-Type').startsWith('application/json')) {
+								alert("Die Zeit ist abgelaufen");
+							} else if (attempt < 10 && xhr.status >= 500 && xhr.status < 600) {
+								setTimeout(tryAnswer.bind(attempt+1), (xhr.getResponseHeader('Retry-After')|0)*1000);
+							} else {
+								alert(`Konnte Antwort nicht speichern: ${xhr.responseText}`);
+							}
+						}).send(JSON.stringify({'':'/schema/myanswer', answer:ev.target.dataset.value|0}));
+						tryAnswer(0);
+						ev.preventDefault();
+					};
+					$dialog.addEventListener('click', handler);
 				} else {
 					const retry = xhr.getResponseHeader('Retry-After')|0;
 					if (attempt < 3 && retry) {
