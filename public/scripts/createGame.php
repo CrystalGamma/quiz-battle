@@ -17,7 +17,7 @@
 			var_dump($stmt->errorInfo());
 			die();
 		}
-		$id=array_shift($stmt->fetchAll(PDO::FETCH_ASSOC))['id'];
+		$id=(int) $stmt->fetchcolumn();
         $rounds=array_key_exists('rounds', $input) ? (int) $input["rounds"] : 6;
         $turns=array_key_exists('turns', $input) ? (int) $input["turns"] : 3;
         $timelimit= array_key_exists('timelimit', $input) ? (int) $input["timelimit"] : 10;
