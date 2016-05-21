@@ -33,7 +33,7 @@
 			const render = {'':'li', style:'order:'+index, c:{'':'a.game', href:gameUrl, c:renderGame(login, json)}};
 			if (json.players.some(player => player[''] === (login.player_||login.player['']) && !player.accepted)) {
 				addChall(render);
-			} else if (json.questions.some(q => q.answers === null) || json.rounds.some(r => r && r.dealer === (login.player||login.player['']))) {
+			} else if (json.questions.some(q => q.answers === null) || json.rounds.some(r => r && r.dealer === (login.player_||login.player['']))) {
 				addOpen(render);
 			} else {
 				addWait(render);
