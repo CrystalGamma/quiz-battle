@@ -50,8 +50,8 @@ function frageInSpiel(){
 
     $contentType=ContentNegotation::getContent($_SERVER['HTTP_ACCEPT'],"text/html,application/json;q=0.9");
 
-    $stmt= $conn->prepare('select spiel_frage.frage as fragenID, frage.frage, frage.bild, frage.erklaerung, frage.richtig, frage.falsch1, frage.falsch2, frage.falsch3, antwort.spieler, antwort.antwort from (frage, spiel_frage) left join antwort on (spiel_frage.fragennr=antwort.fragennr and spiel_frage.spiel=antwort.spiel) where spiel_frage.frage=frage.id and spiel_frage.spiel=? and spiel_frage.fragennr=?;');
-    $stmt->execute([$anzuzeigendesSpielID, $anzuzeigendeFragennr]);
+    $stmt= $conn->prepare('select spiel_frage.frage as fragenID, frage.frage, frage.bild, frage.erklaerung, frage.richtig, frage.falsch1, frage.falsch2, frage.falsch3, teilnahme.spieler, antwort.antwort from (frage, spiel_frage, teilnahme) left join antwort on (spiel_frage.fragennr=antwort.fragennr and spiel_frage.spiel=antwort.spiel AND teilnahme.spieler = antwort.spieler) where teilnahme.spiel = :gid AND spiel_frage.frage=frage.id AND spiel_frage.spiel=:gid AND spiel_frage.fragennr=:qid;');
+    $stmt->execute(['gid' => $anzuzeigendesSpielID, 'qid' => $anzuzeigendeFragennr]);
     $RueckgabeDaten=$stmt->fetchall();
     $antwort=array();
     foreach ($RueckgabeDaten as $value){
