@@ -11,8 +11,10 @@ AND runde.start+spiel.rundenzeit < now()
 AND spiel.status != 'beendet'
 AND NOT EXISTS(SELECT * FROM antwort WHERE spiel=spiel.id AND antwort.spieler=teilnahme.spieler AND antwort.fragennr=spiel_frage.fragennr)");
 	$elapsedRounds->execute(['gid' => $gid]);
+	error_log($elapsedRounds->rowCount()." answers inserted");
 	endGame($conn, $gid);
 	$conn->commit();
+	$conn->beginTransaction();
 }
 
 function endGame($conn, $gid) {

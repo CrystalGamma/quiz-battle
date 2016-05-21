@@ -30,12 +30,7 @@ if (!$alreadyStarted->execute(['player' => $player, 'game' => $gid, 'qid' => $qi
 }
 $row = $alreadyStarted->fetch();
 
-if ($row[1] != 0) {
-	http_response_code(400);
-	die('Frage schon angefangen');
-}
-
-$startQuestion = $conn->prepare("INSERT INTO antwort(spiel, spieler, fragennr, antwort, startzeit) SELECT :gid, id, :qid, NULL, NOW() FROM spieler WHERE name=:player");
+$startQuestion = $conn->prepare("INSERT INTO antwort(spiel, spieler, fragennr, antwort, startzeit) SELECT :gid, id, :qid, NULL, NOW() FROM spieler WHERE name=:player AND NOT EXISTS(SELECT * FROM antwort WHERE id=spieler AND spiel=:gid AND fragennr=:qid)");
 if (!$startQuestion->execute(['gid' => $gid, 'player' => $player, 'qid' => $qid])) {
 	http_response_code(500);
 	die('Datenbankfehler');
