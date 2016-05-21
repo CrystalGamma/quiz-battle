@@ -58,8 +58,7 @@ create table runde(
 	dealer int not null,
 	kategorie int null,
 	primary key (spiel, rundennr),
-	foreign Key(spiel) references spiel(id)
-    ON DELETE CASCADE,,
+	foreign Key(spiel) references spiel(id) ON DELETE CASCADE,
 	foreign Key(dealer) references spieler(id),
 	foreign Key(kategorie) references kategorie(id)
 );
@@ -83,8 +82,7 @@ create table antwort(
 	foreign key (spiel, fragennr) references spiel_frage(spiel, fragennr),
 	foreign key (spiel, spieler) references teilnahme(spiel, spieler),
 	primary key (spiel, spieler, fragennr),
-	foreign Key(spiel) references spiel(id)
-    ON DELETE CASCADE,,
+	foreign Key(spiel) references spiel(id) ON DELETE CASCADE,
 	foreign Key(spieler) references spieler(id)
 	
 );
