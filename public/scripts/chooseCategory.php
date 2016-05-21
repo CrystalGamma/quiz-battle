@@ -51,9 +51,7 @@
 		die("Es existieren nicht genügend Fragen in dieser Kategorie");
 	}
 	require(__DIR__.'/hashPick.php');
-	// FIXME: this fails (Warning: Second argument has to be between 1 and the number of elements in the array)
-	$keys=skyrimShuffle($anzuzeigendesSpielID.';'.$round.';'.$categorie, $questionCount, $questions);
-	error_log(implode(',', $keys));
+	$keys = skyrimShuffle($anzuzeigendesSpielID.';'.$round.';'.$categorie, $questionCount, $questions);
 	$stmt=$conn->prepare("INSERT INTO spiel_frage (fragennr, spiel, frage) VALUES (:fragennr, :spiel, :frage)");
 	$base = $round*$questionCount;
 	for($i = 0; $i < $questionCount; $i++){
