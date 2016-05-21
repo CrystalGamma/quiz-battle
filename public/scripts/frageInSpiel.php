@@ -55,9 +55,14 @@ function frageInSpiel(){
     $RueckgabeDaten=$stmt->fetchall();
     $antwort=array();
     foreach ($RueckgabeDaten as $value){
+            if($value['antwort']==="" or $value['antwort']===null) {
+            $tmp=$value['antwort']; 
+            }else{
+            $tmp=(int) $value['antwort'];
+            }
             array_push($antwort,[
             "player_"=> "/players/".$value['spieler'],
-            "ans"=>$value['antwort']
+            "ans"=>$tmp
             ]);
     };
     $array=[
