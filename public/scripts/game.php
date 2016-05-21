@@ -267,7 +267,7 @@ function getGame (){
 		'timelimit' => $spiel['fragenzeit'],
 		'roundlimit' => $spiel['rundenzeit'],
 		'questions' => $fragen,
-		'dealingrule' => '/dealingrule/'.$spiel[0]['dealingrule']
+		'dealingrule' => '/dealingrule/'.$spiel['dealingrule']
 	];
         // FIXME: no longer varies over Authorization if game is over
         header('Vary: Accept, Authorization');
