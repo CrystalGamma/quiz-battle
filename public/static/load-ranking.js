@@ -6,7 +6,9 @@
 		let json = JSON.parse(xhr.responseText);
 		json.players.forEach((player, idx) => $tbody.appendChild(buildDom({'':'tr', c:[
 			{'':'td', c:`${json.start + idx + 1}.`},
-			{'':'th', c:player['name']},
+			{'':'th', c:[
+				{'':'a', href: player[''], c:player['name']},
+			]},
 			{'':'td', c:''+player['points']}
 		]})));
 		if (json.next_) {
