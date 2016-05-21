@@ -165,60 +165,43 @@ function getGame (){
         $RueckgabeWert=$stmt->fetchall();
         $fragen = [];
         $tmp = [];
-        if (count($RueckgabeWert) > 0) {
-            $fragenID=$RueckgabeWert[0]['fragennr'];
-            foreach ($RueckgabeWert as $value) {
-                    if ($value['fragennr'] === $fragenID) {
-                            if($value['antwort']==="" or $value['antwort']===null ){
-                            array_push($tmp, $value['antwort']);
-                            }else{
-                            array_push($tmp, (int)$value['antwort']);
-                            }
-                            if($value['status']===null){
-                                $tmp=null;
-                            }
-                    } else {
-                            array_push($fragen, [
-                                    "" => $fragenID,
-                                    "answers" => $tmp
-                            ]);
-                            $fragenID=$value['fragennr'];
-                            $tmp=array();
-                            if($value['antwort']==="" or $value['antwort']===null ){
-                            array_push($tmp, $value['antwort']);
-                            }else{
-                            array_push($tmp, (int)$value['antwort']);
-                            }
-                            if($value['status']===null){
-                                $tmp=null;
-                            }
-                            if($value['status']===null){
-                                $tmp=null;
-                            }
-                    };
-            }
-            array_push($fragen, [
-                    "" => $fragenID,
-                    "answers" => $tmp
-            ]);
-        }
-        //Noch nicht beantwortete Fragen werden mit NULL belegt
-        $stmt= $conn->prepare('select spiel.runden as AnzRunden, (spiel.runden*spiel.fragen_pro_runde) as gesAnzFragen, count(teilnahme.spieler) as anzSpieler from spiel, teilnahme where teilnahme.spiel=spiel.id and teilnahme.akzeptiert=true and spiel.id=1;');
-        $stmt->execute([$anzuzeigendesSpielID]);
-        $RueckgabeDaten=$stmt->fetchall();
-        $anzVorhandenerFragen=count($fragen);
-        if($anzVorhandenerFragen<$RueckgabeDaten[0]['gesAnzFragen']){
-            for($i=0; $i<($RueckgabeDaten[0]['gesAnzFragen']-$anzVorhandenerFragen);$i++) {
-                $tmp2=array();
-                for($j=0;$j<$RueckgabeDaten[0]['anzSpieler'];$j++) {
-                    array_push($tmp2, null);
-                }
-                array_push($fragen,[
-                    ""=>$i,
-                    "answers"=>$tmp2
-                ]);
-            }
-        }
+	if (count($RueckgabeWert) > 0) {
+		$fragenID=$RueckgabeWert[0]['fragennr'];
+		foreach ($RueckgabeWert as $value) {
+			if ($value['fragennr'] === $fragenID) {
+				if($value['antwort']==="" or $value['antwort']===null ){
+					$tmp and array_push($tmp, $value['antwort']);
+				} else {
+					$tmp and array_push($tmp, (int)$value['antwort']);
+				}
+				if($value['status']===null){
+					$tmp=null;
+				}
+			} else {
+				array_push($fragen, [
+					"" => $fragenID,
+					"answers" => $tmp
+				]);
+				$fragenID=$value['fragennr'];
+				$tmp=array();
+				if($value['antwort']==="" or $value['antwort']===null ){
+				array_push($tmp, $value['antwort']);
+				}else{
+				array_push($tmp, (int)$value['antwort']);
+				}
+				if($value['status']===null){
+					$tmp=null;
+				}
+				if($value['status']===null){
+					$tmp=null;
+				}
+			};
+		}
+		array_push($fragen, [
+			"" => $fragenID,
+			"answers" => $tmp
+		]);
+	}
 	$array=[
 		"" =>"/schema/game",
 		'players' =>$spieler,
