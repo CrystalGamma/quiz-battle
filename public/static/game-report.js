@@ -1,5 +1,4 @@
 const renderGame = (refPlayer, game) => {
-	console.log(refPlayer);
 	let selfPlayer = null;
 	game.players.forEach((player, idx) => {if (player[''] === refPlayer) {selfPlayer = idx}});
 	if (selfPlayer === null) {return []}
