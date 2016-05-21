@@ -61,5 +61,5 @@ header('Content-Type: application/json');
 echo(json_encode([
 	'' => '/schema/popquiz',
 	'question' => $text,
-	'answers' => skyrimShuffle("$gid;".$question[0], 4, array_slice($question, 2))
+	'answers' => skyrimShuffle("$gid;$player:".$question[0], 4, array_slice($question, 2))
 ]));
