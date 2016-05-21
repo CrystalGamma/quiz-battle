@@ -50,11 +50,13 @@
 		http_response_code(500);
 		die("Es existieren nicht genügend Fragen in dieser Kategorie");
 	}
+	// FIXME: this fails (Warning: Second argument has to be between 1 and the number of elements in the array)
 	$keys=array_rand($questions,$questionCount);
 	$stmt=$conn->prepare("INSERT INTO spiel_frage (fragennr, spiel, frage) VALUES (:fragennr, :spiel, :frage)");
 	$base=($round-1)*$questionCount;
 	for($i=0;$i < $questionCount; $i++){
 		if(!$stmt->execute(['fragennr' => ($base+$i+1), 'spiel' => $anzuzeigendesSpielID, 'frage' => $questions[$keys[$i]]['frage']])){
+			http_response_code(500);
 			var_dump($stmt->errorInfo());
 			die();
 		}
