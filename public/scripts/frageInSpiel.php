@@ -47,13 +47,13 @@ function frageInSpiel(){
 
     $contentType=ContentNegotation::getContent($_SERVER['HTTP_ACCEPT'],"text/html,application/json;q=0.9");
 
-    $stmt= $conn->prepare('select spiel_frage.frage as fragenID, frage.frage, frage.bild, frage.erklaerung, frage.richtig, frage.falsch1, frage.falsch2, frage.falsch3,(Case When antwort.antwort=0 Then 1 Else 0 End)as richtigeAntworten, antwort.spieler, antwort.antwort from (frage, spiel_frage) left join antwort on (spiel_frage.fragennr=antwort.fragennr and spiel_frage.spiel=antwort.spiel) where spiel_frage.frage=frage.id and spiel_frage.spiel=? and spiel_frage.fragennr=?;');
+    $stmt= $conn->prepare('select spiel_frage.frage as fragenID, frage.frage, frage.bild, frage.erklaerung, frage.richtig, frage.falsch1, frage.falsch2, frage.falsch3, antwort.spieler, antwort.antwort from (frage, spiel_frage) left join antwort on (spiel_frage.fragennr=antwort.fragennr and spiel_frage.spiel=antwort.spiel) where spiel_frage.frage=frage.id and spiel_frage.spiel=? and spiel_frage.fragennr=?;');
     $stmt->execute([$anzuzeigendesSpielID, $anzuzeigendeFragennr]);
     $RueckgabeDaten=$stmt->fetchall();
     $antwort=array();
     foreach ($RueckgabeDaten as $value){
             array_push($antwort,[
-            "player_"=> "/player/".$value['spieler'],
+            "player_"=> "/players/".$value['spieler'],
             "ans"=>$value['antwort']
             ]);
     };
@@ -69,8 +69,7 @@ function frageInSpiel(){
                 $RueckgabeDaten[0]['falsch1'],
                 $RueckgabeDaten[0]['falsch2'],
                 $RueckgabeDaten[0]['falsch3']
-            ],
-            "correct"=> $RueckgabeDaten[0]['richtigeAntworten'],
+            ]
         ],    
         "answers"=>$antwort
     ];
