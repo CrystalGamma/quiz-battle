@@ -36,7 +36,7 @@
 require_once __DIR__."/../../connection.php";
 require_once __DIR__."/../checkAuthorization.php";
 require_once __DIR__."/../../classes/ContentNegotation.php";
-
+require_once(__DIR__.'/gameEnd.php');
 
 //Spielername holen
 $stmt= $conn->prepare('select spiel.status from spiel where spiel.id=?');
@@ -50,10 +50,13 @@ if($row===false){
     http_response_code(404);
     die("Das Spiel mit der ID ".$anzuzeigendesSpielID." exisitiert nicht");
 }
+$conn->rollback();
+cleanGame($conn, $anzuzeigendesSpielID);
+
 //Authorisierung??    
 $request=$_SERVER['REQUEST_METHOD'];
 if ($request === 'GET') {
-	getGame();
+	getGame($conn, $anzuzeigendesSpielID);
 } else if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
 	$inputJSON = file_get_contents('php://input');
 	$input = json_decode($inputJSON, TRUE); //convert JSON into array
@@ -168,11 +171,7 @@ if ($request === 'GET') {
     die();
 }
 
-function getGame (){
-        //Players
-        global $conn;
-        global $anzuzeigendesSpielID;
-        global $nutzername;
+function getGame ($conn, $anzuzeigendesSpielID) {
         $stmt= $conn->prepare('select spiel.fragen_pro_runde, spiel.runden, spiel.fragenzeit, spiel.rundenzeit, (case when spiel.dealer=NULL then "firstanswer" else spiel.dealer end) as dealingrule from spiel where spiel.id=?');
         $stmt->execute([$anzuzeigendesSpielID]);
         $spiel=$stmt->fetchall()[0];
@@ -214,7 +213,6 @@ function getGame (){
 		array_push($runden, $runde);
 	};
 	for ($restrunden = $spiel['runden'] - count($runden);$restrunden > 0;$restrunden -= 1) {array_push($runden, null);}
-        // FIXME: auto-close round and start next one if time elapsed
         $stmt= $conn->prepare("
 SELECT spiel_frage.fragennr,teilnahme.spieler, (case when antwort.startzeit+spiel.fragenzeit < now() and antwort.antwort IS NULL then '' else antwort.antwort end) as antwort, (case when antwort.startzeit+spiel.fragenzeit < now() then 'abgel' else antwort.antwort end) as status
 FROM (spiel, teilnahme, spiel_frage) LEFT JOIN antwort on (spiel_frage.fragennr=antwort.fragennr and antwort.spiel=spiel_frage.spiel and teilnahme.spieler=antwort.spieler)
