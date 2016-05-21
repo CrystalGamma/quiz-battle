@@ -37,7 +37,7 @@
 		}
 		for (let $row of Array.from($main.querySelectorAll('tbody >tr'))) {
 			const $dealer = $row.querySelector('a.dealer');
-			if (!$dealer) {continue}
+			if (!$dealer || $dealer.pathname !== (login.player_||login.player[''])) {continue}
 			$main.appendChild(buildDom({'':'.dialog', c:["Wähle Fragenkategorie für die nächste Runde:", ...JSON.parse($dealer.dataset.candidates).map(cat => ({'':'a.candidate', href:cat[''], c:cat['name']}))]}));
 			$main.addEventListener('click', ev => {
 				if (!ev.target.classList.contains('candidate')) {return}
@@ -58,15 +58,13 @@
 			});
 			break;
 		}
-		for (let $answer of Array.from($main.querySelectorAll('a.answer.unknown'))) {
+		Promise.all(Array.from($main.querySelectorAll('a.answer.unknown')).map($answer => new Promise((resolve, reject) => {
 			makeXHR('GET', $answer.href, {Accept:'application/json', Authorization: login.token}, xhr => {
 				if (xhr.status < 200 || xhr.status >= 300) {return}
 				if (!xhr.getResponseHeader('Content-Type').startsWith('application/json')) {return}
 				const json = JSON.parse(xhr.responseText);
-				if (json.answers === null || json.answers.some(x => (x.player_||x.player['']) === (login.player_||login.player['']) && x.ans === null)) {
-					console.log('askme');
-					if ($main.lastElementChild.classList.contains('dialog')) {return}
-					$main.appendChild(buildDom({'':'.dialog', c:{'':'a.askme.start-game', href: $answer.href, c:"Nächste Frage"}}));
+				if (json.question === null || json.answers === null || json.answers.some(x => (x.player_||x.player['']) === (login.player_||login.player['']) && x.ans === null)) {
+					resolve([json, $answer]);
 				} else {
 					for (let ans of json.answers) {
 						if ((ans.player_||ans.player['']) !== $answer.hash.substring(1)) {continue}
@@ -74,9 +72,16 @@
 						$answer.classList.add(ans.ans === 0 ? 'correct' : 'incorrect');
 						if (ans.ans !== null) {$answer.dataset.givenanswer = ans.ans === '' ? '' : json.question.answers[ans.ans]}
 					}
+					resolve(null);
 				}
 			}).send();
-		}
+		}))).then(unanswered => {
+			console.log(unanswered);
+			for (let [question, $answer] of unanswered.filter(x => !!x)) {
+				$main.appendChild(buildDom({'':'.dialog', c:{'':'a.askme.start-game', href: $answer.href, c:"Nächste Frage"}}));
+				break;
+			}
+		});
 		$main.addEventListener('click', ev => {
 			if (!ev.target.classList.contains('askme')) {return}
 			const tryAskMe = attempt => makeXHR('POST', ev.target.href, {Accept:'application/json', 'Content-Type':'application/json', Authorization:login.token}, xhr => {

@@ -21,7 +21,7 @@ echo htmlspecialchars(implode(', ', $othernames));
 	} else if ($round !== NULL) {
 		echo htmlspecialchars($round['category']['name']);
 		$start = $array['turns']*$rid;
-		$end = count($array['questions']);
+		$end = $array['turns']*($rid + 1);
 		foreach ($array['players'] as $pidx => $player) {
 			echo '<td>';
 			for ($i = $start; $i < $end; $i += 1) {

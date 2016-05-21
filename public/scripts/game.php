@@ -173,7 +173,7 @@ function getGame (){
         global $conn;
         global $anzuzeigendesSpielID;
         global $nutzername;
-        $stmt= $conn->prepare('select spiel.runden, spiel.fragenzeit, spiel.rundenzeit, (case when spiel.dealer=NULL then "firstanswer" else spiel.dealer end) as dealingrule from spiel where spiel.id=?');
+        $stmt= $conn->prepare('select spiel.fragen_pro_runde, spiel.runden, spiel.fragenzeit, spiel.rundenzeit, (case when spiel.dealer=NULL then "firstanswer" else spiel.dealer end) as dealingrule from spiel where spiel.id=?');
         $stmt->execute([$anzuzeigendesSpielID]);
         $spiel=$stmt->fetchall()[0];
         $stmt= $conn->prepare('select spieler.name, spieler.id, teilnahme.akzeptiert from spieler, teilnahme where spieler.id=teilnahme.spieler and teilnahme.spiel=? order by spieler.id;');
@@ -263,7 +263,7 @@ function getGame (){
 		"" =>"/schema/game",
 		'players' =>$spieler,
 		'rounds' => $runden,
-		'turns' => $spiel['runden'],
+		'turns' => $spiel['fragen_pro_runde'],
 		'timelimit' => $spiel['fragenzeit'],
 		'roundlimit' => $spiel['rundenzeit'],
 		'questions' => $fragen,

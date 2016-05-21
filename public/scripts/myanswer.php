@@ -36,14 +36,14 @@ $answerIndices = skyrimShuffle("$gid;$player:".$question['id'], 4, [0, 1, 2, 3])
 
 $answer = $answerIndices[$scrambledAnswer];
 
+error_log("$scrambledAnswer -> ".implode(',', $answerIndices)." -> $answer");
+
 $saveAnswer = $conn->prepare("UPDATE antwort SET antwort = :ans WHERE spieler = :pid AND spiel = :gid AND fragennr = :qid AND antwort IS NULL");
 
-$attempt = 0;
 if(!$saveAnswer->execute(['ans' => $answer, 'pid' => $pid, 'gid' => $gid, 'qid' => $qid])) {
 	http_response_code(500);
 	die('Datenbankfehler');
 }
-error_log($saveAnswer->rowCount()."rows");
 if ($saveAnswer->rowCount() !== 1) {
 	http_response_code(400);
 	die('Es wurde schon eine Antwort gespeichert');
@@ -52,7 +52,7 @@ if ($saveAnswer->rowCount() !== 1) {
 $conn->commit();
 
 $scrambledCorrectAnswer = 0;
-foreach ($answerIndices as $idx) {if($idx === 0) {$scrambledCorrectAnswer = $idx;break;}}
+foreach ($answerIndices as $idx) {if($answerIndices[$idx] === 0) {$scrambledCorrectAnswer = $idx;break;}}
 
 header('Content-Type: application/json');
 echo json_encode(['' => '/schema/correctanswer', 'answer' => $scrambledCorrectAnswer]);
