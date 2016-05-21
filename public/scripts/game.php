@@ -229,9 +229,12 @@ ORDER BY spiel_frage.fragennr, teilnahme.spieler");
 		foreach ($RueckgabeWert as $value) {
 			if ($value['fragennr'] === $fragenID) {
 				if($value['antwort']==="" or $value['antwort']===null ){
-					$tmp and array_push($tmp, $value['antwort']);
+					//$tmp and
+					array_push($tmp, $value['antwort']);
 				} else {
-					$tmp and array_push($tmp, (int)$value['antwort']);
+                                       // echo "wert".(int) $value['antwort'];
+					//FIXME $tmp and löste irgendeinproblem verursacht aber ein anders
+					array_push($tmp, (int)$value['antwort']);
 				}
 				if($value['status']===null){
 					$tmp=null;
