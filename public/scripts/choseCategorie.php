@@ -1,6 +1,6 @@
 <?php
 	$inputJSON = file_get_contents('php://input');
-    $input= json_decode( $inputJSON, TRUE ); //convert JSON into array
+	$input= json_decode( $inputJSON, TRUE ); //convert JSON into array
 	if ($input[''] !== '/schema/deal') {
 		http_response_code(400);
 		die('Falsches Datenformat');
@@ -18,15 +18,15 @@
 	}
 	$id=array_shift($stmt->fetchAll(PDO::FETCH_ASSOC))['id'];
 	if (substr($input['category_'], 0, 12) !== '/categories/') {
-			http_response_code(400);
-			die('Ungültiger Spielerverweis');
-		}
-    $categorie = (int) substr($input['category_'], 12);
+		http_response_code(400);
+		die('Ungültiger Kategorieverweis');
+	}
+	$categorie = (int) substr($input['category_'], 12);
 	$stmt=$conn->prepare("SELECT rundennr FROM runde WHERE spiel=? ORDER BY rundennr DESC LIMIT 1");
 	if(!$stmt->execute([$anzuzeigendesSpielID])){
 		var_dump($stmt->errorInfo());
-        die();
-	}	
+		die();
+	}
 	$round=array_shift($stmt->fetchAll(PDO::FETCH_ASSOC))['rundennr'];
     $stmt=$conn->prepare("UPDATE runde SET kategorie=:kategorie WHERE spiel=:spiel AND dealer=:spieler AND rundennr=:rundennr");
 	if(!$stmt->execute(['kategorie' => $categorie, 'spiel' => $anzuzeigendesSpielID, 'spieler' => $id, 'rundennr' => $round])){
@@ -44,6 +44,7 @@
 		var_dump($stmt->errorInfo());
         die();
 	}
+	// TODO: don't fetch all questions into memory
 	$questions=$stmt->fetchAll(PDO::FETCH_ASSOC);
 	if(count($questions)<$questionCount){
 		http_response_code(500);

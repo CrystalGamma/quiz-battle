@@ -35,6 +35,28 @@
 				}
 			}
 		}
-		
+		for (let $row of Array.from($main.querySelectorAll('tbody >tr'))) {
+			const $dealer = $row.querySelector('a.dealer');
+			if (!$dealer) {continue}
+			$main.appendChild(buildDom({'':'.dialog', c:["Wähle Fragenkategorie für die nächste Runde:", ...JSON.parse($dealer.dataset.candidates).map(cat => ({'':'a.candidate', href:cat[''], c:cat['name']}))]}));
+			$main.addEventListener('click', ev => {
+				if (!ev.target.classList.contains('candidate')) {return}
+				ev.preventDefault();
+				const tryChoose = attempt => makeXHR('POST', '', {'Content-Type':'application/json', Accept:'application/json', Authorization: login.token}, xhr => {
+					if (xhr.status >= 200 && xhr.status < 300) {
+						location.reload();
+					} else {
+						const retry = xhr.getResponseHeader('Retry-After')|0;
+						if (attempt < 3 && retry) {
+							setTimeout(tryChoose.bind(attempt+1), retry*1000);
+						} else {
+							alert(`Kategoriewahl konnte nicht übernommen werden: ${xhr.responseText}`);
+						}
+					}
+				}).send(JSON.stringify({'':'/schema/deal', 'category_':ev.target.pathname}));
+				tryChoose(0);
+			});
+			break;
+		}
 	});
 })();

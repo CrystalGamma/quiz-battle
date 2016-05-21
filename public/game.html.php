@@ -16,13 +16,14 @@ echo htmlspecialchars(implode(', ', $othernames));
 } ?></thead>
 <tbody><?php foreach ($array['rounds'] as $round) {
 	?><tr><th><?php
-	if ($round !== NULL && $round['category_'] === NULL) {
-		?><a class=dealer href=<?=$round['dealer']?>>Spieler wählt die Kategorie</a><?php
+	if ($round !== NULL && $round['category'] === NULL) {
+		?><a class="dealer player" href="<?=$round['dealer']?>" data-candidates="<?=htmlspecialchars(json_encode($round['candidates']))?>">Spieler</a> wählt die Kategorie<?php
 	} else if ($round !== NULL) {
-		echo htmlspecialchars($round['category_']);
+		echo htmlspecialchars($round['category']['name']);
 	}
 }?>
 </tbody>
+</table>
 </main>
 <script src=/scripts/builddom></script>
 <script src=/scripts/makexhr></script>

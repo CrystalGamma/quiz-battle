@@ -68,6 +68,7 @@ if ($request === 'GET') {
 		die('Zum Annehmen oder Ablehnen von Spielen muss ein gültiger Authentifikationstoken vorliegen');
 	}
 	if ($input['accept'] === true) {
+		// FIXME: check if player accepted already
 		$stmt = $conn->prepare('UPDATE teilnahme t, spieler s SET t.akzeptiert=1 WHERE t.spieler=s.id AND spiel=:spiel AND s.name = :spieler');
 		if (!$stmt->execute(['spiel' => $anzuzeigendesSpielID, 'spieler' => $username])) {
 			http_response_code(500);
@@ -75,6 +76,11 @@ if ($request === 'GET') {
 			die();
 		}
 		// FIXME: collect bets from players
+		$createFirstRound = $conn->prepare('INSERT INTO runde(spiel, rundennr, dealer, kategorie, start) SELECT :spiel, 0, id, NULL, now() FROM spieler WHERE name = :spieler');
+		if (!$stmt->execute(['spiel' => $anzuzeigendesSpielID, 'spieler' => $user])) {
+			http_response_code(500);
+			die('Konnte nicht erste Runde starten');
+		}
 	} else {
 		// TODO: should games only be deleted if there are less than 2 participants?
 		// FIXME: cascading deletes
@@ -99,6 +105,7 @@ if ($request === 'GET') {
 		die();
 	}
 }else if($_SERVER['REQUEST_METHOD']=='POST'){
+	// FIXME: rename to proper spelling ('chooseCategory')
     require_once(__DIR__."/choseCategorie.php");
 }else{
     http_response_code(405);
@@ -110,7 +117,9 @@ function getGame (){
         global $conn;
         global $anzuzeigendesSpielID;
         global $nutzername;
-        $contentType=ContentNegotation::getContent($_SERVER['HTTP_ACCEPT'],"text/html,application/json;q=0.9");
+        $stmt= $conn->prepare('select spiel.runden, spiel.fragenzeit, spiel.rundenzeit, (case when spiel.dealer=NULL then "firstanswer" else spiel.dealer end) as dealingrule from spiel where spiel.id=?');
+        $stmt->execute([$anzuzeigendesSpielID]);
+        $spiel=$stmt->fetchall()[0];
         $stmt= $conn->prepare('select spieler.name, spieler.id, teilnahme.akzeptiert from spieler, teilnahme where spieler.id=teilnahme.spieler and teilnahme.spiel=? order by spieler.id;');
         $stmt->execute([$anzuzeigendesSpielID]);
         $spieler=array();
@@ -123,27 +132,33 @@ function getGame (){
                 ]
             );
         };
-        $stmt= $conn->prepare('select runde.rundennr, runde.kategorie as kategorieID, kategorie.name as kategorieName, spieler.id as dealerID, spieler.name as dealerName, runde.start from runde, kategorie, spieler where runde.dealer=spieler.id and runde.kategorie=kategorie.id and runde.spiel=? group by runde.rundennr order by runde.rundennr;');
+        $stmt= $conn->prepare('select runde.rundennr, runde.kategorie as kategorieID, kategorie.name as kategorieName, spieler.id as dealerID, spieler.name as dealerName, runde.start from spieler, runde left join kategorie on (runde.kategorie=kategorie.id) where runde.dealer=spieler.id and runde.spiel=? group by runde.rundennr order by runde.rundennr;');
         $stmt->execute([$anzuzeigendesSpielID]);
-        $runden=array();
-        foreach ($stmt->fetchall() as $value){
-            array_push($runden,
-                [
-                "category_"=>[
-                ""=>"/categories/".$value['kategorieID'],
-                "name" =>$value['kategorieName']
-                ],
-            "dealer"=> [
-                        ""=> "/players/".$value['dealerID'],
-                        "name"=>$value['dealerName']
-                        ],
-            "started"=> date(DATE_ISO8601, strtotime($value['start']))
-                ]
-            );
-        };
-        $stmt= $conn->prepare('select spiel.runden, spiel.fragenzeit, spiel.rundenzeit, (case when spiel.dealer=NULL then "firstanswer" else spiel.dealer end) as dealingrule from spiel where spiel.id=?');
-        $stmt->execute([$anzuzeigendesSpielID]);
-        $spiel=$stmt->fetchall();
+        $runden = [];
+	foreach ($stmt->fetchall() as $value){
+		$runde = [
+			'category' => $value['kategorieID'] ? [
+				'' => '/categories/'.$value['kategorieID'],
+				'name' => $value['kategorieName']
+			] : null,
+			"dealer" => [
+				'' => "/players/".$value['dealerID'],
+				'name' => $value['dealerName']
+			],
+			'started' => date(DATE_ISO8601, strtotime($value['start']))
+		];
+		if (!$value['kategorieID']) {
+			// FIXME: make proper pseudorandom selection
+			$categorySelection = $conn->prepare('SELECT id, name FROM kategorie');
+			$categorySelection->execute();
+			$candidates = [];
+			foreach ($categorySelection->fetchAll() as $cat) {array_push($candidates, ['' => '/categories/'.$cat['id'], 'name' => $cat['name']]);}
+			$runde['candidates'] = $candidates;
+		}
+		array_push($runden, $runde);
+	};
+	for ($restrunden = $spiel['runden'] - count($runden);$restrunden > 0;$restrunden -= 1) {array_push($runden, null);}
+        // FIXME: auto-close round and start next one if time elapsed
         $stmt= $conn->prepare('select spiel_frage.fragennr,teilnahme.spieler, (case when antwort.startzeit+spiel.fragenzeit < now() then "" else antwort.antwort end) as antwort, (case when antwort.startzeit+spiel.fragenzeit < now() then "abgel" else antwort.antwort end) as status from (spiel, teilnahme, spiel_frage) left join antwort on (spiel_frage.fragennr=antwort.fragennr and antwort.spiel=spiel_frage.spiel and teilnahme.spieler=antwort.spieler) where spiel_frage.spiel=? and teilnahme.spiel=spiel_frage.spiel and teilnahme.spiel=spiel.id order by spiel_frage.fragennr, teilnahme.spieler;
 
 ');
@@ -205,24 +220,19 @@ function getGame (){
                 ]);
             }
         }
-        $anzVorhandenerRunden= count($runden);
-        if($anzVorhandenerRunden<$RueckgabeDaten[0]['AnzRunden']){
-            for($k=0; $k<($RueckgabeDaten[0]['AnzRunden']-$anzVorhandenerRunden);$k++) {
-            array_push($runden,null);    
-            }
-        }
 	$array=[
 		"" =>"/schema/game",
-		"players" =>$spieler,
-		"rounds" => $runden,
-		"turns" =>$spiel[0]['runden'],
-		"timelimit"=>$spiel[0]['fragenzeit'],
-		"roundlimit"=>$spiel[0]['rundenzeit'],
-		"questions"=>$fragen,
-		"dealingrule"=>"/dealingrule/".$spiel[0]['dealingrule']
+		'players' =>$spieler,
+		'rounds' => $runden,
+		'turns' => $spiel['runden'],
+		'timelimit' => $spiel['fragenzeit'],
+		'roundlimit' => $spiel['rundenzeit'],
+		'questions' => $fragen,
+		'dealingrule' => '/dealingrule/'.$spiel[0]['dealingrule']
 	];
         // FIXME: no longer varies over Authorization if game is over
         header('Vary: Accept, Authorization');
+        $contentType=ContentNegotation::getContent($_SERVER['HTTP_ACCEPT'],"text/html,application/json;q=0.9");
 	if($contentType === "application/json"){
 		header('Content-Type: application/json');
 		echo json_encode($array);
