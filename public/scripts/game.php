@@ -215,9 +215,11 @@ function getGame (){
 	};
 	for ($restrunden = $spiel['runden'] - count($runden);$restrunden > 0;$restrunden -= 1) {array_push($runden, null);}
         // FIXME: auto-close round and start next one if time elapsed
-        $stmt= $conn->prepare('select spiel_frage.fragennr,teilnahme.spieler, (case when antwort.startzeit+spiel.fragenzeit < now() then "" else antwort.antwort end) as antwort, (case when antwort.startzeit+spiel.fragenzeit < now() then "abgel" else antwort.antwort end) as status from (spiel, teilnahme, spiel_frage) left join antwort on (spiel_frage.fragennr=antwort.fragennr and antwort.spiel=spiel_frage.spiel and teilnahme.spieler=antwort.spieler) where spiel_frage.spiel=? and teilnahme.spiel=spiel_frage.spiel and teilnahme.spiel=spiel.id order by spiel_frage.fragennr, teilnahme.spieler;
-
-');
+        $stmt= $conn->prepare("
+SELECT spiel_frage.fragennr,teilnahme.spieler, (case when antwort.startzeit+spiel.fragenzeit < now() and antwort.antwort IS NULL then '' else antwort.antwort end) as antwort, (case when antwort.startzeit+spiel.fragenzeit < now() then 'abgel' else antwort.antwort end) as status
+FROM (spiel, teilnahme, spiel_frage) LEFT JOIN antwort on (spiel_frage.fragennr=antwort.fragennr and antwort.spiel=spiel_frage.spiel and teilnahme.spieler=antwort.spieler)
+WHERE spiel_frage.spiel=? and teilnahme.spiel=spiel_frage.spiel and teilnahme.spiel=spiel.id
+ORDER BY spiel_frage.fragennr, teilnahme.spieler");
         $stmt->execute([$anzuzeigendesSpielID]);
         $RueckgabeWert=$stmt->fetchall();
         $fragen = [];
