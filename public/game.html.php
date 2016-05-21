@@ -17,7 +17,7 @@ echo htmlspecialchars(implode(', ', $othernames));
 <tbody><?php foreach ($array['rounds'] as $round) {
 	?><tr><th><?php
 	if ($round !== NULL && $round['category'] === NULL) {
-		?><a class="dealer player" href="<?=$round['dealer']?>" data-candidates="<?=htmlspecialchars(json_encode($round['candidates']))?>">Spieler</a> wählt die Kategorie<?php
+		?><a class="dealer player" href="<?=$round['dealer']['']?>" data-candidates="<?=htmlspecialchars(json_encode($round['candidates']))?>">Spieler</a> wählt die Kategorie<?php
 	} else if ($round !== NULL) {
 		echo htmlspecialchars($round['category']['name']);
 	}

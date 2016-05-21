@@ -77,7 +77,7 @@ if ($request === 'GET') {
 		}
 		// FIXME: collect bets from players
 		$createFirstRound = $conn->prepare('INSERT INTO runde(spiel, rundennr, dealer, kategorie, start) SELECT :spiel, 0, id, NULL, now() FROM spieler WHERE name = :spieler');
-		if (!$stmt->execute(['spiel' => $anzuzeigendesSpielID, 'spieler' => $user])) {
+		if (!$createFirstRound->execute(['spiel' => $anzuzeigendesSpielID, 'spieler' => $username])) {
 			http_response_code(500);
 			die('Konnte nicht erste Runde starten');
 		}
