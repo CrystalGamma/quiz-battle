@@ -24,7 +24,15 @@ if (isset($requestBody)) {
         http_response_code(400);
         die('Username und Passwort müssen ein String sein.');
     }
-    // TODO: do checks on contents of name and password
+    
+    // do checks on contents of name and password
+    $illegal_characters = [':','/'];
+    foreach ($illegal_characters as $illegal_character) {
+        if (strpos($requestBody['name'], $illegal_character) !== false) {
+            http_response_code(400);
+            die("Ungültiges Zeichen '$illegal_character'.");
+        }
+    }
     
     $stmt = $conn->prepare('SELECT id FROM spieler WHERE name = ?');
     $stmt->execute([$requestBody['name']]);
