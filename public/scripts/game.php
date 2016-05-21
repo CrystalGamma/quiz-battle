@@ -105,8 +105,7 @@ if ($request === 'GET') {
 		die();
 	}
 }else if($_SERVER['REQUEST_METHOD']=='POST'){
-	// FIXME: rename to proper spelling ('chooseCategory')
-    require_once(__DIR__."/choseCategorie.php");
+    require_once(__DIR__."/chooseCategory.php");
 }else{
     http_response_code(405);
     die();
