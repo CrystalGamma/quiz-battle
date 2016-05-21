@@ -20,11 +20,11 @@ $stmt = array(
 );
 
 for ($i = 1; $i <= $_GET['seed'] * 2; $i++) {
-    $playerid = $anzahlspieler + $i;
+    $playerid = $anzahlspieler + 1;
     spieler_erstellen($playerid);
     if ($conn->commit()) {
         $anzahlspieler++;
-        echo "Spieler $playerid erstellt.";
+        echo "Spieler $playerid erstellt. ";
         flush();
         $conn->beginTransaction();
     }
@@ -33,7 +33,7 @@ for ($i = 1; $i <= $_GET['seed'] * 2; $i++) {
 for ($i = 1; $i <= $_GET['seed']; $i++) {
     spiel_erstellen();
     if ($conn->commit()) {
-        echo "Spiel $i erstellt.";
+        echo "Spiel $i erstellt. ";
         flush();
         $conn->beginTransaction();
     }
@@ -50,7 +50,7 @@ function spieler_erstellen($id) {
 }
 
 function spiel_erstellen() {
-    global $anzahlspieler, $fragen, $kategorien, $stmt;
+    global $conn, $anzahlspieler, $fragen, $kategorien, $stmt;
     
     $runden = rand(1, 3);
     $fragen_pro_runde =  min(rand(1, 6), ($fragen / $runden));
