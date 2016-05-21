@@ -3,7 +3,7 @@ const renderGame = (login, game) => {
 	game.players.forEach((player, idx) => {if (player[''] === (login.player_||login.player[''])) {selfPlayer = idx}});
 	if (selfPlayer === null) {return []}
 	const scores = game.players.map(() => 0);
-	game.questions.forEach(question => question && question.answers.forEach((status, player) => scores[player]+=0|(status === 0)));
+	game.questions.forEach(question => question && question.answers && question.answers.forEach((status, player) => scores[player]+=0|(status === 0)));
 	let bestPlayer = null, bestScore = -1;
 	scores.forEach((score, idx) => {if (score > bestScore && idx != selfPlayer) {bestPlayer = idx;bestScore=score}});
 	const title = game.players.length > 2
@@ -19,7 +19,7 @@ const renderGame = (login, game) => {
 		x === null ? '-'
 		: 'b'
 	);
-	return [...title, score, {'':'ul.game-report', c:game.questions.map(({answers}) => ({'':'li.'+lookup(answers[selfPlayer])+lookup(answers[bestPlayer])}))}];
+	return [...title, score, {'':'ul.game-report', c:game.questions.filter(x => !!x.answers).map(({answers}) => ({'':'li.'+lookup(answers[selfPlayer])+lookup(answers[bestPlayer])}))}];
 };
 const showGame = login => url => {
 	const $game = buildDom({'':'a.game', href: url});
