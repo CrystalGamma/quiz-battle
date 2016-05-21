@@ -14,7 +14,6 @@ function hashPick($seed, $sizes) {
 			$numbits += 1;
 		}
 		$mask = (1 << $numbits) - 1;
-		echo("Mask $mask\n");
 		flush();
 		do {
 			// TODO: there may be a better seedable CSPRNG for PHP … I don't feel comfortable running our own crypto like this
@@ -30,7 +29,6 @@ function hashPick($seed, $sizes) {
 			$val = $shift & $mask;
 			$shift >>= $numbits;
 			$remainingInShift -= $numbits;
-			echo("$size $val\n");
 		} while ($val >= $size);
 		array_push($res, $val);
 	}
