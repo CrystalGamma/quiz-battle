@@ -67,15 +67,73 @@ if ($request === 'GET') {
 		header('WWW-Authenticate: Token');
 		die('Zum Annehmen oder Ablehnen von Spielen muss ein gültiger Authentifikationstoken vorliegen');
 	}
+	$stmt=$conn->prepare('SELECT id FROM spieler WHERE name= ?');
+	if(!$stmt->execute([$username])){
+		var_dump($stmt->errorInfo());
+        die();
+	}
+	$id=array_shift($stmt->fetchAll(PDO::FETCH_ASSOC))['id'];
 	if ($input['accept'] === true) {
 		// FIXME: check if player accepted already
-		$stmt = $conn->prepare('UPDATE teilnahme t, spieler s SET t.akzeptiert=1 WHERE t.spieler=s.id AND spiel=:spiel AND s.name = :spieler');
-		if (!$stmt->execute(['spiel' => $anzuzeigendesSpielID, 'spieler' => $username])) {
+		$stmt= $conn->prepare('SELECT akzeptiert FROM teilnahme WHERE spiel=:spiel AND spieler=:spieler');
+		if(!$stmt->execute(['spiel' => $anzuzeigendesSpielID, 'spieler' => $id])){
 			http_response_code(500);
 			var_dump($stmt->errorInfo());
 			die();
 		}
-		// FIXME: collect bets from players
+		if($stmt->rowCount()!==1){
+			http_response_code(400);
+			die('Spieler ist zu diesem Spiel nicht eingeladen');
+		}
+		$teilnahme=$stmt->fetch();
+		if($teilnahme['akzeptiert']==1){
+			http_response_code(400);
+			die('Der Spieler hat bereits zugesagt');
+		}
+		$stmt = $conn->prepare('UPDATE teilnahme SET akzeptiert=1 WHERE spieler=:spieler AND spiel=:spiel');
+		if (!$stmt->execute(['spiel' => $anzuzeigendesSpielID, 'spieler' => $id])) {
+			http_response_code(500);
+			var_dump($stmt->errorInfo());
+			die();
+		}
+		$stmt=$conn->prepare('SELECT einsatz FROM spiel WHERE id=?');
+		if (!$stmt->execute([$anzuzeigendesSpielID])) {
+			http_response_code(500);
+			var_dump($stmt->errorInfo());
+			die();
+		}
+		$einsatz=$stmt->fetch()['einsatz'];
+		$stmt=$conn->prepare('SELECT spieler FROM teilnahme WHERE spiel=?');
+		if (!$stmt->execute([$anzuzeigendesSpielID])) {
+			http_response_code(500);
+			var_dump($stmt->errorInfo());
+			die();
+		}
+		$players=$stmt->fetchAll(PDO::FETCH_COLUMN);
+		print_r($players);
+		$update=$conn->prepare('UPDATE spieler SET punkte=:punkte WHERE id=:player');
+		$select=$conn->prepare('SELECT punkte From spieler WHERE id=?');
+		foreach($players as $player){
+			if (!$select->execute([$player])) {
+				http_response_code(500);
+				var_dump($stmt->errorInfo());
+				die();
+			}
+			$punkte=$select->fetch(PDO::FETCH_COLUMN);
+			if($punkte>$einsatz){
+				if (!$update->execute(['punkte' => $punkte-$einsatz, 'player' => $player])) {
+					http_response_code(500);
+					var_dump($stmt->errorInfo());
+					die();
+				}
+			}else{
+				if (!$update->execute(['punkte' => 0, 'player' => $player])) {
+					http_response_code(500);
+					var_dump($stmt->errorInfo());
+					die();
+				}
+			}
+		}
 		$createFirstRound = $conn->prepare('INSERT INTO runde(spiel, rundennr, dealer, kategorie, start) SELECT :spiel, 0, id, NULL, now() FROM spieler WHERE name = :spieler');
 		if (!$createFirstRound->execute(['spiel' => $anzuzeigendesSpielID, 'spieler' => $username])) {
 			http_response_code(500);
