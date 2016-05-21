@@ -3,7 +3,11 @@
 		const loadMore = () => makeXHR('GET', $link.href, {Accept: 'application/json', Authorization: login.token}, xhr => {
 			if (xhr.status < 200 || xhr.status >= 300 || !xhr.getResponseHeader('Content-Type').startsWith('application/json')) {return}
 			const json = JSON.parse(xhr.responseText);
-			json.games_.map(showGame(login)).forEach(el => $list.appendChild(el));
+			json.games_.forEach((gameUrl, index) => makeXHR('GET', gameUrl, {Accept:'application/json', Authorization: login.token}, xhr => {
+				if (xhr.status < 200 || xhr.status >=300 || !xhr.getResponseHeader('Content-Type').startsWith('application/json')) {return}
+				const json = JSON.parse(xhr.responseText);
+				$list.appendChild(buildDom({'':'li', style:'order:'+index, c:{'':'a.game', href:gameUrl, c:renderGame(location.pathname, json)}}));
+			}).send());
 			if (json.next_) {
 				$link.href = json.next_;	// TODO: resolve relative URIs
 			} else {

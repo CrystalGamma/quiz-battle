@@ -30,7 +30,7 @@
 		json.activegames_.forEach((gameUrl, index) => makeXHR('GET', gameUrl, {Accept:'application/json', Authorization: login.token}, xhr => {
 			if (xhr.status < 200 || xhr.status >=300 || !xhr.getResponseHeader('Content-Type').startsWith('application/json')) {return}
 			const json = JSON.parse(xhr.responseText);
-			const render = {'':'li', style:'order:'+index, c:{'':'a.game', href:gameUrl, c:renderGame(login, json)}};
+			const render = {'':'li', style:'order:'+index, c:{'':'a.game', href:gameUrl, c:renderGame(login.player_||login.player[''], json)}};
 			if (json.players.some(player => player[''] === (login.player_||login.player['']) && !player.accepted)) {
 				addChall(render);
 			} else if (json.questions.some(q => q.answers === null) || json.rounds.some(r => r && r.dealer === (login.player_||login.player['']))) {
