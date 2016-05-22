@@ -4,8 +4,8 @@ error_reporting(E_ALL);
 $path = __DIR__.'/../../sql/';
 $files = array(
     'Datenbankerstellung' => 'database.sql',
-    'Initialbefüllung' => 'initial.sql',
-    'Fragenkatalog erstellen' => 'questions.sql'
+    'Fragenkatalog erstellen' => 'questions.sql',
+    'Initialbefüllung' => 'initial.sql'
 );
 
 foreach ($files as $file) {
