@@ -64,7 +64,7 @@ foreach ($answerIndices as $idx) {if($answerIndices[$idx] === 0) {$scrambledCorr
 $checkForNextQuestion = $conn->prepare("SELECT fragennr FROM spiel_frage sf WHERE spiel=:gid AND NOT EXISTS(SELECT * FROM antwort a WHERE a.fragennr=sf.fragennr AND a.spiel=sf.spiel AND spieler=:pid) ORDER BY fragennr LIMIT 1");
 $checkForNextQuestion->execute(['gid' => $gid, 'pid' => $pid]);
 $nextQuestion = $checkForNextQuestion->fetchall(PDO::FETCH_COLUMN, 0);
-http_response_code($zeitUeberschreitung ? 403 : 201)
+http_response_code($zeitUeberschreitung ? 403 : 201);
 if (count($nextQuestion) > 0) {
 	header("Location: /games/$gid/".$nextQuestion[0]);
 }
