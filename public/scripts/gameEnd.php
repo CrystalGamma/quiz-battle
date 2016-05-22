@@ -11,8 +11,10 @@ AND runde.start+spiel.rundenzeit < now()
 AND spiel.status != 'beendet'
 AND NOT EXISTS(SELECT * FROM antwort WHERE spiel=spiel.id AND antwort.spieler=teilnahme.spieler AND antwort.fragennr=spiel_frage.fragennr)");
 	$elapsedRounds->execute(['gid' => $gid]);
+	error_log($elapsedRounds->rowCount()." answers inserted");
 	endGame($conn, $gid);
 	$conn->commit();
+	$conn->beginTransaction();
 }
 
 function endGame($conn, $gid) {
@@ -23,7 +25,6 @@ SELECT spiel.status = 'beendet' as done, COUNT(antwort.startzeit) as actual, spi
 FROM spiel, antwort WHERE spiel.id=:gid AND antwort.spiel=spiel.id");
 	$countAnswers->execute(['gid' => $gid]);
 	$counts = $countAnswers->fetch();
-	error_log(implode(',', $counts));
 	if (!$counts['done'] && $counts['actual'] === $counts['target']) {
 		$fetchWinner = $conn->prepare("SELECT spieler FROM antwort WHERE antwort=0 AND spiel=:gid GROUP BY spieler HAVING COUNT(antwort) = (SELECT COUNT(antwort) FROM antwort WHERE spiel=:gid AND antwort=0 GROUP BY spieler LIMIT 1)");
 		$fetchWinner->execute(['gid' => $gid]);

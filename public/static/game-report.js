@@ -1,6 +1,6 @@
-const renderGame = (login, game) => {
+const renderGame = (refPlayer, game) => {
 	let selfPlayer = null;
-	game.players.forEach((player, idx) => {if (player[''] === (login.player_||login.player[''])) {selfPlayer = idx}});
+	game.players.forEach((player, idx) => {if (player[''] === refPlayer) {selfPlayer = idx}});
 	if (selfPlayer === null) {return []}
 	const scores = game.players.map(() => 0);
 	game.questions.forEach(question => question && question.answers && question.answers.forEach((status, player) => scores[player]+=0|(status === 0)));
@@ -20,20 +20,4 @@ const renderGame = (login, game) => {
 		: 'b'
 	);
 	return [...title, score, {'':'ul.game-report', c:game.questions.filter(x => !!x.answers).map(({answers}) => ({'':'li.'+lookup(answers[selfPlayer])+lookup(answers[bestPlayer])}))}];
-};
-const showGame = login => url => {
-	const $game = buildDom({'':'a.game', href: url});
-	makeXHR('GET', url, {Accept: 'application/json'}, xhr => {
-		if (xhr.status < 200 || xhr.status >= 300) {return}
-		const ct = xhr.getResponseHeader('Content-Type');
-		if (ct !== 'application/json') {console.error(`Wrong content type: ${ct}`);return}
-		const game = JSON.parse(xhr.responseText);
-		const render = renderGame(login, game);
-		if (!render) {
-			$game.parentNode.removeChild($game);
-		} else {
-			buildDom(render).forEach(x => $game.appendChild(x));
-		}
-	}).send();
-	return buildDom({'':'li', c:$game});
 };
