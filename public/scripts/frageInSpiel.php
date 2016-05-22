@@ -49,7 +49,17 @@ function frageInSpiel(){
         global $anzuzeigendeFragennr;
 
     $contentType=ContentNegotation::getContent($_SERVER['HTTP_ACCEPT'],"text/html,application/json;q=0.9");
-
+$nutzername=getAuthorizationUser();
+            $listVisibility = $conn->prepare("
+SELECT (( SELECT COUNT(spieler) FROM antwort a WHERE sf.spiel=a.spiel and sf.fragennr=a.fragennr and (antwort is not null or timestampdiff(second, startzeit, now()) > fragenzeit) ) = (SELECT COUNT(spieler) FROM teilnahme t WHERE t.spiel=sf.spiel)) OR EXISTS( SELECT * FROM antwort a, spieler s WHERE a.spieler=s.id AND s.name= :player AND a.spiel=sf.spiel AND a.fragennr=sf.fragennr AND (a.antwort IS NOT NULL OR TIMESTAMPDIFF(SECOND, startzeit, now()) > fragenzeit) ) FROM spiel_frage sf, spiel WHERE spiel=id and id= :gid and fragennr= :fid ORDER BY fragennr;
+");
+	$listVisibility->execute(['gid' => $anzuzeigendesSpielID, 'player' => $nutzername === false ? '' : $nutzername, 'fid' => $anzuzeigendeFragennr]);
+	$visibility = (int) $listVisibility->fetchcolumn();
+    if($visibility===0){
+        http_response_code(403);
+        die("Sie haben keinen Zugriff auf diese Werte.");
+    }
+    
     $stmt= $conn->prepare('select spiel_frage.frage as fragenID, frage.frage, frage.bild, frage.erklaerung, frage.richtig, frage.falsch1, frage.falsch2, frage.falsch3, teilnahme.spieler, (case when antwort is null and startzeit is null then null else     (case when antwort is not null and startzeit is not null then antwort else         (case when antwort is null and startzeit is not null and timestampdiff(second, startzeit, now())>spiel.fragenzeit then "x" else null end )     end)  end) as antwort  from (frage, spiel_frage, spiel, teilnahme) left join antwort on (spiel_frage.fragennr=antwort.fragennr and spiel_frage.spiel=antwort.spiel AND teilnahme.spieler = antwort.spieler) where spiel.id=spiel_frage.spiel and teilnahme.spiel = :gid AND spiel_frage.frage=frage.id AND spiel_frage.spiel=:gid AND spiel_frage.fragennr= :qid;');
     $stmt->execute(['gid' => $anzuzeigendesSpielID, 'qid' => $anzuzeigendeFragennr]);
     $RueckgabeDaten=$stmt->fetchall();
@@ -84,6 +94,7 @@ function frageInSpiel(){
         "answers"=>$antwort
     ];
     $json= json_encode($array);
+     header('Vary: Accept, Authorization');
     if($contentType==="application/json"){
         header('Content-Type: application/json; charset=UTF-8');
         echo $json;
