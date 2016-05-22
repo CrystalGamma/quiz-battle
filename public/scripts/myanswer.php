@@ -30,7 +30,6 @@ $fetchQuestion = $conn->prepare("SELECT sf.frage as id, a.antwort as antwort, s.
 $fetchQuestion->execute(['player' => $player, 'gid' => $gid, 'qid' => $qid]);
 $question = $fetchQuestion->fetch();
 $pid = $question['pid'];
-error_log("$pid");
 
 $answerIndices = skyrimShuffle("$gid;$player:".$question['id'], 4, [0, 1, 2, 3]);
 
@@ -43,7 +42,6 @@ $stmt= $conn->prepare('select timestampdiff(second, startzeit, now())>spiel.frag
 //1= ist abgelaufen, 0 = noch zeit
 $stmt->execute(['pid' => $pid,'gid' => $gid,'qid' => $qid]);
 $zeitUeberschreitung=(int) $stmt->fetchcolumn();
-error_log("ergenis".$zeitUeberschreitung);
 if($zeitUeberschreitung === 0){
     $saveAnswer = $conn->prepare("UPDATE antwort SET antwort = :ans WHERE spieler = :pid AND spiel = :gid AND fragennr = :qid AND antwort IS NULL");
 
