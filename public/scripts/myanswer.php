@@ -24,8 +24,6 @@ if ($player === false) {
 	header('WWW-Authenticate: Token');
 	die('Benötige korrektes Anmeldetoken');
 }
-
-// FIXME: check if we are within the time limit
 $fetchQuestion = $conn->prepare("SELECT sf.frage as id, a.antwort as antwort, s.id as pid FROM antwort a, spiel_frage sf, spieler s WHERE a.fragennr = :qid AND a.spieler = s.id AND s.name = :player AND a.spiel = :gid AND sf.spiel = :gid AND sf.fragennr = :qid");
 $fetchQuestion->execute(['player' => $player, 'gid' => $gid, 'qid' => $qid]);
 $question = $fetchQuestion->fetch();
@@ -55,8 +53,13 @@ if($zeitUeberschreitung === 0){
             die('Es wurde schon eine Antwort gespeichert');
     }
     // FIXME:retry?
-    $conn->commit();
 }
+$conn->commit();
+//Antwort ausgeben
+$stmt=$conn->prepare("select frage.erklaerung from frage, spiel_frage where frage.id=spiel_frage.frage and spiel_frage.spiel= :gid and spiel_frage.fragennr= :qid");
+$stmt->execute(['gid' => $gid, 'qid' => $qid]);
+$erklaerung= $stmt->fetchcolumn();
+
 $scrambledCorrectAnswer = 0;
 foreach ($answerIndices as $idx) {if($answerIndices[$idx] === 0) {$scrambledCorrectAnswer = $idx;break;}}
 
@@ -70,6 +73,7 @@ else if (count($nextQuestion) > 0) {
         http_response_code(201);
 	header("Location: /games/$gid/".$nextQuestion[0]);
 }
-
+require_once(__DIR__.'/gameEnd.php');
+cleargame($conn, $gid);
 header('Content-Type: application/json; charset=UTF-8');
-echo json_encode(['' => '/schema/correctanswer', 'answer' => $scrambledCorrectAnswer]);
+echo json_encode(['' => '/schema/correctanswer', 'answer' => $scrambledCorrectAnswer, 'explanation' => $erklaerung]);
