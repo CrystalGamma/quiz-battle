@@ -1,4 +1,16 @@
 <?php
+$username = getAuthorizationUser(); //Nachschauen welcher User eingeloggt ist
+if ($username === false) {
+	http_response_code(401);
+	header('WWW-Authenticate: Token');
+	die('Zum Annehmen oder Ablehnen von Spielen muss ein gültiger Authentifikationstoken vorliegen');
+}
+$stmt=$conn->prepare('SELECT id FROM spieler WHERE name= ?'); 
+if(!$stmt->execute([$username])){
+    handleError($stmt);
+}
+$id=$stmt->fetch(PDO::FETCH_COLUMN); //Die ID des eingeloggten Users ermitteln
+
 	$inputJSON = file_get_contents('php://input'); //auslesen JSON
 	$input= json_decode( $inputJSON, TRUE ); //konvertieren des JSON in ein Array
 	if ($input[''] !== '/schema/deal') { //Kontrolle ob das richtige Dateiformat angegeben wurde

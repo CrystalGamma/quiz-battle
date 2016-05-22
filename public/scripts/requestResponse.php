@@ -1,4 +1,16 @@
 <?php
+$username = getAuthorizationUser(); //Nachschauen welcher User eingeloggt ist
+if ($username === false) {
+	http_response_code(401);
+	header('WWW-Authenticate: Token');
+	die('Zum Annehmen oder Ablehnen von Spielen muss ein gültiger Authentifikationstoken vorliegen');
+}
+$stmt=$conn->prepare('SELECT id FROM spieler WHERE name= ?'); 
+if(!$stmt->execute([$username])){
+    handleError($stmt);
+}
+$id=$stmt->fetch(PDO::FETCH_COLUMN); //Die ID des eingeloggten Users ermitteln
+
 $inputJSON = file_get_contents('php://input'); //auslesen JSON
 $input = json_decode($inputJSON, TRUE); //konvertieren des JSON in ein Array
 if ($input[''] !== '/schema/response') { //Kontrolle ob das richtige Dateiformat angegeben wurde
@@ -45,7 +57,7 @@ if ($input['accept'] === true) {
             handleError($stmt);
         }
         $players=$stmt->fetchAll(PDO::FETCH_COLUMN);
-	$conn->prepare("UPDATE spieler, teilnahme SET punkte = (CASE WHEN punkte < :points THEN 0 ELSE punkte - :points) WHERE spieler=id AND spiel=:gid")->execute(['points'=>$einsatz/2/count($players), 'gid' => $anzuzeigendesSpielID]);
+	$conn->prepare("UPDATE spieler, teilnahme SET punkte = (CASE WHEN punkte < :points THEN 0 ELSE punkte - :points END) WHERE spieler=id AND spiel=:gid")->execute(['points'=>$einsatz/2/count($players), 'gid' => $anzuzeigendesSpielID]);
         $createFirstRound = $conn->prepare('INSERT INTO runde(spiel, rundennr, dealer, kategorie, start) SELECT :spiel, 0, id, NULL, now() FROM spieler WHERE name = :spieler');
         if (!$createFirstRound->execute(['spiel' => $anzuzeigendesSpielID, 'spieler' => $username])) { //Erstellen der ersten Runde
             http_response_code(500);

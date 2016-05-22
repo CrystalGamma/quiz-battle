@@ -53,18 +53,6 @@ if($row===false){
 $conn->rollback();
 cleanGame($conn, $anzuzeigendesSpielID);
 
-$username = getAuthorizationUser(); //Nachschauen welcher User eingeloggt ist
-if ($username === false) {
-	http_response_code(401);
-	header('WWW-Authenticate: Token');
-	die('Zum Annehmen oder Ablehnen von Spielen muss ein gültiger Authentifikationstoken vorliegen');
-}
-$stmt=$conn->prepare('SELECT id FROM spieler WHERE name= ?'); 
-if(!$stmt->execute([$username])){
-    handleError($stmt);
-}
-$id=$stmt->fetch(PDO::FETCH_COLUMN); //Die ID des eingeloggten Users ermitteln
-
 $request=$_SERVER['REQUEST_METHOD'];
 if ($request === 'GET') {
 	getGame($conn, $anzuzeigendesSpielID);
