@@ -1,0 +1,46 @@
+Nach dem Aufruf der Startseite mit der URL "localhost" haben sie verschiedene Möglichkeiten
+
+1. Sie können sich die Rangliste ansehen. Drücken Sie dafür auf den Button Rangliste(vgl Rangliste).
+
+2. Sie können einen Nutzer erstellen. Dafür geben Sie bitte einen Nutzernamen und ein Password in die Eingabefelder und setzen Sie den Hacken bei  "Neuen Account erstellen" bevor Sie die Enter-Taste betätigen oder auf anmelden drücken. Sofern sie einen bereits vergebenen Nutzernamen eingegeben haben erhalten Sie eine Fehlermeldung "Registration fehlgeschlagen: Username ist bereits vergeben."
+Bitte beachten Sie bei der Wahl Ihres Passwortes unsere Passwordregeln---TODO Die da wären
+
+3. Sie können sich mit Ihrem Nutzer anmelden. Geben Sie dafür bitte ihren Benutzernamen und Ihr Password in die zugehörigen Felder ein.
+Sofern sie sich bei Ihrem Nutzernamen bzw ihrem Passwort vertippen, erhalten Sie die Fehlermeldungen "Kein Account mit diesem Namen vorhanden" bzw. "Anmeldung fehlgeschlagen: Passwort ist inkorrekt"
+Bei erfolgreicher Anmeldung sehen Sie eine Übersicht(vgl. Startseite angemeldet)
+
+Startseite angemeldet
+Auf dieser Seite sehen sie eine Übersicht Ihrer Punkte und ihres Ranges und können verschiedene Aktionen durchführen.
+Mit einem Klick auf "Neues Spiel" nehmen Sie an einem Spiel mit einem anderen zufälligen Spieler teil. Sofern ein Slot frei ist steigen Sie direkt ins Spiel ein(vgl Spielstart). 
+Sofern noch kein Slot frei ist, bleiben Sie auf Ihrer Startseite. Sobald sich ein andere Spieler gefunden hat, finden Sie diesen unter dem Punkt "Warten auf".
+
+Unter der Box "herausforderungen von sehen" Sie eine Liste aller Herrausforderungen von anderen Spielern. Mit einem Klck die Einträge der Liste können Sie die Herrausforderungen annhemen oder ablehnen. Wenn Sie annehmen steigen Sie direkt in das Spiel ein(vgl Spielstart). Wenn sie ablehnen ---TODO was dann?
+
+Unter der Box "Spiele gegen" sehen Sie eine liste aller --TODO aktuellen/abgelaufenen-? Spiele gegen verschiedene Mitspieler. Wenn sie auf diesen Button drücken, dann --TODO?
+
+In der letzten Box "Warten auf ..." sehen Sie alle Spiele wo Sie gerade auf die Antwort des Mitspielers warten müssen. Mit einem Klick auf einen Eintrag --TODO
+
+
+Rangliste
+Diese Seite ermöglicht zeigt Ihnen die aktuelle Rangliste allen Spielern und deren Punkten.
+Zudem können Sie über diese Seite auf die Spielerprofile anderer Spieler gehen(vgl. fremde Spielprofile).
+
+fremde Spielprofile
+Auf den Seiten anderer Spieler können Sie wie bei sich dessen Rang und aktuelle Punkte sehen.
+Desweiteren können sie beendete Spiele dieses Spielers sehen.--TODO war das beabsichtigt?
+Zusätzlich können Sie wenn Sie angemeldet sind, diesen Spieler zum Match herausfordern (Button "Herausfordern"). 
+Desweiteren können sie Ihre mit diesem Spieler abgeschlossenen Spiele sehen.
+Unter der Box "Erfolg in Kategorien" sehen Sie eine Übersicht über die verschiedenen Kategorien und ihren Erfolg.
+
+Spielstart
+Sobald sie ein Spiel gestartet haben, befinden Sie sich auf der kategorieauswahlseite. Sofern Sie als Dealer bestimmt wurden wählen Sie nun eine Kategorie.
+Wenn ihr Gegenspieler der Dealer ist, warten Sie bitte bis dieser seine Wahl getroffen hat und laden sie dann die seite neu. Sobald dieser seine Wahl getroffen hat, können auch Sie die nachfolgende kategorie auswählen. Diesen Wechsel können Sie bis alle Kategorien ausgewählt wurden wiederholen.
+Dabei können Sie auch die gleiche kategorie mehrfach auswählen, sofern genügend Fragen vorhanden sind. Die Fehlermeldung "Kategoriewahl konnte nicht übernommen werden: Es existieren nicht genügend Fragen in dieser Kategorie" weist Sie auf diesen Fall hin.
+
+Sobald mindestens 1 Kategorie ausgewählt wurde können Sie mit dem Button "Nächste Frage" die erste Frage sehen.
+
+Neben der Frage und den verschiedenen Antwortmöglichkeiten sehen sie auch einen Timer, vor dessen Ende sie eine Antwort abgegeben haben sollten.
+Wenn Sie das Zeitfenster verpassen werden sie mit der Hinweismeldung ""-TODO darauf hingewiesen.
+Nach beantwortung bzw. Zeitablauf färben sich die Buttons und die Übersichtsbox in Grün bei richtiger Antwort und rot bei falscher Antwort. Zudem sehen sie noch einen Erklärungstext zur gestellten Frage.
+
+Nachdem Sie und Ihr Mitspieler alle Fragen beantwortete haben --TODO
