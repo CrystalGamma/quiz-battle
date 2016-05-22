@@ -17,6 +17,15 @@ Es gibt eine Startansicht, von der die Spieler auf ihre Spiele zugreifen können
 Im Gegensatz zu Quizduell erlaubt es dieses Projekt, in den Teil der Statistik anderer Spieler, die gemeinsamen Spielen basieren, Einsicht zu nehmen.
 Zudem werden, wie gefordert, die Spieler in einer Rangliste aufgeführt.
 
+# Technischer Aufbau
+Die Anwendung aus diesem Projekt besteht aus zwei großen Teilen, die über eine definierte Schnittstelle miteinander kommunizieren.
+
+Das Back-End wurde entsprechend den Vorgaben in PHP programmiert und dient dem Zugriff auf die Datenbank.
+Es bietet die Grundlage für die Nutzung des Spiels und ist das erste, mit dem Nutzer und Browser interagieren.
+
+Darauf baut das Front-End auf, das die Nutzeroberfläche mit vielfältigen Interaktionsmöglichkeiten erweitert.
+Insbesondere alle Aktionen, die Nutzerauthorisierung benötigen, werden vom Front-End angestoßen.
+
 # Datenbankentwurf
 Beim Entwurf der Datenbank wurde auf eine gute Übereinstimmung mit dem relationalen Modell geachtet.
 Die Tabellen wurden in dritter Normalform entworfen.
