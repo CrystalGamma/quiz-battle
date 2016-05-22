@@ -24,9 +24,12 @@
 				$list.appendChild(buildDom(game));
 			}]
 		};
-		let [$chall, addChall] = createSection('challenges', "Herausforderungen von …");
-		let [$open, addOpen] = createSection('open-games', "Spiele gegen …");
-		let [$waiting, addWait] = createSection('waiting-games', "Warten auf …");
+		const chall = createSection('challenges', "Herausforderungen von …");
+		const open = createSection('open-games', "Spiele gegen …");
+		const wait = createSection('waiting-games', "Warten auf …");
+		let $chall = chall[0], addChall = chall[1];
+		let $open = open[0], addOpen = open[1];
+		let $waiting = wait[0], addWait = wait[1];
 		json.activegames_.forEach((gameUrl, index) => makeXHR('GET', gameUrl, {Accept:'application/json', Authorization: login.token}, xhr => {
 			if (xhr.status < 200 || xhr.status >=300 || !xhr.getResponseHeader('Content-Type').startsWith('application/json')) {return}
 			const json = JSON.parse(xhr.responseText);

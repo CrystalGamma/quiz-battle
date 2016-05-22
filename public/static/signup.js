@@ -34,7 +34,7 @@
 				}).send(JSON.stringify({'':'/schema/player', 'name':$user.value, 'password': $password.value}));
 				tryRegister();
 			} else {
-				doLogin(authUrl, $user.value, $password.value).then(() => location.reload()).catch(([,err]) => alert(err));
+				doLogin(authUrl, $user.value, $password.value).then(() => location.reload()).catch(err => alert(err[1]));
 			}
 		});
 	});

@@ -6,10 +6,7 @@ const buildDom = (() =>{
 		if (obj instanceof Node) {return obj}
 		if (Array.isArray(obj)) {return obj.map(buildDom)}
 		if (typeof obj === 'string' || obj instanceof String) {return document.createTextNode(obj)}
-		let {
-			'': selector,
-			c: children
-		} = obj;
+		let selector = obj[''], children = obj.c;
 		const match = selector && tagRegex.exec(selector);
 		let tag = match ? match[1] : 'div';
 		selector = match ? match[2] : selector||'';
