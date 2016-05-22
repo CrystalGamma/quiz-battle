@@ -6,7 +6,7 @@ require_once __DIR__.'/../../classes/ContentNegotation.php';
 $contentType = ContentNegotation::getContent($_SERVER['HTTP_ACCEPT'], 'text/html,application/json;q=0.9');
 
 if (empty($_GET['id'])) {
-    http_response_code(404);
+    http_response_code(400);
     die();
 }
 $stmt = $conn->prepare('SELECT id AS "", frage AS question, erklaerung AS explanation, richtig, falsch1, falsch2, falsch3, bild AS picture FROM frage WHERE id = ?');
@@ -14,7 +14,7 @@ $stmt->execute([$_GET['id']]);
 $question = $stmt->fetch(PDO::FETCH_ASSOC);
 if (empty($question)) {
     http_response_code(404);
-    die();
+    die('Eine Frage mit der ID '.$_GET['id'].' exisitiert nicht.');
 }
 
 $question['answers'] = array(
