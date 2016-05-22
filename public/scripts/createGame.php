@@ -34,7 +34,7 @@
         }
         //Wenn schon ein nicht vollständiges Spiel exisitiert muss kein neues erzeugt werden
         if($vorhandenesSpiel===null){
-	$stmt = $conn->prepare("Insert Into spiel (einsatz, dealer, runden, fragen_pro_runde, fragenzeit, rundenzeit, status) Values (100, :dealer, :runden, :fragen_pro_runde, :fragenzeit, :rundenzeit, 'Offen')");
+	$stmt = $conn->prepare("Insert Into spiel (einsatz, dealer, runden, fragen_pro_runde, fragenzeit, rundenzeit, status) Values (100, :dealer, :runden, :fragen_pro_runde, :fragenzeit, :rundenzeit, 'offen')");
             if($stmt->execute(['dealer' => $dealingrule, 'runden' => $rounds, 'fragen_pro_runde' => $turns, 'fragenzeit' => $timelimit, 'rundenzeit' => $roundlimit])){
                     $gameid=$conn->lastInsertId();
             }else{
