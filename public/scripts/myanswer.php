@@ -52,7 +52,7 @@ if($zeitUeberschreitung === 0){
     // FIXME:retry?
 }
 $conn->commit();
-//Antwort ausgeben
+//Erklärung ausgeben
 $stmt=$conn->prepare("select frage.erklaerung from frage, spiel_frage where frage.id=spiel_frage.frage and spiel_frage.spiel= :gid and spiel_frage.fragennr= :qid");
 $stmt->execute(['gid' => $gid, 'qid' => $qid]);
 $erklaerung= $stmt->fetchcolumn();
