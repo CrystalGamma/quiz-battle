@@ -22,19 +22,21 @@ const loginBoxes = Array.from(document.querySelectorAll('.login'));
 if (!localStorage) {return}
 let login = localStorage.getItem('login');
 if (!login) {
-	for (let el of loginBoxes) {
-		el.appendChild(buildDom({'':'form', c:[
-			{'':'input', name:'user', placeholder:"Username", autocomplete:'username'},
-			{'':'input', name:'password', type:'password', placeholder:"Passwort", autocomplete:'current-password'},
-			{'':'button', type:'submit', c: "Login"}
-		]}));
+	if (document.currentScript.dataset.noform === undefined) {
+		for (let el of loginBoxes) {
+			el.appendChild(buildDom({'':'form', c:[
+				{'':'input', name:'user', placeholder:"Username", autocomplete:'username'},
+				{'':'input', name:'password', type:'password', placeholder:"Passwort", autocomplete:'current-password'},
+				{'':'button', type:'submit', c: "Login"}
+			]}));
+		}
+		document.body.addEventListener('submit', ev => {
+			const container = ev.target.parentNode;
+			if (!container.classList.contains('login')) {return}
+			ev.preventDefault();
+			doLogin(container.dataset.auth, ev.target.user.value, ev.target.password.value).then(() => location.reload()).catch(x => alert(x[1]));
+		});
 	}
-	document.body.addEventListener('submit', ev => {
-		const container = ev.target.parentNode;
-		if (!container.classList.contains('login')) {return}
-		ev.preventDefault();
-		doLogin(container.dataset.auth, ev.target.user.value, ev.target.password.value).then(() => location.reload()).catch(([, error]) => alert(error));
-	});
 	return Promise.reject("nicht angemeldet");
 } else {
 	login = JSON.parse(login);
