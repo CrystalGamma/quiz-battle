@@ -53,10 +53,10 @@ if($row===false){
 $conn->rollback();
 cleanGame($conn, $anzuzeigendesSpielID);
 
-//Authorisierung??    
 $request=$_SERVER['REQUEST_METHOD'];
 if ($request === 'GET') {
-	getGame($conn, $anzuzeigendesSpielID);
+        $Status=$row['status'];
+	getGame($conn, $anzuzeigendesSpielID, $Status);
 } else if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
 	$inputJSON = file_get_contents('php://input');
 	$input = json_decode($inputJSON, TRUE); //convert JSON into array
@@ -112,7 +112,6 @@ if ($request === 'GET') {
 			die();
 		}
 		$players=$stmt->fetchAll(PDO::FETCH_COLUMN);
-		print_r($players);
 		$update=$conn->prepare('UPDATE spieler SET punkte=:punkte WHERE id=:player');
 		$select=$conn->prepare('SELECT punkte From spieler WHERE id=?');
 		foreach($players as $player){
@@ -171,14 +170,20 @@ if ($request === 'GET') {
     die();
 }
 
-function getGame ($conn, $anzuzeigendesSpielID) {
+function getGame ($conn, $anzuzeigendesSpielID, $Status) {
+        //Informationen für JSON Element Spiel
         $stmt= $conn->prepare('select spiel.fragen_pro_runde, spiel.runden, spiel.fragenzeit, spiel.rundenzeit, (case when spiel.dealer=NULL then "firstanswer" else spiel.dealer end) as dealingrule from spiel where spiel.id=?');
         $stmt->execute([$anzuzeigendesSpielID]);
         $spiel=$stmt->fetchall()[0];
+        //Aufbau des JSON Teil-Element Players
         $stmt= $conn->prepare('select spieler.name, spieler.id, teilnahme.akzeptiert from spieler, teilnahme where spieler.id=teilnahme.spieler and teilnahme.spiel=? order by spieler.id;');
         $stmt->execute([$anzuzeigendesSpielID]);
         $spieler=array();
-        foreach ($stmt->fetchall() as $value){
+        // Feststellung on angemeldeter User am Spiel beteiligt ist 
+        $nutzername=getAuthorizationUser();
+        $SpielerIstBeteiligt=false;
+        $SpielerPos;
+        foreach ($stmt->fetchall() as $key => $value){
             array_push($spieler,
                 [
                 ""=> "/players/".$value['id'],
@@ -186,7 +191,14 @@ function getGame ($conn, $anzuzeigendesSpielID) {
                 "accepted"=> (bool)$value['akzeptiert']
                 ]
             );
+                if($nutzername!==false){
+                    if($value['name']===$nutzername){
+                    $SpielerIstBeteiligt=true;
+                    $SpielerPos=$key;
+                    }
+                }
         };
+        //Aufbau des JSON-Teilelements  rounds
         $stmt= $conn->prepare('select runde.rundennr, runde.kategorie as kategorieID, kategorie.name as kategorieName, spieler.id as dealerID, spieler.name as dealerName, runde.start from spieler, runde left join kategorie on (runde.kategorie=kategorie.id) where runde.dealer=spieler.id and runde.spiel=? group by runde.rundennr order by runde.rundennr;');
         $stmt->execute([$anzuzeigendesSpielID]);
         $runden = [];
@@ -212,6 +224,8 @@ function getGame ($conn, $anzuzeigendesSpielID) {
 		}
 		array_push($runden, $runde);
 	};
+	//Aufbau des JSON-Teilelements questions
+	//mit answers pro frage in der Reihenfolge der Spieler in players
 	for ($restrunden = $spiel['runden'] - count($runden);$restrunden > 0;$restrunden -= 1) {array_push($runden, null);}
         $stmt= $conn->prepare("
 SELECT spiel_frage.fragennr,teilnahme.spieler, (case when antwort.startzeit+spiel.fragenzeit < now() and antwort.antwort IS NULL then '' else antwort.antwort end) as antwort, (case when antwort.startzeit+spiel.fragenzeit < now() then 'abgel' else antwort.antwort end) as status
@@ -224,8 +238,10 @@ ORDER BY spiel_frage.fragennr, teilnahme.spieler");
         $tmp = [];
 	if (count($RueckgabeWert) > 0) {
 		$fragenID=$RueckgabeWert[0]['fragennr'];
-		foreach ($RueckgabeWert as $value) {
+		foreach ($RueckgabeWert as $key2 => $value) {
+		//solange die FragenID gleich ist wird das Array der Frage gefüllt wenn nicht wird ein neues Array angefangen
 			if ($value['fragennr'] === $fragenID) {
+                                //Unterscheidung zwischen int und anderen Wertetypen
 				if($value['antwort']==="" or $value['antwort']===null ){
 					//$tmp and
 					array_push($tmp, $value['antwort']);
@@ -234,8 +250,20 @@ ORDER BY spiel_frage.fragennr, teilnahme.spieler");
 					//FIXME $tmp and löste irgendeinproblem verursacht aber ein anders
 					array_push($tmp, (int)$value['antwort']);
 				}
+                                //Änderung des Inhalts nach Status der Antwort
+                                
 				if($value['status']===null){
-					$tmp=null;
+					//$tmp=null;
+                                    if($Status!=="beendet"){
+                                        //nicht angemeldet oder nicht Teil des Spiels
+                                        if($nutzername!==false or $SpielerIstBeteiligt===false) {
+                                            $tmp=null;
+                                        }
+                                        //angemeldet und Teil des Spiels und hat noch nicht geantwortet
+                                        if($SpielerIstBeteiligt===true and $SpielerPos===$key2){
+                                            $tmp=null;
+                                        }
+                                    }
 				}
 			} else {
 				array_push($fragen, [
@@ -249,11 +277,19 @@ ORDER BY spiel_frage.fragennr, teilnahme.spieler");
 				}else{
 				array_push($tmp, (int)$value['antwort']);
 				}
+				//Änderung des Angezeigten nach Status meiner Antwort(geantwortete oder nicht) und Spielstatus
 				if($value['status']===null){
-					$tmp=null;
-				}
-				if($value['status']===null){
-					$tmp=null;
+				//	$tmp=null;//--> es werden keine Antworten zum Spiel gezeigt
+                                    if($Status!=="beendet"){
+                                        //nicht angemeldet oder nicht Teil des Spiels
+                                        if($nutzername!==false or $SpielerIstBeteiligt===false) {
+                                            $tmp=null;
+                                        }
+                                        //angemeldet und Teil des Spiels und hat noch nicht geantwortet
+                                        if($SpielerIstBeteiligt===true and $SpielerPos===$key2){
+                                            $tmp=null;
+                                        }
+                                    }
 				}
 			};
 		}
@@ -262,6 +298,7 @@ ORDER BY spiel_frage.fragennr, teilnahme.spieler");
 			"answers" => $tmp
 		]);
 	}
+	//Zusamenfügen der Teilelemente zum Gesamtelement
 	$array=[
 		"" =>"/schema/game",
 		'players' =>$spieler,
