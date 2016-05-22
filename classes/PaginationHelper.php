@@ -1,9 +1,26 @@
 <?php
+/**
+ * Eine Hilfsklasse zur Realisierung des Pagings.
+ * Ein Objekt dieser Klasse enthält die folgenden Informationen
+ * - den Startpunkt (offset) der anzuzeigenden Einträge,
+ * - den Endpunkt (limit) der anzuzeigenden Einträge,
+ * - die aktuelle Schrittweite (steps) der anzuzeigenden Einträge,
+ * - einen Verweis auf die umliegenden Vorgänger (prev) unter Berücksichtigung der Schrittweite sowie
+ * - einen Verweis auf die umliegenden Nachfolger (next) unter Berücksichtigung der Schrittweite.   
+ */
 class PaginationHelper {
     protected $start, $end, $next, $prev, $steps;
     protected static $DEFAULT_STEPS = 10;
     
+    /**
+     * Hilfsmethode, die einen PaginationHelper zurückgibt.
+     *  
+     * @param int $count Gesamtanzahl der Einträge.
+     *  
+     * @return PaginationHelper Ein Objekt, welches alle für das Paging relevanten Informationen trägt.
+     */
     public static function getHelper($count) {
+        // Erlaubt sind nur numerische Parameter
         if (!self::isRequestValid()) {
             http_response_code(400);
             die();
@@ -11,16 +28,18 @@ class PaginationHelper {
         
         if (!isset($_GET['start'])) $start = NULL;
         else $start = $_GET['start'];
-        
-        if (!isset($_GET['end'])) {
+
+        // Schrittweite ermitteln wenn möglich, ansonsten Standardschrittweite von 10
+        if (isset($_GET['end'])) {
+            $end = $_GET['end'];
+            $steps = $end - $start;
+        } else {
             $steps = self::$DEFAULT_STEPS;
             if ($count < $start + $steps) $end = $count;
             else $end = $start + $steps;
-        } else {
-            $end = $_GET['end'];
-            $steps = $end - $start;
         }
         
+        // Angeforderter Bereich ist zu groß oder übersteigt die Anzahl der Einträge
         if ($steps > 1000 || max(-1, $start) >= $count || $end > $count) {
             http_response_code(416);
             die();
@@ -29,6 +48,9 @@ class PaginationHelper {
         return new PaginationHelper($start, $end, $steps, $count); 
     }
     
+    /**
+     * Prüft ob die verwendeten Teile der Abfrage-Zeichenkette ausschließlich Ziffern enthält.
+     */
     public static function isRequestValid() {
         if (isset($_GET['start']))
             if (!is_numeric($_GET['start']))
@@ -41,7 +63,7 @@ class PaginationHelper {
         return true;
     }
     
-    private function __construct($start, $end, $steps, $count) {
+    private function __construct($start, $end, $steps, $count) { 
         $next = $end >= $count ? null : $end;
         if (!is_null($next)) {
             if ($steps != self::$DEFAULT_STEPS)
