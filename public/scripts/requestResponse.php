@@ -5,17 +5,6 @@ if ($input[''] !== '/schema/response') { //Kontrolle ob das richtige Dateiformat
 	http_response_code(400);
 	die('Falsches Datenformat');
 }
-$username = getAuthorizationUser(); //Nachschauen welcher User eingeloggt ist
-if ($username === false) {
-	http_response_code(401);
-	header('WWW-Authenticate: Token');
-	die('Zum Annehmen oder Ablehnen von Spielen muss ein gültiger Authentifikationstoken vorliegen');
-}
-$stmt=$conn->prepare('SELECT id FROM spieler WHERE name= ?'); 
-if(!$stmt->execute([$username])){
-    handleError($stmt);
-}
-$id=$stmt->fetch(PDO::FETCH_COLUMN); //Die ID des eingeloggten Users ermitteln
 if ($input['accept'] === true) {
 	$stmt= $conn->prepare('SELECT akzeptiert FROM teilnahme WHERE spiel=:spiel AND spieler=:spieler');
 	if(!$stmt->execute(['spiel' => $anzuzeigendesSpielID, 'spieler' => $id])){
@@ -60,16 +49,16 @@ if ($input['accept'] === true) {
         $select=$conn->prepare('SELECT punkte From spieler WHERE id=?');
         foreach($players as $player){
             if (!$select->execute([$player])) {
-                handleError($stmt);
+                handleError($select);
             }
             $punkte=$select->fetch(PDO::FETCH_COLUMN); //Raussuchen des Punktestands des Spielers
             if($punkte>$einsatz){ //Vergleich der Punkte mit dem Einsatz. Punkte > Einsatz -> Abziehen, Punkte < Einsatz -> Punkte auf 0 setzen
                 if (!$update->execute(['punkte' => $punkte-$einsatz, 'player' => $player])) {
-                    handleError($stmt);
+                    handleError($update);
                 }
             }else{
                 if (!$update->execute(['punkte' => 0, 'player' => $player])) {
-                    handleError($stmt);
+                    handleError($update);
                 }
             }
         }
