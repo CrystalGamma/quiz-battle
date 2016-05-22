@@ -157,5 +157,23 @@
 			tryAskMe(0);
 			ev.preventDefault();
 		});
+		$main.addEventListener('click', ev => {
+			if (ev.target.tagName != 'A' || !ev.target.classList.contains('answer')) {return}
+			ev.preventDefault();
+			if (ev.target.classList.contains('unknown')) {return}
+			makeXHR('GET', ev.target.href, {Accept:'application/json', Authorization:login.token}, xhr => {
+				if (xhr.status < 200 || xhr.status >= 300) {return}
+				const json = JSON.parse(xhr.responseText);
+				let text = json.question.question + '\nRichtige Antwort: ' + json.question.answers[0];
+				for (let ans of json.answers) {
+					if (ans.player_ === ev.target.hash.substring(1)) {
+						text += ans.ans === null ? "\nSpieler hat noch nicht geantwortet" :
+							ans.ans === '' ? "\nZeit ist abgelaufen"
+							: "\nAntwort des Spielers: "+json.question.answers[ans.ans];
+					}
+				}
+				alert(text);
+			}).send();
+		});
 	});
 })();
