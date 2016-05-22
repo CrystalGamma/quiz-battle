@@ -6,9 +6,8 @@ require_once __DIR__.'/../../classes/PaginationHelper.php';
 
 $contentType = ContentNegotation::getContent($_SERVER['HTTP_ACCEPT'], 'text/html,application/json;q=0.9');
 
-// POST test with: curl http://localhost/players/ -H "Content-Type: application/json" -X POST -d "{\"\":\"/schema/player\",\"name\":\"test\",\"password\":\"test\"}" -i
-$requestBody = json_decode(file_get_contents('php://input'), true);
-if (isset($requestBody)) {
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // POST test with: curl http://localhost/players/ -H "Content-Type: application/json" -X POST -d "{\"\":\"/schema/player\",\"name\":\"test\",\"password\":\"test\"}" -i
     header('Content-Type: text/plain; charset=utf-8');
     
     $headers = getallheaders();
@@ -16,6 +15,9 @@ if (isset($requestBody)) {
         http_response_code(400);
         die('Nicht erwarteter Content-Type; erwartete wurde application/json.');
     }
+    
+    // Anforderungen an das Datenformat prüfen.
+    $requestBody = json_decode(file_get_contents('php://input'), true);
     if ($requestBody[''] !== '/schema/player') {
         http_response_code(400);
         die('Falsches Schema.');
@@ -25,7 +27,7 @@ if (isset($requestBody)) {
         die('Username und Passwort müssen ein String sein.');
     }
     
-    // do checks on contents of name and password
+    // Prüfen, ob der Benutzername ungültige Zeichen enthält.
     $illegal_characters = [':','/'];
     foreach ($illegal_characters as $illegal_character) {
         if (strpos($requestBody['name'], $illegal_character) !== false) {
@@ -49,8 +51,9 @@ if (isset($requestBody)) {
         ));
         $id = $conn->lastInsertId();
         if ($conn->commit()) {
-            header("Location: /players/$id");
+            header("Location: /players/$id"); // HTTP erwartet einen Verweis auf die neu erstellte Seite, in diesem Fall die Spielerseite
             http_response_code(201);
+            // Nutzererstellung erfolgreich, Authorisierungstoken ausstellen
             die(json_encode(['token' => 'Token '.base64_encode($requestBody['name'].':'.$requestBody['password']), 'player' => ['name' => $requestBody['name'], '' => "/players/$id"]]));
         } else {
             http_response_code(500);
@@ -59,7 +62,7 @@ if (isset($requestBody)) {
         }
     }
 } else {
-// GET ranking
+    // GET Rangliste
     $stmt = $conn->query('SELECT COUNT(*) FROM spieler');
     $count = (int) $stmt->fetchColumn();
     $pagination = PaginationHelper::getHelper($count);
@@ -70,11 +73,13 @@ if (isset($requestBody)) {
     $stmt->execute();
     $players = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+    // Casten einzelner Rückgabewerte zu int, da PDO/mysql in alten Versionen nur Strings zurückgibt 
     foreach($players as &$player) {
         $player['points'] = (int) $player['points'];
         $player['ranking'] = (int) $player['ranking'];
     }
 
+    // Zusammenbauen der Teilelemente
     $array = array(
         '' => '/schema/players',
         'count' => $count,
