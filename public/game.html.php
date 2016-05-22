@@ -19,7 +19,7 @@ echo htmlspecialchars(implode(', ', $othernames));
 foreach ($array['rounds'] as $rid => $round) {
 	?><tr><th><?php
 	if ($round !== NULL && $round['category'] === NULL) {
-		?><a class="dealer player" href="<?=$round['dealer']['']?>" data-candidates="<?=htmlspecialchars(json_encode($round['candidates'], ENT_QUOTES, 'utf-8'))?>">Spieler</a> wählt die Kategorie<?php
+		?><a class="dealer player" href="<?=$round['dealer']['']?>" data-candidates="<?=htmlspecialchars(json_encode($round['candidates']), ENT_QUOTES, 'utf-8')?>">Spieler</a> wählt die Kategorie<?php
 	} else if ($round !== NULL) {
 		echo htmlspecialchars($round['category']['name'], ENT_QUOTES, 'utf-8');
 		$start = $array['turns']*$rid;
