@@ -24,19 +24,27 @@
         $roundlimit= array_key_exists('roundlimit', $input) ? (int) $input["roundlimit"] : 172800;	// zwei Tage
         // TODO: dealing rule
         $dealingrule = NULL;
+        //Für Matchmaking
+        $vorhandenesSpiel=null;
+        if(count($input["players_"])===1){
+            $stmt = $conn->prepare("select spiel from (select spiel, spieler from teilnahme group by spiel having count(spiel)<2) as tmp where spieler!=?");
+             $stmt->execute([$id]);
+             //Erstes noch nicht vollständiges Spiel wurde identifiziert
+            $vorhandenesSpiel=$stmt->fetchall()[0][0];
+            $gameid=$vorhandenesSpiel;
+        }
+        //Wenn schon ein ncith vollständiges Spiel exisitiert muss kein neues erzeugt werden
+        if($vorhandenesSpiel===null){
 	$stmt = $conn->prepare("Insert Into spiel (einsatz, dealer, runden, fragen_pro_runde, fragenzeit, rundenzeit, status) Values (100, :dealer, :runden, :fragen_pro_runde, :fragenzeit, :rundenzeit, 'Offen')");
-	if($stmt->execute(['dealer' => $dealingrule, 'runden' => $rounds, 'fragen_pro_runde' => $turns, 'fragenzeit' => $timelimit, 'rundenzeit' => $roundlimit])){
-		$gameid=$conn->lastInsertId();
-	}else{
-		var_dump($stmt->errorInfo());
-		die('test');
+            if($stmt->execute(['dealer' => $dealingrule, 'runden' => $rounds, 'fragen_pro_runde' => $turns, 'fragenzeit' => $timelimit, 'rundenzeit' => $roundlimit])){
+                    $gameid=$conn->lastInsertId();
+            }else{
+                    var_dump($stmt->errorInfo());
+                    die('test');
+            }
 	}
 	$insertPlayer = $conn->prepare("Insert Into teilnahme (spiel, spieler, akzeptiert) VALUES (:id, :spieler, :teilnahme)");
 	$players = $input["players_"];
-	if (count($players) < 2) {
-		http_response_code(400);
-		die('Weniger als zwei Spieler im Spiel');
-	}
 	foreach($players as $player){
 		if (substr($player, 0, 9) !== '/players/') {
 			http_response_code(400);
