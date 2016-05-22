@@ -76,7 +76,7 @@ $oldGameCount->execute([$user['id']]);
 $numOldGames = (int)$oldGameCount->fetchall()[0][0];
 header('Vary: Authorization, Accept');
 if($contentType==="application/json"){
-    header('Content-Type: application/json');
+    header('Content-Type: application/json; charset=UTF-8');
     echo json_encode([
 	""=>"/schema/player",
         "name" =>$user['name'],

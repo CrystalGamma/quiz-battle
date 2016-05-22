@@ -63,5 +63,5 @@ if (count($nextQuestion) > 0) {
 	header("Location: /games/$gid/".$nextQuestion[0]);
 }
 
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=UTF-8');
 echo json_encode(['' => '/schema/correctanswer', 'answer' => $scrambledCorrectAnswer]);
