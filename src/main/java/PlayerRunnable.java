@@ -8,9 +8,11 @@ import java.util.Map;
  */
 @SuppressWarnings( { "rawtypes", "nls" } )
 public class PlayerRunnable implements Runnable {
-    private final JsonParser jsonParser;
+    private final StatusRunnable status;
+    private final JsonParser     jsonParser;
 
-    public PlayerRunnable( final JsonParser jsonParser ) {
+    public PlayerRunnable( final StatusRunnable status, final JsonParser jsonParser ) {
+        this.status = status;
         this.jsonParser = jsonParser;
     }
 
@@ -26,9 +28,11 @@ public class PlayerRunnable implements Runnable {
                     playername += map.get( "count" );
                 }
                 playername += System.currentTimeMillis();
-                ConnectionHelper.sendPOST( "players/",
+                if ( null != ConnectionHelper.sendPOST( "players/",
                         "{\"\":\"/schema/player\",\"name\":\"" + playername + "\",\"password\":\"test\"}",
-                        HttpURLConnection.HTTP_CREATED );
+                        HttpURLConnection.HTTP_CREATED ) ) {
+                    this.status.increase( "players" );
+                }
             }
         } catch ( Exception ex ) {
             ex.printStackTrace();
