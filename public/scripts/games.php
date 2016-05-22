@@ -40,4 +40,10 @@ if (isset($_GET['pid'])) {
 } else {
     require_once __DIR__.'/createGame.php';
 }
+
+function handleError($stmt){
+    http_response_code(500);
+    var_dump($stmt->errorInfo());
+    die();
+}
 ?>
