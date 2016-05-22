@@ -26,5 +26,5 @@
 			]}
 		]}));
 	}).send());
-	loginPromise.then(() => document.getElementById('stats').appendChild(buildDom({'':'a.challenge-player.start-game', href: '', c: "Herausfordern"})));
+	loginPromise.then(() => document.getElementById('status').appendChild(buildDom({'':'a.challenge-player.start-game', href: '', c: "Herausfordern"})));
 })();

@@ -22,7 +22,7 @@ require_once __DIR__."/../../classes/ContentNegotation.php";
 
 $contentType=ContentNegotation::getContent($_SERVER['HTTP_ACCEPT'],"text/html,application/json;q=0.9");
 
-$stmt= $conn->prepare('select id, name, punkte as points,(select count(spieler.id)+1 from spieler where punkte > points)as rang from spieler where spieler.id=?');
+$stmt= $conn->prepare('select id, name, punkte as points,(select count(spieler.id)+1 from spieler where punkte > points)as ranking from spieler where spieler.id=?');
 $stmt->execute([$_GET['id']]);
 $user = $stmt->fetch();
 //Überprüfung ob es den User gibt
@@ -82,7 +82,7 @@ if($contentType==="application/json"){
 	""=>"/schema/player",
         "name" =>$user['name'],
         "score" =>$user['points'],
-        "rang" =>$user['rang'],
+        "ranking" =>$user['ranking'],
         "activegames_" => $laufendeSpiele,
         "oldgames_"=> ['' => $user['id']."/oldgames", 'count' => $numOldGames],
         "categorystats"=>$kategorie

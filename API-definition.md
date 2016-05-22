@@ -228,24 +228,6 @@ Fragenkatalog
 }
 ```
 
-# Kategorie: /categories/\<id\> (Birk)
-## GET
-### application/json
-```json
-{
-	"": "/schema/category",
-	"name": "Kategoriename",
-	"count": 1234,
-	"start": 0,
-	"end": 10,
-	"next_": "?start=10",
-	"prev_": null,
-	"questions": [
-		{"": "/questions/<id>", "text": "Fragentext"}
-	]
-}
-```
-
 # Katalog-Frage: /questions/\<id\>
 ## GET
 ### application/json
@@ -256,7 +238,7 @@ Fragenkatalog
 	"explanation": "Erklärung",
 	"answers": ["Richtige Antwort", "Falsche Antwort 1", "Falsche Antwort 2", "Falsche Antwort 3"],
 	"picture": "http://example.com/picture.svg",
-	"categories_": ["/categories/<id"]
+	"categories_": ["/categories/<id>"]
 }
 ```
 
