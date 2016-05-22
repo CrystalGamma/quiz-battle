@@ -80,7 +80,7 @@
                             die('Konnte nicht erste Runde starten');
                     }
 		}*/
-		if($vorhandenesSpiel===null)
+		if($vorhandenesSpiel!==null)
 		{
                     $createFirstRound = $conn->prepare(' Insert into runde(spiel, rundennr, dealer, kategorie, start) values (:spiel, 0 ,:spieler,NULL, now())');
                     if (!$createFirstRound->execute(['spiel' => $gameid, 'spieler' => $playerid])) {
@@ -94,6 +94,7 @@
 		header('Retry-After: 3');
 		die('Transaktion fehlgeschlagen');
 	}
+	if((count($input["players_"])===2) or $vorhandenesSpiel!==null)
 	http_response_code(201);
 	header("Location: /games/$gameid/");
 	die();
