@@ -4,12 +4,13 @@ header('Content-Type: text/html; charset=UTF-8');
 <title>Statistiken für <?=htmlspecialchars($user['name'], ENT_QUOTES, 'utf-8')?> – Quiz Battle</title>
 <?php require(__DIR__.'/header.html') ?>
 <main>
-<section id=stats>
+<section id=status>
 <h1><span class=player><?=htmlspecialchars($user['name'], ENT_QUOTES, 'utf-8')?></span> – Statistiken</h1>
-<ul class=stat>
+<div><ul class=stat>
+<li>Ranking: <span class=figure><?=$user['ranking']?></span>
 <li><span class=figure><?=$numOldGames?></span> Spiele
 <li><span class=figure><?=$user['points']?></span> Punkte
-</ul>
+</ul></div>
 </section>
 <?php if ($numOldGames > 0) { ?>
 <section id=closed-games>

@@ -7,7 +7,7 @@
 		$main.appendChild(buildDom({'':'section#status', c:[
 			{'':'h1', c:login.user},
 			{c:{'':'ul.stat', c:[
-				{'':'li', c:["Ranking: ", {'':'span.figure', c: '1234'}]},
+				{'':'li', c:["Ranking: ", {'':'span.figure', c: ''+json.ranking}]},
 				{'':'li', c:["Punkte: ", {'':'span.figure', c: ''+json.score}]}
 			]}},
 			{'':'a.start-game.matchmaking', href: newGameUrl, c: "Neues Spiel"}
