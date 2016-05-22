@@ -15,7 +15,7 @@
 					} else {
 						const retry = xhr.getResponseHeader('Retry-After');
 						if (xhr.status >= 500 && xhr.status < 600 && attempt < 3) {
-							setTimeout(tryAccept.bind(attempt+1), (retry||1)*1000);
+							setTimeout(tryAccept.bind(null, attempt+1), (retry||1)*1000);
 						} else {
 							alert(`Fehler beim Annehmen des Spiels: ${xhr.responseText}`);
 						}
@@ -48,7 +48,7 @@
 					} else {
 						const retry = xhr.getResponseHeader('Retry-After')|0;
 						if (attempt < 3 && retry) {
-							setTimeout(tryChoose.bind(attempt+1), retry*1000);
+							setTimeout(tryChoose.bind(null, attempt+1), retry*1000);
 						} else {
 							alert(`Kategoriewahl konnte nicht übernommen werden: ${xhr.responseText}`);
 						}
@@ -85,6 +85,36 @@
 		});
 		$main.addEventListener('click', ev => {
 			if (!ev.target.classList.contains('askme')) {return}
+			const $dialog = ev.target.parentNode;
+			const tryAnswer = (attempt, answer) => makeXHR('PUT', ev.target.href, {'Content-Type':'application/json', Accept: 'application/json', Authorization: login.token}, xhr => {
+				if (xhr.getResponseHeader('Content-Type').startsWith('application/json')) {
+					const json = JSON.parse(xhr.responseText);
+					const $answers = Array.from($dialog.querySelectorAll('button.answer'));
+					$answers.forEach(x => {x.disabled = true});
+					if (answer !== null) {$answers[answer].classList.add('incorrect')}
+					const $correct = $answers[json.answer];
+					$correct.classList.remove('incorrect');
+					$correct.classList.add('correct');
+					if (json.explanation) {$dialog.appendChild(buildDom({'':'p.explanation', c:json.explanation}))}
+					reloadUnknown();
+				}
+				if (xhr.status >= 200 && xhr.status < 300) {
+					onTheClock = false;
+					const nextQuestion = xhr.getResponseHeader('Location');
+					if (xhr.getResponseHeader('Location')) {
+						$dialog.appendChild(buildDom({'':'a.askme.start-game', href: nextQuestion, c:"Nächste Frage"}));
+					}
+				} else if (xhr.status === 403) {
+					alert("Die Zeit ist abgelaufen");
+					const $button = buildDom({'':'button.start-game', c: "Weiter"});
+					$button.addEventListener('click', () => location.reload());
+					$dialog.appendChild($button);
+				} else if (attempt < 10 && xhr.status >= 500 && xhr.status < 600) {
+					setTimeout(tryAnswer.bind(null, attempt+1, answer), (xhr.getResponseHeader('Retry-After')|0)*1000);
+				} else {
+					alert(`Konnte Antwort nicht speichern: ${xhr.responseText}`);
+				}
+			}).send(JSON.stringify({'':'/schema/myanswer', answer:answer||0}));
 			let onTheClock = true;
 			const timeLimit = ($main.dataset.timelimit|0)*1000;
 			let endTime = performance.now() + timeLimit;
@@ -92,6 +122,7 @@
 			const step = time => {
 				if (time > endTime) {
 					$timer.value = 0;
+					setTimeout(tryAnswer.bind(null, 0, null), 1000);
 				} else {
 					$timer.value = endTime-time;
 					if (onTheClock) {requestAnimationFrame(step)}
@@ -101,7 +132,6 @@
 			const tryAskMe = attempt => makeXHR('POST', ev.target.href, {Accept:'application/json', 'Content-Type':'application/json', Authorization:login.token}, xhr => {
 				if (xhr.status >= 200 && xhr.status < 300) {
 					const json = JSON.parse(xhr.responseText);
-					const $dialog = ev.target.parentNode;
 					$dialog.innerHTML='';
 					$dialog.appendChild(buildDom({'':'.choice', c:[
 						json.question,
@@ -110,38 +140,15 @@
 					]}));
 					const handler = ev => {
 						if (!ev.target.classList.contains('answer')) {return}
-						const tryAnswer = attempt => makeXHR('PUT', xhr.responseURL, {'Content-Type':'application/json', Accept: 'application/json', Authorization: login.token}, xhr => {
-							if (xhr.status >= 200 && xhr.status < 300) {
-								onTheClock = false;
-								const json = JSON.parse(xhr.responseText);
-								const $answers = Array.from($dialog.querySelectorAll('button.answer'));
-								$answers.forEach(x => {x.disabled = true});
-								ev.target.classList.add('incorrect');
-								const $correct = $answers[json.answer];
-								$correct.classList.remove('incorrect');
-								$correct.classList.add('correct');
-								reloadUnknown();
-								$dialog.removeEventListener('click', handler);
-								const nextQuestion = xhr.getResponseHeader('Location');
-								if (xhr.getResponseHeader('Location')) {
-									$dialog.appendChild(buildDom({'':'a.askme.start-game', href: nextQuestion, c:"Nächste Frage"}));
-								}
-							} else if (xhr.status === 403 && xhr.getResponseHeader('Content-Type').startsWith('application/json')) {
-								alert("Die Zeit ist abgelaufen");
-							} else if (attempt < 10 && xhr.status >= 500 && xhr.status < 600) {
-								setTimeout(tryAnswer.bind(attempt+1), (xhr.getResponseHeader('Retry-After')|0)*1000);
-							} else {
-								alert(`Konnte Antwort nicht speichern: ${xhr.responseText}`);
-							}
-						}).send(JSON.stringify({'':'/schema/myanswer', answer:ev.target.dataset.value|0}));
-						tryAnswer(0);
+						tryAnswer(0, ev.target.dataset.value|0);
 						ev.preventDefault();
+						$dialog.removeEventListener('click', handler);
 					};
 					$dialog.addEventListener('click', handler);
 				} else {
 					const retry = xhr.getResponseHeader('Retry-After')|0;
 					if (attempt < 3 && retry) {
-						setTimeout(tryAskMe.bind(attempt+1), retry*1000);
+						setTimeout(tryAskMe.bind(null, attempt+1), retry*1000);
 					} else {
 						alert(`Frage konnte nicht geladen werden: ${xhr.responseText}`);
 					}
