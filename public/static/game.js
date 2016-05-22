@@ -64,17 +64,13 @@
 				if (xhr.status < 200 || xhr.status >= 300) {return}
 				if (!xhr.getResponseHeader('Content-Type').startsWith('application/json')) {return}
 				const json = JSON.parse(xhr.responseText);
-				if (json.question === null || json.answers === null || json.answers.some(x => (x.player_||x.player['']) === (login.player_||login.player['']) && x.ans === null)) {
-					resolve([json, $answer]);
-				} else {
-					for (let ans of json.answers) {
-						if ((ans.player_||ans.player['']) !== $answer.hash.substring(1)) {continue}
-						$answer.classList.remove('unknown');
-						$answer.classList.add(ans.ans === 0 ? 'correct' : 'incorrect');
-						if (ans.ans !== null) {$answer.dataset.givenanswer = ans.ans === '' ? '' : json.question.answers[ans.ans]}
-					}
-					resolve(null);
+				for (let ans of json.answers) {
+					if ((ans.player_||ans.player['']) !== $answer.hash.substring(1)) {continue}
+					$answer.classList.remove('unknown');
+					$answer.classList.add(ans.ans === 0 ? 'correct' : 'incorrect');
+					if (ans.ans !== null) {$answer.dataset.givenanswer = ans.ans === '' ? '' : json.question.answers[ans.ans]}
 				}
+				resolve(null);
 			}).send();
 		})));
 		reloadUnknown().then(unanswered => {
@@ -143,9 +139,8 @@
 						if (!ev.target.classList.contains('answer')) {return}
 						tryAnswer(0, ev.target.dataset.value|0);
 						ev.preventDefault();
-						$dialog.removeEventListener('click', handler);
 					};
-					$dialog.addEventListener('click', handler);
+					$dialog.querySelector('.choice').addEventListener('click', handler);
 				} else {
 					const retry = xhr.getResponseHeader('Retry-After')|0;
 					if (attempt < 3 && retry) {
