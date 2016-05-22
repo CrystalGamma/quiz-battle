@@ -49,16 +49,16 @@ if ($input['accept'] === true) {
         $select=$conn->prepare('SELECT punkte From spieler WHERE id=?');
         foreach($players as $player){
             if (!$select->execute([$player])) {
-                handleError($stmt);
+                handleError($select);
             }
             $punkte=$select->fetch(PDO::FETCH_COLUMN); //Raussuchen des Punktestands des Spielers
             if($punkte>$einsatz){ //Vergleich der Punkte mit dem Einsatz. Punkte > Einsatz -> Abziehen, Punkte < Einsatz -> Punkte auf 0 setzen
                 if (!$update->execute(['punkte' => $punkte-$einsatz, 'player' => $player])) {
-                    handleError($stmt);
+                    handleError($update);
                 }
             }else{
                 if (!$update->execute(['punkte' => 0, 'player' => $player])) {
-                    handleError($stmt);
+                    handleError($update);
                 }
             }
         }

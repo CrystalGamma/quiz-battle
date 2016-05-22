@@ -1,12 +1,12 @@
 <?php
     if($_SERVER['REQUEST_METHOD']=='POST'){
-        $inputJSON = file_get_contents('php://input');
-        $input= json_decode( $inputJSON, TRUE ); //convert JSON into array
-		if ($input[''] !== '/schema/game?new') {
+        $inputJSON = file_get_contents('php://input'); //auslesen JSON
+        $input= json_decode( $inputJSON, TRUE ); //konvertieren des JSON in ein Array
+		if ($input[''] !== '/schema/game?new') { //Kontrolle ob das richtige Dateiformat angegeben wurde
 			http_response_code(400);
 			die('Falsches Datenformat');
 		}
-		$username = getAuthorizationUser();
+		$username = getAuthorizationUser(); //Nachschauen welcher User eingeloggt ist
 		if ($username === false) {
 			http_response_code(401);
 			header('WWW-Authenticate: Token');
@@ -14,10 +14,9 @@
 		}
 		$stmt=$conn->prepare('SELECT id FROM spieler WHERE name= ?');
 		if(!$stmt->execute([$username])){
-			var_dump($stmt->errorInfo());
-			die();
+			handleError($stmt);
 		}
-		$id=(int) $stmt->fetchcolumn();
+		$id=(int) $stmt->fetchcolumn(); //Die ID des eingeloggten Users ermitteln
         $rounds=array_key_exists('rounds', $input) ? (int) $input["rounds"] : 6;
         $turns=array_key_exists('turns', $input) ? (int) $input["turns"] : 3;
         $timelimit= array_key_exists('timelimit', $input) ? (int) $input["timelimit"] : 10;
@@ -33,7 +32,7 @@
             $vorhandenesSpiel=$stmt->fetchall()[0][0];
             $gameid=$vorhandenesSpiel;
         }
-        //Wenn schon ein ncith vollständiges Spiel exisitiert muss kein neues erzeugt werden
+        //Wenn schon ein nicht vollständiges Spiel exisitiert muss kein neues erzeugt werden
         if($vorhandenesSpiel===null){
 	$stmt = $conn->prepare("Insert Into spiel (einsatz, dealer, runden, fragen_pro_runde, fragenzeit, rundenzeit, status) Values (100, :dealer, :runden, :fragen_pro_runde, :fragenzeit, :rundenzeit, 'Offen')");
             if($stmt->execute(['dealer' => $dealingrule, 'runden' => $rounds, 'fragen_pro_runde' => $turns, 'fragenzeit' => $timelimit, 'rundenzeit' => $roundlimit])){
@@ -46,24 +45,22 @@
 	$insertPlayer = $conn->prepare("Insert Into teilnahme (spiel, spieler, akzeptiert) VALUES (:id, :spieler, :teilnahme)");
 	$players = $input["players_"];
 	foreach($players as $player){
-		if (substr($player, 0, 9) !== '/players/') {
+		if (substr($player, 0, 9) !== '/players/') { //Kontrolle ob der Spieler richtig refenrenziert wurde
 			http_response_code(400);
 			die('Ungültiger Spielerverweis');
 		}
-		$playerid= (int) substr($player, 9);
+		$playerid= (int) substr($player, 9); //Auslesen der Spieler-ID
 		$stmt=$conn->prepare('SELECT * FROM spieler WHERE id=?');
 		if(!$stmt->execute([$playerid])){
-			var_dump($stmt->errorInfo());
-			die();
+			handleError($stmt);
 		}
 		$erg=$stmt->fetchAll(PDO::FETCH_ASSOC);
-		if(count($erg)!==1){
+		if(count($erg)!==1){ //Kontrolle ob die angegeben Spieler auch existieren
 			http_response_code(400);
 			die('Spieler mit der ID '.$playerid.' nicht vorhanden.');
 		}
 		if(!$insertPlayer->execute(['id' => $gameid, 'spieler' => $playerid, 'teilnahme' => $playerid === $id ? 1 : 0])){
-			var_dump($stmt->errorInfo());
-			die();
+			handleError($insertPlayer);
 		}
 		error_log("wir haben".count($input["players_"]));
 		/*if(count($input["players_"])===1)
