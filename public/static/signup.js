@@ -9,6 +9,7 @@
 		const $password = buildDom({'':'input', type:'password', name:'password'});
 		const $register = buildDom({'':'input', type:'checkbox', autocomplete:'off'});
 		$main.appendChild(buildDom({'':'form.signup', c:[
+			{'':'h1', c:"Willkommen bei Quiz Battle"},
 			{'':'label', c:["Nickname: ", $user]},
 			{'':'label', c:["Passwort: ", $password]},
 			{'':'label.dense', c:[$register, "Neuen Account erstellen"]},

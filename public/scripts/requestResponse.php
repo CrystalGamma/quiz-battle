@@ -80,7 +80,7 @@ if ($input['accept'] === true) {
 	http_response_code(205);
 	die();
 } else {
-	http_response_code(200);
+	http_response_code(201);
 	header('Location: /');
 	die();
 }
