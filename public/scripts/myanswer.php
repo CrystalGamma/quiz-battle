@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 require_once(__DIR__.'/hashPick.php');
 
 $headers = getallheaders();
@@ -63,7 +63,7 @@ foreach ($answerIndices as $idx) {if($answerIndices[$idx] === 0) {$scrambledCorr
 if($zeitUeberschreitung===1){
     http_response_code(403);
 }
+header('Content-Type: application/json; charset=UTF-8');
 require_once(__DIR__.'/gameEnd.php');
 cleanGame($conn, $gid);
-header('Content-Type: application/json; charset=UTF-8');
 echo json_encode(['' => '/schema/correctanswer', 'answer' => $scrambledCorrectAnswer, 'explanation' => $erklaerung]);
