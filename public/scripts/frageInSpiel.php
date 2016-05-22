@@ -50,13 +50,16 @@ function frageInSpiel(){
 
     $contentType=ContentNegotation::getContent($_SERVER['HTTP_ACCEPT'],"text/html,application/json;q=0.9");
 
-    $stmt= $conn->prepare('select spiel_frage.frage as fragenID, frage.frage, frage.bild, frage.erklaerung, frage.richtig, frage.falsch1, frage.falsch2, frage.falsch3, teilnahme.spieler, antwort.antwort from (frage, spiel_frage, teilnahme) left join antwort on (spiel_frage.fragennr=antwort.fragennr and spiel_frage.spiel=antwort.spiel AND teilnahme.spieler = antwort.spieler) where teilnahme.spiel = :gid AND spiel_frage.frage=frage.id AND spiel_frage.spiel=:gid AND spiel_frage.fragennr=:qid;');
+    $stmt= $conn->prepare('select spiel_frage.frage as fragenID, frage.frage, frage.bild, frage.erklaerung, frage.richtig, frage.falsch1, frage.falsch2, frage.falsch3, teilnahme.spieler, (case when antwort is null and startzeit is null then null else     (case when antwort is not null and startzeit is not null then antwort else         (case when antwort is null and startzeit is not null and timestampdiff(second, startzeit, now())>spiel.fragenzeit then "x" else null end )     end)  end) as antwort  from (frage, spiel_frage, spiel, teilnahme) left join antwort on (spiel_frage.fragennr=antwort.fragennr and spiel_frage.spiel=antwort.spiel AND teilnahme.spieler = antwort.spieler) where spiel.id=spiel_frage.spiel and teilnahme.spiel = :gid AND spiel_frage.frage=frage.id AND spiel_frage.spiel=:gid AND spiel_frage.fragennr= :qid;');
     $stmt->execute(['gid' => $anzuzeigendesSpielID, 'qid' => $anzuzeigendeFragennr]);
     $RueckgabeDaten=$stmt->fetchall();
     $antwort=array();
+    error_log("DBa".print_r($RueckgabeDaten, true));
     foreach ($RueckgabeDaten as $value){
-            if($value['antwort']==="" or $value['antwort']===null) {
-            $tmp=$value['antwort']; 
+            if($value['antwort']==="x"){
+            $tmp="";
+            }else if ($value['antwort']===null) {
+            $tmp=null; 
             }else{
             $tmp=(int) $value['antwort'];
             }
@@ -81,6 +84,7 @@ function frageInSpiel(){
         ],    
         "answers"=>$antwort
     ];
+    //error_log("Wichtig".print_r($antwort, true));
     $json= json_encode($array);
     if($contentType==="application/json"){
         header('Content-Type: application/json; charset=UTF-8');
