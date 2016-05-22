@@ -5,7 +5,7 @@
 		let categories = json.categorystats.map(({category, correct, incorrect}) => ({category, correct, incorrect, percentage: correct*100/(correct+incorrect)})).sort((a, b) => (b.percentage-a.percentage)||(b.correct-a.correct));
 		document.querySelector('main').appendChild(buildDom({'':'section#category-stats', c:[
 			{'':'h1', c:"Erfolg in Kategorien"},
-			...(location.path !== (login.player_||login.player['']) ? [{'':'p', c:["Aus allen gemeinsamen Spielen von ", {'':'a.player', href:login.player_||login.player[''], c:login.user||login.player['']}, " und ", {'':'a.player', href:'', c:json.name}]}]: []),
+			...(location.pathname !== (login.player_||login.player['']) ? [{'':'p', c:["Aus allen gemeinsamen Spielen von ", {'':'a.player', href:login.player_||login.player[''], c:login.user||login.player['']}, " und ", {'':'a.player', href:'', c:json.name}]}]: []),
 			{'':'table', c:[
 				{'':'thead', c:{'':'tr', c:[
 					{'':'th'},
@@ -26,5 +26,5 @@
 			]}
 		]}));
 	}).send());
-	loginPromise.then(() => document.getElementById('status').appendChild(buildDom({'':'a.challenge-player.start-game', href: '', c: "Herausfordern"})));
+	loginPromise.then(login => location.pathname !== (login.player_||login.player['']) && document.getElementById('status').appendChild(buildDom({'':'a.challenge-player.start-game', href: '', c: "Herausfordern"})));
 })();
