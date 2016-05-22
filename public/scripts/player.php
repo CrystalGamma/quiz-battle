@@ -71,6 +71,7 @@ foreach ($stmt->fetchall() as $value){
 		"incorrect" => (int) $value['falscheAntwort']
 	]);
 }
+//JSON Teilelement oldgames wird zusammengebaut
 $oldGameCount = $conn->prepare("Select Count(spiel.id) From spiel, teilnahme where teilnahme.spieler = ? And spiel.status = 'beendet' And spiel.id = teilnahme.spiel");
 $oldGameCount->execute([$user['id']]);
 $numOldGames = (int)$oldGameCount->fetchall()[0][0];
