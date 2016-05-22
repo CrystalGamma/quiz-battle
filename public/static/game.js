@@ -90,17 +90,25 @@
 					const $dialog = ev.target.parentNode;
 					$dialog.innerHTML='';
 					// FIXME: show timer of some sort
-					buildDom([json.question, ...json.answers.map((ans, idx) => ({'':'button.answer', 'data-value':''+idx, c:ans}))]).forEach(x => $dialog.appendChild(x));
+					$dialog.appendChild(buildDom({'':'.choice', c:[
+						json.question,
+						...json.answers.map((ans, idx) => ({'':'button.answer', 'data-value':''+idx, c:ans}))
+					]}));
 					const handler = ev => {
 						if (!ev.target.classList.contains('answer')) {return}
 						const tryAnswer = attempt => makeXHR('PUT', xhr.responseURL, {'Content-Type':'application/json', Accept: 'application/json', Authorization: login.token}, xhr => {
 							if (xhr.status >= 200 && xhr.status < 300) {
 								const json = JSON.parse(xhr.responseText);
-								Array.from($dialog.querySelectorAll('button.answer')).forEach(x => {x.disabled = true});
+								const $answers = Array.from($dialog.querySelectorAll('button.answer'));
+								$answers.forEach(x => {x.disabled = true});
 								ev.target.classList.add('incorrect');
-								const $correct = $dialog.children[json.answer];
+								const $correct = $answers[json.answer];
 								$correct.classList.remove('incorrect');
 								$correct.classList.add('correct');
+								const nextQuestion = xhr.getResponseHeader('Location');
+								if (xhr.getResponseHeader('Location')) {
+									$dialog.appendChild(buildDom({'':'a.askme.start-game', href: nextQuestion}));
+								}
 							} else if (xhr.status === 403 && xhr.getResponseHeader('Content-Type').startsWith('application/json')) {
 								alert("Die Zeit ist abgelaufen");
 							} else if (attempt < 10 && xhr.status >= 500 && xhr.status < 600) {
