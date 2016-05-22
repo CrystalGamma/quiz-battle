@@ -50,7 +50,6 @@ if (!$conn->commit()) {
 }
 
 $text = $question[1];
-error_log(implode(',', array_slice($question, 2)));
 
 header('Content-Type: application/json; charset=UTF-8');
 echo(json_encode([

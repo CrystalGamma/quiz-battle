@@ -32,7 +32,6 @@ FROM spiel, antwort WHERE spiel.id=:gid AND antwort.spiel=spiel.id");
 		$grantBonus = $conn->prepare("UPDATE spieler SET punkte=punkte+:bonus WHERE id=:pid");
 		foreach ($winners as $pid) {$grantBonus->execute(['bonus' => $bonus, 'pid' => $pid]);}
 		$conn->prepare("UPDATE spiel SET status='beendet' WHERE id=?")->execute([$gid]);
-		error_log("ended game $gid");
 		return true;
 	}
 	return false;

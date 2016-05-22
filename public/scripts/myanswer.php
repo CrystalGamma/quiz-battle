@@ -33,14 +33,11 @@ $answerIndices = skyrimShuffle("$gid;$player:".$question['id'], 4, [0, 1, 2, 3])
 
 $answer = $answerIndices[$scrambledAnswer];
 
-error_log("$scrambledAnswer -> ".implode(',', $answerIndices)." -> $answer");
-
 //Überprüfung zeit abgelaufen
 $stmt= $conn->prepare('select timestampdiff(second, startzeit, now())>spiel.fragenzeit from antwort, spiel where antwort.spiel=spiel.id and spieler= :pid and spiel= :gid and fragennr= :qid;');
 //1= ist abgelaufen, 0 = noch zeit
 $stmt->execute(['pid' => $pid,'gid' => $gid,'qid' => $qid]);
 $zeitUeberschreitung=(int) $stmt->fetchcolumn();
-error_log("hallo".$zeitUeberschreitung);
 if($zeitUeberschreitung === 0){
     $saveAnswer = $conn->prepare("UPDATE antwort SET antwort = :ans WHERE spieler = :pid AND spiel = :gid AND fragennr = :qid AND antwort IS NULL");
 

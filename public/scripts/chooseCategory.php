@@ -27,7 +27,6 @@ $id=$stmt->fetch(PDO::FETCH_COLUMN); //Die ID des eingeloggten Users ermitteln
 		handleError($stmt);
 	}
 	$round= (int)$stmt->fetchcolumn(); //Auslesen der letzten Runde des Spiels
-	error_log("round$round");
     $stmt=$conn->prepare("UPDATE runde SET kategorie=:kategorie WHERE spiel=:spiel AND rundennr=:rundennr");
 	if(!$stmt->execute(['kategorie' => $categorie, 'spiel' => $anzuzeigendesSpielID, 'rundennr' => $round])){
 		handleError($stmt);
@@ -45,7 +44,6 @@ $id=$stmt->fetch(PDO::FETCH_COLUMN); //Die ID des eingeloggten Users ermitteln
 	// TODO: don't fetch all questions into memory
 	$questions=$stmt->fetchAll(PDO::FETCH_COLUMN); //Sammeln der Fragen in dieser Kategorie
 	if(count($questions)<$questionCount){
-		error_log(count($questions)." < $questionCount");
 		http_response_code(500);
 		die("Es existieren nicht genügend Fragen in dieser Kategorie");
 	}
