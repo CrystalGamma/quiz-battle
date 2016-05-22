@@ -49,6 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
 		die('Unbekanntes Schema');
 	}
 	$conn->prepare("UPDATE spieler SET passwort=:pw WHERE id=:pid")->execute(['pid' => $user['id'], 'pw' => password_hash($json['password'], PASSWORD_DEFAULT)]);
+	$conn->commit();
 	$token = 'Token '.base64_encode($user['name'].':'.$json['password']);
 	header('Content-Type: application/json');
 	die(json_encode(['player' => [''=> '/players/'.$user['id'], 'name' => $user['name']], 'token' => $token]));
