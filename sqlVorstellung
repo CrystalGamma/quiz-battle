@@ -1,0 +1,53 @@
+select spiel.fragen_pro_runde, spiel.runden, spiel.fragenzeit, spiel.rundenzeit, (case when spiel.dealer=NULL then "firstanswer" else spiel.dealer end) as dealingrule from spiel where spiel.id=?
+--> Raussuchen Infos JSON Game
+
+SELECT ((
+	SELECT COUNT(spieler)
+	FROM antwort a
+	WHERE sf.spiel=a.spiel and sf.fragennr=a.fragennr and (antwort is not null or timestampdiff(second, startzeit, now()) > fragenzeit)
+) = (SELECT COUNT(spieler) FROM teilnahme t WHERE t.spiel=sf.spiel)) OR EXISTS(
+	SELECT * FROM antwort a, spieler s
+	WHERE a.spieler=s.id AND s.name=:player
+	AND a.spiel=sf.spiel AND a.fragennr=sf.fragennr
+	AND (a.antwort IS NOT NULL OR TIMESTAMPDIFF(SECOND, startzeit, now()) > fragenzeit)
+) FROM spiel_frage sf, spiel WHERE spiel=id and id=:gid ORDER BY fragennr    --> Visibility
+
+select runde.rundennr, runde.kategorie as kategorieID, kategorie.name as kategorieName, spieler.id as dealerID, spieler.name as dealerName, runde.start from spieler, runde left join kategorie on (runde.kategorie=kategorie.id) where runde.dealer=spieler.id and runde.spiel=? group by runde.rundennr order by runde.rundennr
+--> Raussuchen Infos JSON Game->Round
+
+SELECT spiel_frage.fragennr,teilnahme.spieler, (
+	case when TIMESTAMPDIFF(SECOND, antwort.startzeit, now()) > spiel.fragenzeit and antwort.antwort IS NULL
+	THEN 'abgel'
+	ELSE antwort.antwort end) as antwort
+FROM (spiel, teilnahme, spiel_frage) LEFT JOIN antwort on (spiel_frage.fragennr=antwort.fragennr and antwort.spiel=spiel_frage.spiel and teilnahme.spieler=antwort.spieler)
+WHERE spiel_frage.spiel=? and teilnahme.spiel=spiel_frage.spiel and teilnahme.spiel=spiel.id
+ORDER BY spiel_frage.fragennr, teilnahme.spieler"
+--> Raussuchen der Antworten auf die Frage samt abgelaufen oder nicht
+
+SELECT frage FROM frage_kategorie fk WHERE kategorie=:category AND frage NOT IN (SELECT frage FROM spiel_frage sf WHERE sf.frage=fk.frage AND sf.spiel = :gid)
+--> Auslesen der Fragen für eine Runde
+
+select spiel_frage.frage as fragenID, frage.frage, frage.bild, frage.erklaerung, frage.richtig, frage.falsch1, frage.falsch2, frage.falsch3, teilnahme.spieler, (case when antwort is null and startzeit is null then null else     (case when antwort is not null and startzeit is not null then antwort else         (case when antwort is null and startzeit is not null and timestampdiff(second, startzeit, now())>spiel.fragenzeit then "x" else null end )     end)  end) as antwort  from (frage, spiel_frage, spiel, teilnahme) left join antwort on (spiel_frage.fragennr=antwort.fragennr and spiel_frage.spiel=antwort.spiel AND teilnahme.spieler = antwort.spieler) where spiel.id=spiel_frage.spiel and teilnahme.spiel = :gid AND spiel_frage.frage=frage.id AND spiel_frage.spiel=:gid AND spiel_frage.fragennr= :qid;
+--> Alle Infos zu Fragen und deren Beantwortung
+
+INSERT INTO antwort(spiel, spieler, fragennr, antwort, startzeit)
+SELECT spiel.id, spieler, fragennr, NULL, runde.start FROM runde, spiel, teilnahme, spiel_frage
+WHERE runde.spiel=spiel.id AND spiel.id=:gid AND teilnahme.spiel=spiel.id AND spiel_frage.spiel=spiel.id
+AND spiel_frage.fragennr < (runde.rundennr+1)*spiel.fragen_pro_runde AND spiel_frage.fragennr >= runde.rundennr*spiel.fragen_pro_runde
+AND timestampdiff(second, runde.start, now()) > spiel.rundenzeit
+AND spiel.status != 'beendet'
+AND NOT EXISTS(SELECT * FROM antwort WHERE spiel=spiel.id AND antwort.spieler=teilnahme.spieler AND antwort.fragennr=spiel_frage.fragennr)
+--> ?
+
+Select k.name As katName, k.id As katID, Sum(
+	Case When a.antwort=0 Then 1 Else 0 End
+) As richtigeAntwort, Sum(
+	Case When a.antwort!=0 Then 1 Else 0 End
+) As falscheAntwort, s.name
+From spiel, spieler s, spiel_frage sf, antwort a, frage f, frage_kategorie fk, kategorie k, teilnahme t, teilnahme t2
+Where spiel.status="beendet" And sf.spiel=spiel.id And sf.frage=f.id And f.id=fk.frage And fk.kategorie=k.id 
+And a.spiel=spiel.id And a.spieler=:statsfor and a.fragennr=sf.fragennr
+And spiel.id=t.spiel And s.id=t.spieler And s.name=:authorized
+And t2.spiel=spiel.id And t2.spieler=:statsfor
+Group By k.id;
+--> Ausfertung der bisherigen Spiele für die Statistik
