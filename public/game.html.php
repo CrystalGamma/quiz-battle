@@ -6,7 +6,7 @@ $othernames = [];
 foreach ($array['players'] as $idx => $player) {
 	if ($idx !== 0) {array_push($othernames, $player['name']);}
 }
-echo htmlspecialchars(implode(', ', $othernames));
+echo htmlspecialchars(implode(', ', $othernames), ENT_QUOTES, 'utf-8');
 ?></title>
 <?php require(__DIR__.'/header.html') ?>
 <main data-timelimit=<?=$array['timelimit']?>>
