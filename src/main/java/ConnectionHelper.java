@@ -28,21 +28,27 @@ public class ConnectionHelper {
         }
     }
 
-    protected static void sendPOST( final String endpoint, final String json, final int expectedResponse )
-            throws IOException {
+    protected static String sendPOST( final String endpoint, final String json, final int expectedResponse,
+            final String... token ) throws IOException {
         HttpURLConnection conn = getConnection( endpoint );
         conn.setRequestMethod( "POST" );
-        conn.setRequestProperty( "Content-Type", "application/json; charset=utf-8" );
+        if ( token.length == 1 ) {
+            conn.setRequestProperty( "Authorization", token[0] );
+        }
+        conn.setRequestProperty( "Content-Type", "application/json; charset=UTF-8" );
         conn.setDoOutput( true );
 
         OutputStream out = conn.getOutputStream();
         out.write( json.getBytes( "utf-8" ) );
         out.close();
-        int responseCode = conn.getResponseCode();
 
+        int responseCode = conn.getResponseCode();
         if ( responseCode != expectedResponse ) {
             System.err.println( "POST request not worked. Response was: " + conn.getResponseMessage() + " w/ "
                     + getResponseBody( conn ) );
+            return null;
+        } else {
+            return getResponseBody( conn );
         }
     }
 
