@@ -12,4 +12,4 @@ li em::after{content:':'}
 </style>
 <script src=/scripts/builddom></script>
 <br>
-<script src=/scripts/embrowsen data-json="<?= htmlspecialchars($json)?>"></script>
+<script src=/scripts/embrowsen data-json="<?= htmlspecialchars($json, ENT_QUOTES, 'utf-8')?>"></script>

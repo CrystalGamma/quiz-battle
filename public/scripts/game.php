@@ -185,7 +185,7 @@ ORDER BY spiel_frage.fragennr, teilnahme.spieler");
         header('Vary: Accept, Authorization');
         $contentType=ContentNegotation::getContent($_SERVER['HTTP_ACCEPT'],"text/html,application/json;q=0.9");
 	if($contentType === "application/json"){
-		header('Content-Type: application/json');
+		header('Content-Type: application/json; charset=UTF-8');
 		echo json_encode($array);
 	}else{
 		// TODO: looks horrible
