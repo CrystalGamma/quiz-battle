@@ -25,7 +25,7 @@ FROM spiel, antwort WHERE spiel.id=:gid AND antwort.spiel=spiel.id");
 	$countAnswers->execute(['gid' => $gid]);
 	$counts = $countAnswers->fetch();
 	if (!$counts['done'] && $counts['actual'] === $counts['target']) {
-		$fetchWinner = $conn->prepare("SELECT spieler FROM antwort WHERE antwort=0 AND spiel=:gid GROUP BY spieler HAVING COUNT(antwort) = (SELECT COUNT(antwort) FROM antwort WHERE spiel=:gid AND antwort=0 GROUP BY spieler LIMIT 1)");
+		$fetchWinner = $conn->prepare("SELECT spieler FROM antwort WHERE antwort=0 AND spiel=:gid GROUP BY spieler HAVING COUNT(antwort) = (SELECT COUNT(antwort) as punkte FROM antwort WHERE spiel=:gid AND antwort=0 GROUP BY spieler ORDER BY punkte DESC LIMIT 1)");
 		$fetchWinner->execute(['gid' => $gid]);
 		$winners = $fetchWinner->fetchAll(PDO::FETCH_COLUMN, 0);
 		$bonus = ceil((float)$counts['bet'] / count($winners));
