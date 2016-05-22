@@ -111,29 +111,8 @@ if ($request === 'GET') {
 			die();
 		}
 		$players=$stmt->fetchAll(PDO::FETCH_COLUMN);
-		$update=$conn->prepare('UPDATE spieler SET punkte=:punkte WHERE id=:player');
-		$select=$conn->prepare('SELECT punkte From spieler WHERE id=?');
-		foreach($players as $player){
-			if (!$select->execute([$player])) {
-				http_response_code(500);
-				var_dump($stmt->errorInfo());
-				die();
-			}
-			$punkte=$select->fetch(PDO::FETCH_COLUMN);
-			if($punkte>$einsatz){
-				if (!$update->execute(['punkte' => $punkte-$einsatz, 'player' => $player])) {
-					http_response_code(500);
-					var_dump($stmt->errorInfo());
-					die();
-				}
-			}else{
-				if (!$update->execute(['punkte' => 0, 'player' => $player])) {
-					http_response_code(500);
-					var_dump($stmt->errorInfo());
-					die();
-				}
-			}
-		}
+		$conn->prepare("UPDATE spieler, teilnahme SET punkte = (CASE WHEN punkte < :points THEN 0 ELSE punkte - :points) WHERE spieler=id AND spiel=:gid")->execute(['points'=>$einsatz/2/count($players), 'gid' => $anzuzeigendesSpielID]);
+		
 		$createFirstRound = $conn->prepare('INSERT INTO runde(spiel, rundennr, dealer, kategorie, start) SELECT :spiel, 0, id, NULL, now() FROM spieler WHERE name = :spieler');
 		if (!$createFirstRound->execute(['spiel' => $anzuzeigendesSpielID, 'spieler' => $username])) {
 			http_response_code(500);
