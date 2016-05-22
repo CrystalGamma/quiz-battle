@@ -65,6 +65,9 @@ form.signup input:not([type="checkbox"]) {width:20em}
 .notification.new {height:0}
 
 .dialog {display:flex;flex-flow:column nowrap;align-items:center}
+.dialog .choice {width:30em;display:flex;flex-flow:column}
+button.answer {border:none;background:transparent}
+button.answer:hover {background:#ccc}
 
 a.answer {display:inline-block;height:1.5em;width:3em;margin:.3em;border-radius:.3em}
 a.answer:first-of-type {margin-left:2em}
@@ -72,3 +75,6 @@ a.answer:last-of-type {margin-right:2em}
 .correct.answer {background:#0c3}
 .unknown.answer {background:#555}
 .incorrect.answer {background:#c30}
+.correct.answer:hover {background:#0f5}
+.unknown.answer:hover {background:#777}
+.incorrect.answer:hover {background:#f30}

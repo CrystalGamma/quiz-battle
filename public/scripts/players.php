@@ -64,7 +64,7 @@ if (isset($requestBody)) {
     $count = (int) $stmt->fetchColumn();
     $pagination = PaginationHelper::getHelper($count);
 
-    $stmt = $conn->prepare('SELECT id AS "", name, punkte AS points FROM spieler ORDER BY points DESC LIMIT :limit OFFSET :offset');
+    $stmt = $conn->prepare('SELECT id AS "", name, punkte AS points, (SELECT COUNT(*) FROM spieler s2 WHERE s2.punkte > spieler.punkte) + 1 AS ranking FROM spieler ORDER BY points DESC LIMIT :limit OFFSET :offset');
     $stmt->bindValue(':limit', $pagination->getSteps(), PDO::PARAM_INT);
     $stmt->bindValue(':offset', $pagination->getStart(), PDO::PARAM_INT);
     $stmt->execute();
@@ -72,6 +72,7 @@ if (isset($requestBody)) {
 
     foreach($players as &$player) {
         $player['points'] = (int) $player['points'];
+        $player['ranking'] = (int) $player['ranking'];
     }
 
     $array = array(
