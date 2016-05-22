@@ -17,6 +17,6 @@ const renderGame = (refPlayer, game) => {
 		: 'b'
 	);
 	return game.players.length === 2
-		? [{'':'span.player', c:game.players[bestPlayer].name}, score, {'':'ul.game-report', c:game.questions.filter(x => !!x.answers).map(({answers}) => ({'':'li.'+lookup(answers[selfPlayer])+lookup(answers[bestPlayer])}))}] 
+		? [{'':'span.player', c:game.players[bestPlayer].name}, score, {'':'ul.game-report', c:game.questions.filter(x => !!x.answers).map(quest => ({'':'li.'+lookup(quest.answers[selfPlayer])+lookup(quest.answers[bestPlayer])}))}] 
 		: ["Beliebiger Spieler"];
 };
