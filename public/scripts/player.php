@@ -28,8 +28,32 @@ $user = $stmt->fetch();
 //Überprüfung ob es den User gibt
 if($user===false){
     http_response_code(404);
-    die("Der Spieler mit der ID ".$user['id']." exisitiert nicht");
+    die("Der Spieler mit der ID ".$user['id']." existiert nicht");
 }
+
+if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
+	if (getAuthorizationUser() !== $user['name']) {
+		http_response_code(401);
+		header('WWW-Authenticate: Token');
+		header('Content-Type: text/plain; charset=UTF-8');
+		die('Zum Ändern des Passworts wird der Token dieses Nutzers benötigt');
+	}
+	$headers = getallheaders();
+	if (substr($headers['Content-Type'], 0, 16) !== 'application/json') {
+		http_response_code(400);
+		die('Brauche JSON');
+	}
+	$json = json_decode(file_get_contents('php://input'), TRUE);
+	if ($json[''] !== '/schema/player?setpassword') {
+		http_response_code(400);
+		die('Unbekanntes Schema');
+	}
+	$conn->prepare("UPDATE spieler SET passwort=:pw WHERE id=:pid")->execute(['pid' => $user['id'], 'pw' => password_hash($json['password'], PASSWORD_DEFAULT)]);
+	$token = 'Token '.base64_encode($user['name'].':'.$json['password']);
+	header('Content-Type: application/json');
+	die(json_encode(['player' => [''=> '/players/'.$user['id'], 'name' => $user['name']], 'token' => $token]));
+}
+
 $anzuzeigenderUsername=$user['name'];
 $username=getAuthorizationUser();
 if ($username === false) {$username = NULL;}
