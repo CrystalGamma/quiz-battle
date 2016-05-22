@@ -16,8 +16,8 @@ ul.stat li {margin:.2em .5em}
 .start-game {margin:1em;padding:.5em;border-radius:.5em;border:.2em solid #0a0;background:#0c0;color:white}
 .start-game::after {content:' \23f5';color:#ccc}
 
-main {display:flex;flex-flow:row wrap}
-#open-games, #waiting-games, #closed-games, #challenges {flex:1;margin:.3em}
+main {display:flex;flex-flow:row wrap;justify-content:center;align-items:flex-start;min-height:80vh}
+#open-games, #waiting-games, #closed-games, #challenges {flex:1 20em;margin:.3em}
 #open-games:empty, #waiting-games:empty, #closed-games:empty, #challenges:empty {display:none}
 main >h1, main .dialog {flex:100%}
 
@@ -57,6 +57,7 @@ table th {padding: .3em}
 
 input {margin:0 .3em}
 
+form.signup {align-self:center}
 form.signup label {display:flex;justify-content:space-between;padding:.3em}
 form.signup label.dense {justify-content:flex-start}
 form.signup input:not([type="checkbox"]) {width:20em}
