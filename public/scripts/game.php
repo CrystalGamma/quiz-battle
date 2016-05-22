@@ -227,11 +227,7 @@ function getGame ($conn, $anzuzeigendesSpielID, $Status) {
 	//Aufbau des JSON-Teilelements questions
 	//mit answers pro frage in der Reihenfolge der Spieler in players
 	for ($restrunden = $spiel['runden'] - count($runden);$restrunden > 0;$restrunden -= 1) {array_push($runden, null);}
-        $stmt= $conn->prepare("
-SELECT spiel_frage.fragennr,teilnahme.spieler, (case when antwort.startzeit+spiel.fragenzeit < now() and antwort.antwort IS NULL then '' else antwort.antwort end) as antwort, (case when antwort.startzeit+spiel.fragenzeit < now() then 'abgel' else antwort.antwort end) as status
-FROM (spiel, teilnahme, spiel_frage) LEFT JOIN antwort on (spiel_frage.fragennr=antwort.fragennr and antwort.spiel=spiel_frage.spiel and teilnahme.spieler=antwort.spieler)
-WHERE spiel_frage.spiel=? and teilnahme.spiel=spiel_frage.spiel and teilnahme.spiel=spiel.id
-ORDER BY spiel_frage.fragennr, teilnahme.spieler");
+        $stmt= $conn->prepare("SELECT spiel_frage.fragennr,teilnahme.spieler, (case when antwort.antwort IS NULL then (case when antwort.startzeit+spiel.fragenzeit>now() then 'nicht beantwortet' else 'abgel' end) else antwort.antwort end) as antwort FROM (spiel, teilnahme, spiel_frage) LEFT JOIN antwort on (spiel_frage.fragennr=antwort.fragennr and antwort.spiel=spiel_frage.spiel and teilnahme.spieler=antwort.spieler) WHERE spiel_frage.spiel=? and teilnahme.spiel=spiel_frage.spiel and teilnahme.spiel=spiel.id ORDER BY spiel_frage.fragennr, teilnahme.spieler;");
         $stmt->execute([$anzuzeigendesSpielID]);
         $RueckgabeWert=$stmt->fetchall();
         $fragen = [];
@@ -242,17 +238,19 @@ ORDER BY spiel_frage.fragennr, teilnahme.spieler");
 		//solange die FragenID gleich ist wird das Array der Frage gefüllt wenn nicht wird ein neues Array angefangen
 			if ($value['fragennr'] === $fragenID) {
                                 //Unterscheidung zwischen int und anderen Wertetypen
-				if($value['antwort']==="" or $value['antwort']===null ){
+				if($value['antwort']==="abgel"){
 					//$tmp and
-					array_push($tmp, $value['antwort']);
-				} else {
+					array_push($tmp, "");
+				} else if( $value['antwort']==="nicht beantwortet" ){
+					//$tmp and
+					array_push($tmp, null);
+				}else {
                                        // echo "wert".(int) $value['antwort'];
 					//FIXME $tmp and löste irgendeinproblem verursacht aber ein anders
 					array_push($tmp, (int)$value['antwort']);
 				}
                                 //Änderung des Inhalts nach Status der Antwort
-                                
-				if($value['status']===null){
+				if($value['antwort']==="nicht beantwortet"){
 					//$tmp=null;
                                     if($Status!=="beendet"){
                                         //nicht angemeldet oder nicht Teil des Spiels
@@ -272,13 +270,17 @@ ORDER BY spiel_frage.fragennr, teilnahme.spieler");
 				]);
 				$fragenID=$value['fragennr'];
 				$tmp=array();
-				if($value['antwort']==="" or $value['antwort']===null ){
-				array_push($tmp, $value['antwort']);
+				if($value['antwort']==="abgel"){
+					//$tmp and
+					array_push($tmp, "");
+				} else if( $value['antwort']==="nicht beantwortet" ){
+					//$tmp and
+					array_push($tmp, null);
 				}else{
 				array_push($tmp, (int)$value['antwort']);
 				}
 				//Änderung des Angezeigten nach Status meiner Antwort(geantwortete oder nicht) und Spielstatus
-				if($value['status']===null){
+				if($value['antwort']==="nicht beantwortet"){
 				//	$tmp=null;//--> es werden keine Antworten zum Spiel gezeigt
                                     if($Status!=="beendet"){
                                         //nicht angemeldet oder nicht Teil des Spiels
