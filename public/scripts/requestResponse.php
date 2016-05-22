@@ -5,17 +5,6 @@ if ($input[''] !== '/schema/response') { //Kontrolle ob das richtige Dateiformat
 	http_response_code(400);
 	die('Falsches Datenformat');
 }
-$username = getAuthorizationUser(); //Nachschauen welcher User eingeloggt ist
-if ($username === false) {
-	http_response_code(401);
-	header('WWW-Authenticate: Token');
-	die('Zum Annehmen oder Ablehnen von Spielen muss ein gültiger Authentifikationstoken vorliegen');
-}
-$stmt=$conn->prepare('SELECT id FROM spieler WHERE name= ?'); 
-if(!$stmt->execute([$username])){
-    handleError($stmt);
-}
-$id=$stmt->fetch(PDO::FETCH_COLUMN); //Die ID des eingeloggten Users ermitteln
 if ($input['accept'] === true) {
 	$stmt= $conn->prepare('SELECT akzeptiert FROM teilnahme WHERE spiel=:spiel AND spieler=:spieler');
 	if(!$stmt->execute(['spiel' => $anzuzeigendesSpielID, 'spieler' => $id])){
