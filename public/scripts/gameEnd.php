@@ -7,7 +7,7 @@ INSERT INTO antwort(spiel, spieler, fragennr, antwort, startzeit)
 SELECT spiel.id, spieler, fragennr, NULL, runde.start FROM runde, spiel, teilnahme, spiel_frage
 WHERE runde.spiel=spiel.id AND spiel.id=:gid AND teilnahme.spiel=spiel.id AND spiel_frage.spiel=spiel.id
 AND spiel_frage.fragennr < (runde.rundennr+1)*spiel.fragen_pro_runde AND spiel_frage.fragennr >= runde.rundennr*spiel.fragen_pro_runde
-AND runde.start+spiel.rundenzeit < now()
+AND timestampdiff(second, runde.start, now()) > spiel.rundenzeit
 AND spiel.status != 'beendet'
 AND NOT EXISTS(SELECT * FROM antwort WHERE spiel=spiel.id AND antwort.spieler=teilnahme.spieler AND antwort.fragennr=spiel_frage.fragennr)");
 	$elapsedRounds->execute(['gid' => $gid]);
