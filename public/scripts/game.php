@@ -32,7 +32,6 @@
 
 `questions.status`: Antwortstatus in der Reihenfolge der Spielerliste: `null` wenn noch nicht beantwortet, `true` wenn richtig, `false` wenn falsch, `""` wenn Zeit abgelaufen.
 */
-
 require_once __DIR__."/../../connection.php";
 require_once __DIR__."/../checkAuthorization.php";
 require_once __DIR__."/../../classes/ContentNegotation.php";
@@ -183,6 +182,7 @@ ORDER BY spiel_frage.fragennr, teilnahme.spieler");
 	];
         // FIXME: no longer varies over Authorization if game is over
         header('Vary: Accept, Authorization');
+        header( 'Cache-Control: max-age=3' );
         $contentType=ContentNegotation::getContent($_SERVER['HTTP_ACCEPT'],"text/html,application/json;q=0.9");
 	if($contentType === "application/json"){
 		header('Content-Type: application/json; charset=UTF-8');

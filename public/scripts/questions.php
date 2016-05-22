@@ -40,7 +40,7 @@ foreach ($categories as $category) {
 $question[''] = '/schema/question';
 
 $json = json_encode($question);
-
+header("Cache-Control: max-age=3");
 if ($contentType === 'application/json') {
     header("Content-Type: $contentType; charset=UTF-8");
     echo $json;
