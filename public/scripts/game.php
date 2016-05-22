@@ -151,7 +151,7 @@ ORDER BY spiel_frage.fragennr, teilnahme.spieler");
 			if ($value['fragennr'] !== $fragenID) {
 				array_push($fragen, [
 					'' => "$fragenID",
-					'answers' => $visibility[$fragenID] ? $tmp : null
+					'answers' => $visibility[$fragenID-1] ? $tmp : null
 				]);
 				$fragenID=$value['fragennr'];
 				$tmp=[];
@@ -166,7 +166,7 @@ ORDER BY spiel_frage.fragennr, teilnahme.spieler");
 		}
 		array_push($fragen, [
 			'' => "$fragenID",
-			'answers' => $visibility[$fragenID] ? $tmp : null
+			'answers' => $visibility[$fragenID-1] ? $tmp : null
 		]);
 	}
 	//Zusamenfügen der Teilelemente zum Gesamtelement
