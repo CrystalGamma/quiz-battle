@@ -9,7 +9,7 @@ foreach ($array['players'] as $idx => $player) {
 echo htmlspecialchars(implode(', ', $othernames));
 ?></title>
 <?php require(__DIR__.'/header.html') ?>
-<main>
+<main data-timelimit=<?=$array['timelimit']?>>
 <table>
 <thead><tr><th>Kategorie<?php foreach ($array['players'] as $player) {
 	?><th><a class=player href=<?=$player['']?> data-accepted=<?=$player['accepted'] ? 'true' : 'false' ?>><?=htmlspecialchars($player['name'])?></a><?php
