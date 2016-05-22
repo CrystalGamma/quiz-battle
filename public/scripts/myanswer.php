@@ -42,6 +42,7 @@ $stmt= $conn->prepare('select timestampdiff(second, startzeit, now())>spiel.frag
 //1= ist abgelaufen, 0 = noch zeit
 $stmt->execute(['pid' => $pid,'gid' => $gid,'qid' => $qid]);
 $zeitUeberschreitung=(int) $stmt->fetchcolumn();
+error_log("hallo".$zeitUeberschreitung);
 if($zeitUeberschreitung === 0){
     $saveAnswer = $conn->prepare("UPDATE antwort SET antwort = :ans WHERE spieler = :pid AND spiel = :gid AND fragennr = :qid AND antwort IS NULL");
 
@@ -62,8 +63,11 @@ foreach ($answerIndices as $idx) {if($answerIndices[$idx] === 0) {$scrambledCorr
 $checkForNextQuestion = $conn->prepare("SELECT fragennr FROM spiel_frage sf WHERE spiel=:gid AND NOT EXISTS(SELECT * FROM antwort a WHERE a.fragennr=sf.fragennr AND a.spiel=sf.spiel AND spieler=:pid) ORDER BY fragennr LIMIT 1");
 $checkForNextQuestion->execute(['gid' => $gid, 'pid' => $pid]);
 $nextQuestion = $checkForNextQuestion->fetchall(PDO::FETCH_COLUMN, 0);
-http_response_code($zeitUeberschreitung ? 403 : 201);
-if (count($nextQuestion) > 0) {
+if($zeitUeberschreitung===1){
+    http_response_code(403);
+}
+else if (count($nextQuestion) > 0) {
+        http_response_code(201);
 	header("Location: /games/$gid/".$nextQuestion[0]);
 }
 
