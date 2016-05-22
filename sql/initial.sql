@@ -15,8 +15,8 @@ INSERT INTO teilnahme (spiel, spieler, akzeptiert) VALUES
                       (3,     1,       true),
                       (3,     2,       false);
 INSERT INTO runde (spiel, rundennr, dealer, kategorie) VALUES
-                  (1,     1,        1,      1),
-                  (2,     1,        1,      3);
+                  (1,     1,        1,      4),
+                  (2,     1,        1,      4);
 INSERT INTO spiel_frage (spiel, fragennr, frage) VALUES
                         (1,     1,        1),
                         (1,     2,        2),
