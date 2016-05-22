@@ -55,8 +55,7 @@ cleanGame($conn, $anzuzeigendesSpielID);
 
 $request=$_SERVER['REQUEST_METHOD'];
 if ($request === 'GET') {
-        $Status=$row['status'];
-	getGame($conn, $anzuzeigendesSpielID, $Status);
+	getGame($conn, $anzuzeigendesSpielID);
 } else if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
 	$inputJSON = file_get_contents('php://input');
 	$input = json_decode($inputJSON, TRUE); //convert JSON into array
@@ -170,7 +169,7 @@ if ($request === 'GET') {
     die();
 }
 
-function getGame ($conn, $anzuzeigendesSpielID, $Status) {
+function getGame ($conn, $anzuzeigendesSpielID) {
         //Informationen für JSON Element Spiel
         $stmt= $conn->prepare('select spiel.fragen_pro_runde, spiel.runden, spiel.fragenzeit, spiel.rundenzeit, (case when spiel.dealer=NULL then "firstanswer" else spiel.dealer end) as dealingrule from spiel where spiel.id=?');
         $stmt->execute([$anzuzeigendesSpielID]);
@@ -181,8 +180,19 @@ function getGame ($conn, $anzuzeigendesSpielID, $Status) {
         $spieler=array();
         // Feststellung on angemeldeter User am Spiel beteiligt ist 
         $nutzername=getAuthorizationUser();
-        $SpielerIstBeteiligt=false;
-        $SpielerPos;
+        $listVisibility = $conn->prepare("
+SELECT ((
+	SELECT COUNT(spieler)
+	FROM antwort a
+	WHERE sf.spiel=a.spiel and sf.fragennr=a.fragennr and (antwort is not null or timestampdiff(second, startzeit, now()) > fragenzeit)
+) = (SELECT COUNT(spieler) FROM teilnahme t WHERE t.spiel=sf.spiel)) OR EXISTS(
+	SELECT * FROM antwort a, spieler s
+	WHERE a.spieler=s.id AND s.name=:player
+	AND a.spiel=sf.spiel AND a.fragennr=sf.fragennr
+	AND (a.antwort IS NOT NULL OR TIMESTAMPDIFF(SECOND, startzeit, now()) > fragenzeit)
+) FROM spiel_frage sf, spiel WHERE spiel=id and id=:gid ORDER BY fragennr");
+	$listVisibility->execute(['gid' => $anzuzeigendesSpielID, 'player' => $nutzername === false ? '' : $nutzername]);
+	$visibility = $listVisibility->fetchall(PDO::FETCH_COLUMN, 0);
         foreach ($stmt->fetchall() as $key => $value){
             array_push($spieler,
                 [
@@ -191,12 +201,6 @@ function getGame ($conn, $anzuzeigendesSpielID, $Status) {
                 "accepted"=> (bool)$value['akzeptiert']
                 ]
             );
-                if($nutzername!==false){
-                    if($value['name']===$nutzername){
-                    $SpielerIstBeteiligt=true;
-                    $SpielerPos=$key;
-                    }
-                }
         };
         //Aufbau des JSON-Teilelements  rounds
         $stmt= $conn->prepare('select runde.rundennr, runde.kategorie as kategorieID, kategorie.name as kategorieName, spieler.id as dealerID, spieler.name as dealerName, runde.start from spieler, runde left join kategorie on (runde.kategorie=kategorie.id) where runde.dealer=spieler.id and runde.spiel=? group by runde.rundennr order by runde.rundennr;');
@@ -228,7 +232,10 @@ function getGame ($conn, $anzuzeigendesSpielID, $Status) {
 	//mit answers pro frage in der Reihenfolge der Spieler in players
 	for ($restrunden = $spiel['runden'] - count($runden);$restrunden > 0;$restrunden -= 1) {array_push($runden, null);}
         $stmt= $conn->prepare("
-SELECT spiel_frage.fragennr,teilnahme.spieler, (case when antwort.startzeit+spiel.fragenzeit < now() and antwort.antwort IS NULL then '' else antwort.antwort end) as antwort, (case when antwort.startzeit+spiel.fragenzeit < now() then 'abgel' else antwort.antwort end) as status
+SELECT spiel_frage.fragennr,teilnahme.spieler, (
+	case when TIMESTAMPDIFF(SECOND, antwort.startzeit, now()) > spiel.fragenzeit and antwort.antwort IS NULL
+	THEN 'abgel'
+	ELSE antwort.antwort end) as antwort
 FROM (spiel, teilnahme, spiel_frage) LEFT JOIN antwort on (spiel_frage.fragennr=antwort.fragennr and antwort.spiel=spiel_frage.spiel and teilnahme.spieler=antwort.spieler)
 WHERE spiel_frage.spiel=? and teilnahme.spiel=spiel_frage.spiel and teilnahme.spiel=spiel.id
 ORDER BY spiel_frage.fragennr, teilnahme.spieler");
@@ -238,64 +245,27 @@ ORDER BY spiel_frage.fragennr, teilnahme.spieler");
         $tmp = [];
 	if (count($RueckgabeWert) > 0) {
 		$fragenID=$RueckgabeWert[0]['fragennr'];
-		foreach ($RueckgabeWert as $key2 => $value) {
+		foreach ($RueckgabeWert as $value) {
 		//solange die FragenID gleich ist wird das Array der Frage gefüllt wenn nicht wird ein neues Array angefangen
-			if ($value['fragennr'] === $fragenID) {
-                                //Unterscheidung zwischen int und anderen Wertetypen
-				if($value['antwort']==="" or $value['antwort']===null ){
-					//$tmp and
-					array_push($tmp, $value['antwort']);
-				} else {
-                                       // echo "wert".(int) $value['antwort'];
-					//FIXME $tmp and löste irgendeinproblem verursacht aber ein anders
-					array_push($tmp, (int)$value['antwort']);
-				}
-                                //Änderung des Inhalts nach Status der Antwort
-                                
-				if($value['status']===null){
-					//$tmp=null;
-                                    if($Status!=="beendet"){
-                                        //nicht angemeldet oder nicht Teil des Spiels
-                                        if($nutzername!==false or $SpielerIstBeteiligt===false) {
-                                            $tmp=null;
-                                        }
-                                        //angemeldet und Teil des Spiels und hat noch nicht geantwortet
-                                        if($SpielerIstBeteiligt===true and $SpielerPos===$key2){
-                                            $tmp=null;
-                                        }
-                                    }
-				}
-			} else {
+			if ($value['fragennr'] !== $fragenID) {
 				array_push($fragen, [
-					"" => $fragenID,
-					"answers" => $tmp
+					'' => "$fragenID",
+					'answers' => $visibility[$fragenID] ? $tmp : null
 				]);
 				$fragenID=$value['fragennr'];
-				$tmp=array();
-				if($value['antwort']==="" or $value['antwort']===null ){
-				array_push($tmp, $value['antwort']);
-				}else{
+				$tmp=[];
+			}
+			if($value['antwort']==="" or $value['antwort']===null ){
+				array_push($tmp, null);
+			} else if ($value['antwort'] === 'abgel') {
+				array_push($tmp, "");
+			} else {
 				array_push($tmp, (int)$value['antwort']);
-				}
-				//Änderung des Angezeigten nach Status meiner Antwort(geantwortete oder nicht) und Spielstatus
-				if($value['status']===null){
-				//	$tmp=null;//--> es werden keine Antworten zum Spiel gezeigt
-                                    if($Status!=="beendet"){
-                                        //nicht angemeldet oder nicht Teil des Spiels
-                                        if($nutzername!==false or $SpielerIstBeteiligt===false) {
-                                            $tmp=null;
-                                        }
-                                        //angemeldet und Teil des Spiels und hat noch nicht geantwortet
-                                        if($SpielerIstBeteiligt===true and $SpielerPos===$key2){
-                                            $tmp=null;
-                                        }
-                                    }
-				}
-			};
+			}
 		}
 		array_push($fragen, [
-			"" => $fragenID,
-			"answers" => $tmp
+			'' => "$fragenID",
+			'answers' => $visibility[$fragenID] ? $tmp : null
 		]);
 	}
 	//Zusamenfügen der Teilelemente zum Gesamtelement
