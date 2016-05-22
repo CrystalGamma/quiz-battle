@@ -1,17 +1,17 @@
 create table kategorie(
 	id int auto_increment primary key not null,
-	name varchar(255) not null
+	name varchar(150) not null
 );
 
 create table frage(
 	id int auto_increment primary key not null,
-	frage varchar(255) not null,
+	frage varchar(150) not null,
 	richtig varchar(50) not null,
 	falsch1 varchar(50) not null,
 	falsch2 varchar(50) not null,
 	falsch3 varchar(50) not null,
 	bild blob null,
-	erklaerung varchar(255) not null	-- nicht vorhanden, wenn leerer string
+	erklaerung varchar(150) not null	-- nicht vorhanden, wenn leerer string
 );
 
 create table frage_kategorie(
@@ -24,8 +24,8 @@ create table frage_kategorie(
 
 create table spieler(
 	id int auto_increment primary key not null,
-	name varchar(255) unique not null, -- nick
-	passwort varchar(255) not null,
+	name varchar(150) unique not null, -- nick
+	passwort varchar(150) not null,
 	punkte int not null
 );
 

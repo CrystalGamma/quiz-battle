@@ -42,7 +42,7 @@ $question[''] = '/schema/question';
 $json = json_encode($question);
 
 if ($contentType === 'application/json') {
-    header("Content-Type: $contentType; charset: utf-8");
+    header("Content-Type: $contentType; charset=UTF-8");
     echo $json;
 } else {
     require_once __DIR__.'/../embrowsen.php';

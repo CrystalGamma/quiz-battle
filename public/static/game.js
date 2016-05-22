@@ -78,27 +78,41 @@
 		})));
 		reloadUnknown().then(unanswered => {
 			console.log(unanswered);
-			for (let [question, $answer] of unanswered.filter(x => !!x)) {
-				$main.appendChild(buildDom({'':'.dialog', c:{'':'a.askme.start-game', href: $answer.href, c:"Nächste Frage"}}));
+			for (let pair of unanswered.filter(x => !!x)) {
+				$main.appendChild(buildDom({'':'.dialog', c:{'':'a.askme.start-game', href: pair[1].href, c:"Nächste Frage"}}));
 				break;
 			}
 		});
 		$main.addEventListener('click', ev => {
 			if (!ev.target.classList.contains('askme')) {return}
+			let onTheClock = true;
+			const timeLimit = ($main.dataset.timelimit|0)*1000;
+			let endTime = performance.now() + timeLimit;
+			const $timer = buildDom({'':'progress', max:timeLimit});
+			const step = time => {
+				if (time > endTime) {
+					$timer.value = 0;
+				} else {
+					$timer.value = endTime-time;
+					if (onTheClock) {requestAnimationFrame(step)}
+				}
+			};
+			step(performance.now());
 			const tryAskMe = attempt => makeXHR('POST', ev.target.href, {Accept:'application/json', 'Content-Type':'application/json', Authorization:login.token}, xhr => {
 				if (xhr.status >= 200 && xhr.status < 300) {
 					const json = JSON.parse(xhr.responseText);
 					const $dialog = ev.target.parentNode;
 					$dialog.innerHTML='';
-					// FIXME: show timer of some sort
 					$dialog.appendChild(buildDom({'':'.choice', c:[
 						json.question,
+						$timer,
 						...json.answers.map((ans, idx) => ({'':'button.answer', 'data-value':''+idx, c:ans}))
 					]}));
 					const handler = ev => {
 						if (!ev.target.classList.contains('answer')) {return}
 						const tryAnswer = attempt => makeXHR('PUT', xhr.responseURL, {'Content-Type':'application/json', Accept: 'application/json', Authorization: login.token}, xhr => {
 							if (xhr.status >= 200 && xhr.status < 300) {
+								onTheClock = false;
 								const json = JSON.parse(xhr.responseText);
 								const $answers = Array.from($dialog.querySelectorAll('button.answer'));
 								$answers.forEach(x => {x.disabled = true});

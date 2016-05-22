@@ -4,12 +4,12 @@
 <main>
 <h1>Rangliste</h1>
 <div>
-<?php if($array['prev_']) {?><a rel=prev href="<?=htmlspecialchars($array['prev_'])?>">Vorherige</a><?php } ?>
+<?php if($array['prev_']) {?><a rel=prev href="<?=htmlspecialchars($array['prev_'], ENT_QUOTES, 'utf-8')?>">Vorherige</a><?php } ?>
 <table>
 <thead><tr><th>Rang<th>Name<th>Punkte</thead>
 <tbody><?php foreach($array['players'] as $idx => &$player) { ?><tr><td><?=$array['start']+$idx+1?>.<th><a class=player href="<?=$player['']?>"><?=$player['name']?><td><?=$player['points']?><?php } ?></tbody>
 </table>
-<?php if ($array['next_']) {?><a rel=next href="<?=htmlspecialchars($array['next_'])?>">Weitere</a><?php } ?>
+<?php if ($array['next_']) {?><a rel=next href="<?=htmlspecialchars($array['next_'], ENT_QUOTES, 'utf-8')?>">Weitere</a><?php } ?>
 </div>
 </main>
 <script src=/scripts/makexhr></script>

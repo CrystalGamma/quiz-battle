@@ -14,7 +14,7 @@ foreach ($files as $file) {
 }
 
 $pdo = new PDO('mysql:host=localhost;','root', '');
-$pdo->exec('drop database if exists quizduell; create database quizduell;');
+$pdo->exec('drop database if exists quizduell; create database quizduell character set utf8mb4 collate utf8mb4_bin;');
 $pdo = null;
 
 require_once __DIR__.'/../../connection.php';
