@@ -32,7 +32,7 @@ public class GamesRunnable implements Runnable {
                 }
 
                 if ( null != ConnectionHelper.sendPOST( "games/",
-                        "{\"\":\"/schema/game?new\",\"players_\": [\"/players/1\"],\"rounds\":5,\"turns\":\"3\",\"timelimit\":10,\"roundlimit\":172800,\"dealingrule\":\"/players/1\"}",
+                        "{\"\":\"/schema/game?new\",\"players_\": [\"/players/1\", \"/players/2\"],\"rounds\":5,\"turns\":\"3\",\"timelimit\":10,\"roundlimit\":172800,\"dealingrule\":\"/players/1\"}",
                         HttpURLConnection.HTTP_CREATED, this.token ) ) {
                     this.status.increase( "games" );
                 }
