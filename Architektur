@@ -7,13 +7,14 @@ Die Schlüsselanforderungen waren dabei:
 • Accountverwaltung
 • Aufstellung einer Spielerrangfolge
 
-Während zu Beginn der Themenfindung eine Umsetzung eines Managementspiels à la OGame oder Die Stämme diskutiert wurde, wurde dieser Vorschlag später, insbesondere im Hinblick auf die Aspekte Pausierbarkeit und Rangfolge zugunsten des Konzepts eines kompetitiven Quizspiels wie Quizduell, zurückgezogen.
+Während zu Beginn der Themenfindung eine Umsetzung eines Managementspiels wie OGame oder Die Stämme diskutiert wurde, wurden diese Vorschläge später, insbesondere im Hinblick auf die Aspekte der Pausierbarkeit und der Rangfolgeliste zugunsten, verworfen.
+Stattdessen wurde sich für die Umsetzung eines kompetitiven Quizspiels ähnlich zu der bekannte Applikation Quizduell entscheiden.
 
 # Aufbau der Anwendungsoberfläche
-Die Ansichten der Nutzeroberfläche sind ähnlich verbunden wie in der Inspiration Quizduell.
+Die Ansichten der Nutzeroberfläche sind ähnlich miteinander verbunden wie in der Inspiration Quizduell.
 
-Es gibt eine Startansicht, von der die Spieler auf ihre Spiele zugreifen können, eine Spielansicht, in der das Quiz stattfindet, und eine Statistikseite für jeden Spieler.
-Im Gegensatz zu Quizduell erlaubt es dieses Projekt, in den Teil der Statistik anderer Spieler, die gemeinsam erlebt wurden, Einsicht zu nehmen.
+Es gibt eine Startansicht, von der die Spieler auf ihre Spiele zugreifen können, eine Spielansicht, in der das Quiz an sich stattfindet, und eine Statistikseite für jeden Spieler.
+Im Gegensatz zu Quizduell erlaubt es dieses Projekt, in den Teil der Statistik anderer Spieler, die gemeinsamen Spielen basieren, Einsicht zu nehmen.
 Zudem werden, wie gefordert, die Spieler in einer Rangliste aufgeführt.
 
 # Datenbankentwurf
@@ -30,10 +31,10 @@ Das Datenmodell, das im Rahmen dieses Projekts erstellt wurde, ist zukunftsfähi
 Beim Projekt Quiz Battle handelt es sich um eine strikte REST-Architektur. Bei REST handelt es sich um ein Objektmodell, das beschreibt, wie verteilte Objekte miteinander interagieren können.
 
 Die Struktur der Anwendung ist ressourcenorientiert. So lassen sich viele der Ansichten des Spiels auf die Darstellung der unterliegenden Ressource abbilden.
-Jede Ressource besitzt mit ihrer URL eine permanente Bezeichnung, die z. B. mit Lesezeichen auch außerhalb der Anwendung nutzen.
+Jede Ressource besitzt mit ihrer URL eine permanente Bezeichnung, die z. B. mit Lesezeichen auch außerhalb der Anwendung nutzbar ist.
 Die Ressourcen, und damit die Spielansichten, sind durch Hyperlinks verknüpft.
-Da den URLs in dieser Art Anwendungsmodell eine enorme Bedeutung zukommt, war es wichtig, diese flexibel zuweisen zu können.
-Weil das im Projektauftrag vorgegebene PHP keine andere Zuweisung von URLs ermöglicht als die Verzeichnisstruktur des Servers, musste zu den URL-Rewriting-Fähigkeiten des HTTP-Servers gegriffen werden, um die Anordnung der Dateien, die am Ende des Tages ein Implementationsdetail sind, vom Client zu verbergen.
+Da den URLs in dieser Art des Anwendungsmodell eine enorme Bedeutung zukommt, war es wichtig, diese flexibel zuweisen zu können.
+Weil das im Projektauftrag vorgegebene PHP keine andere Zuweisung von URLs ermöglicht als die Verzeichnisstruktur des Servers, musste zu den URL-Rewriting-Fähigkeiten des HTTP-Servers gegriffen werden, um die Anordnung der Dateien, welche schlussendlich ein Implementationsdetail sind, vom Client zu verbergen.
 Auch die statischen Ressourcen wie der im Front-End eingesetzten Skripte werden über Rewritten URLs referenziert, die unter anderem die Dateiendungen verbergen, die ebenfalls als Implementationsdetail betrachtet werden.
 
 Da es sich um eine Webanwendung handelt, wird das “Uniform Interface Constraint” in HTTP umgesetzt.
