@@ -32,8 +32,8 @@ foreach ($array['rounds'] as $rid => $round) {
 				?><a class="answer <?=$answers === null ? 'unknown' : ($answers[$pidx] === 0 ? 'correct' : 'incorrect') ?>" href=<?=$question['']?>#<?=$player['']?>></a><?php
 			}
 		}
-	}
-}?>
+	} ?>
+<?php }?>
 </tbody>
 </table>
 </main>
