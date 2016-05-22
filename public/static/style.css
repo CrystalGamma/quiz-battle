@@ -66,7 +66,9 @@ form.signup input:not([type="checkbox"]) {width:20em}
 
 .dialog {display:flex;flex-flow:column nowrap;align-items:center}
 
-a.answer {display:inline-block;height:1em;width:2em}
+a.answer {display:inline-block;height:1.5em;width:3em;margin:.3em;border-radius:.3em}
+a.answer:first-of-type {margin-left:2em}
+a.answer:last-of-type {margin-right:2em}
 .correct.answer {background:#0c3}
 .unknown.answer {background:#555}
 .incorrect.answer {background:#c30}

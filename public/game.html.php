@@ -13,8 +13,10 @@ echo htmlspecialchars(implode(', ', $othernames));
 <table>
 <thead><tr><th>Kategorie<?php foreach ($array['players'] as $player) {
 	?><th><a class=player href=<?=$player['']?> data-accepted=<?=$player['accepted'] ? 'true' : 'false' ?>><?=htmlspecialchars($player['name'])?></a><?php
-} ?></thead>
-<tbody><?php foreach ($array['rounds'] as $rid => $round) {
+}
+?></thead>
+<tbody><?php
+foreach ($array['rounds'] as $rid => $round) {
 	?><tr><th><?php
 	if ($round !== NULL && $round['category'] === NULL) {
 		?><a class="dealer player" href="<?=$round['dealer']['']?>" data-candidates="<?=htmlspecialchars(json_encode($round['candidates']))?>">Spieler</a> wählt die Kategorie<?php
@@ -27,7 +29,7 @@ echo htmlspecialchars(implode(', ', $othernames));
 			for ($i = $start; $i < $end; $i += 1) {
 				$question = $array['questions'][$i];
 				$answers = $question['answers'];
-				?><a class="answer <?=$answers === null ? 'unknown' : ($answers[$pidx] === 0 ? 'correct' : 'incorrect') ?>" href=<?=$question['']?>#<?=$player['']?>>x</a><?php
+				?><a class="answer <?=$answers === null ? 'unknown' : ($answers[$pidx] === 0 ? 'correct' : 'incorrect') ?>" href=<?=$question['']?>#<?=$player['']?>></a><?php
 			}
 		}
 	}
