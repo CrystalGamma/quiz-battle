@@ -58,7 +58,7 @@
 			});
 			break;
 		}
-		Promise.all(Array.from($main.querySelectorAll('a.answer.unknown')).map($answer => new Promise((resolve, reject) => {
+		const reloadUnknown = () => Promise.all(Array.from($main.querySelectorAll('a.answer.unknown')).map($answer => new Promise((resolve, reject) => {
 			makeXHR('GET', $answer.href, {Accept:'application/json', Authorization: login.token}, xhr => {
 				if (xhr.status < 200 || xhr.status >= 300) {return}
 				if (!xhr.getResponseHeader('Content-Type').startsWith('application/json')) {return}
@@ -75,7 +75,8 @@
 					resolve(null);
 				}
 			}).send();
-		}))).then(unanswered => {
+		})));
+		reloadUnknown().then(unanswered => {
 			console.log(unanswered);
 			for (let [question, $answer] of unanswered.filter(x => !!x)) {
 				$main.appendChild(buildDom({'':'.dialog', c:{'':'a.askme.start-game', href: $answer.href, c:"Nächste Frage"}}));
@@ -105,9 +106,11 @@
 								const $correct = $answers[json.answer];
 								$correct.classList.remove('incorrect');
 								$correct.classList.add('correct');
+								reloadUnknown();
+								$dialog.removeEventListener('click', handler);
 								const nextQuestion = xhr.getResponseHeader('Location');
 								if (xhr.getResponseHeader('Location')) {
-									$dialog.appendChild(buildDom({'':'a.askme.start-game', href: nextQuestion}));
+									$dialog.appendChild(buildDom({'':'a.askme.start-game', href: nextQuestion, c:"Nächste Frage"}));
 								}
 							} else if (xhr.status === 403 && xhr.getResponseHeader('Content-Type').startsWith('application/json')) {
 								alert("Die Zeit ist abgelaufen");
