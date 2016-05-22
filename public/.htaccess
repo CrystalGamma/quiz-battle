@@ -4,7 +4,6 @@ RewriteBase /
 
 RewriteRule ^players/(\d+)/oldgames$ scripts/games.php?pid=$1 [END,QSA]
 RewriteRule ^games/(\d+)/(\d+)$ scripts/frageInSpiel.php?id=$1&qid=$2 [END]
-RewriteRule ^(categories)/(\d+)/?$ scripts/$1.php?id=$2 [END]
 RewriteRule ^games/(\d+)/$ scripts/game.php?id=$1 [END]
 RewriteRule ^players/(\d+)/?$ scripts/player.php?id=$1 [END]
 RewriteRule ^questions/(\d+)/?$ scripts/question.php?id=$1 [END]

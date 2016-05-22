@@ -8,16 +8,12 @@ $contentType = ContentNegotation::getContent($_SERVER['HTTP_ACCEPT'], 'text/html
 // liest Kategorienamen und -id´s zu allen Kategorien aus
 $stmt = $conn->prepare('SELECT id AS "", name AS name FROM kategorie');
 $stmt->execute();
-$category = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-
-
-$category[''] = '/schema/category';
-
-
-$json = json_encode($category);
-
-
+$json = json_encode(array(
+    '' => '/schema/category',
+    'categories' => array_values($categories) 
+));
 
 // darstellung der Abfrageergebnisse
 if ($contentType === 'application/json') {
