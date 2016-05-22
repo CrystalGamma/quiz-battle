@@ -10,7 +10,7 @@
 				{'':'li', c:["Ranking: ", {'':'span.figure', c: '1234'}]},
 				{'':'li', c:["Punkte: ", {'':'span.figure', c: ''+json.score}]}
 			]}},
-			{'':'a.start-game', href: newGameUrl, c: "Neues Spiel"}
+			{'':'a.start-game.matchmaking', href: newGameUrl, c: "Neues Spiel"}
 		]}));
 		const createSection = (id, headertext) => {
 			const $el = buildDom({'':'section#'+id});
