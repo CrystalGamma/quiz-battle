@@ -65,6 +65,29 @@
 			var_dump($stmt->errorInfo());
 			die();
 		}
+		error_log("wir haben".count($input["players_"]));
+		/*if(count($input["players_"])===1)
+		{
+                    if($vorhandenesSpiel===null){
+                        $runde=0;
+                    }else{
+                        $runde=1;
+                    }
+                    error_log("ausgelöst");
+                    $createFirstRound = $conn->prepare(' Insert into runde(spiel, rundennr, dealer, kategorie, start) values (:spiel, :rundenID ,:spieler,NULL, now())');
+                    if (!$createFirstRound->execute(['spiel' => $gameid, 'spieler' => $playerid, 'rundenID'=>$runde])) {
+                            http_response_code(500);
+                            die('Konnte nicht erste Runde starten');
+                    }
+		}*/
+		if($vorhandenesSpiel===null)
+		{
+                    $createFirstRound = $conn->prepare(' Insert into runde(spiel, rundennr, dealer, kategorie, start) values (:spiel, 0 ,:spieler,NULL, now())');
+                    if (!$createFirstRound->execute(['spiel' => $gameid, 'spieler' => $playerid])) {
+                            http_response_code(500);
+                            die('Konnte nicht erste Runde starten');
+                    }
+                }
 	}
 	if (!$conn->commit()) {
 		http_response_code(500);
