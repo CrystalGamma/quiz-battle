@@ -57,115 +57,17 @@ $request=$_SERVER['REQUEST_METHOD'];
 if ($request === 'GET') {
 	getGame($conn, $anzuzeigendesSpielID);
 } else if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
-	$inputJSON = file_get_contents('php://input');
-	$input = json_decode($inputJSON, TRUE); //convert JSON into array
-	if ($input[''] !== '/schema/response') {
-		http_response_code(400);
-		die('Falsches Datenformat');
-	}
-	$username = getAuthorizationUser();
-	if ($username === false) {
-		http_response_code(401);
-		header('WWW-Authenticate: Token');
-		die('Zum Annehmen oder Ablehnen von Spielen muss ein gültiger Authentifikationstoken vorliegen');
-	}
-	$stmt=$conn->prepare('SELECT id FROM spieler WHERE name= ?');
-	if(!$stmt->execute([$username])){
-		var_dump($stmt->errorInfo());
-        die();
-	}
-	$id=array_shift($stmt->fetchAll(PDO::FETCH_ASSOC))['id'];
-	if ($input['accept'] === true) {
-		$stmt= $conn->prepare('SELECT akzeptiert FROM teilnahme WHERE spiel=:spiel AND spieler=:spieler');
-		if(!$stmt->execute(['spiel' => $anzuzeigendesSpielID, 'spieler' => $id])){
-			http_response_code(500);
-			var_dump($stmt->errorInfo());
-			die();
-		}
-		if($stmt->rowCount()!==1){
-			http_response_code(400);
-			die('Spieler ist zu diesem Spiel nicht eingeladen');
-		}
-		$teilnahme=$stmt->fetch();
-		if($teilnahme['akzeptiert']==1){
-			http_response_code(400);
-			die('Der Spieler hat bereits zugesagt');
-		}
-		$stmt = $conn->prepare('UPDATE teilnahme SET akzeptiert=1 WHERE spieler=:spieler AND spiel=:spiel');
-		if (!$stmt->execute(['spiel' => $anzuzeigendesSpielID, 'spieler' => $id])) {
-			http_response_code(500);
-			var_dump($stmt->errorInfo());
-			die();
-		}
-		$stmt=$conn->prepare('SELECT einsatz FROM spiel WHERE id=?');
-		if (!$stmt->execute([$anzuzeigendesSpielID])) {
-			http_response_code(500);
-			var_dump($stmt->errorInfo());
-			die();
-		}
-		$einsatz=$stmt->fetch()['einsatz'];
-		$stmt=$conn->prepare('SELECT spieler FROM teilnahme WHERE spiel=?');
-		if (!$stmt->execute([$anzuzeigendesSpielID])) {
-			http_response_code(500);
-			var_dump($stmt->errorInfo());
-			die();
-		}
-		$players=$stmt->fetchAll(PDO::FETCH_COLUMN);
-		$update=$conn->prepare('UPDATE spieler SET punkte=:punkte WHERE id=:player');
-		$select=$conn->prepare('SELECT punkte From spieler WHERE id=?');
-		foreach($players as $player){
-			if (!$select->execute([$player])) {
-				http_response_code(500);
-				var_dump($stmt->errorInfo());
-				die();
-			}
-			$punkte=$select->fetch(PDO::FETCH_COLUMN);
-			if($punkte>$einsatz){
-				if (!$update->execute(['punkte' => $punkte-$einsatz, 'player' => $player])) {
-					http_response_code(500);
-					var_dump($stmt->errorInfo());
-					die();
-				}
-			}else{
-				if (!$update->execute(['punkte' => 0, 'player' => $player])) {
-					http_response_code(500);
-					var_dump($stmt->errorInfo());
-					die();
-				}
-			}
-		}
-		$createFirstRound = $conn->prepare('INSERT INTO runde(spiel, rundennr, dealer, kategorie, start) SELECT :spiel, 0, id, NULL, now() FROM spieler WHERE name = :spieler');
-		if (!$createFirstRound->execute(['spiel' => $anzuzeigendesSpielID, 'spieler' => $username])) {
-			http_response_code(500);
-			die('Konnte nicht erste Runde starten');
-		}
-	} else {
-		// TODO: should games only be deleted if there are less than 2 participants?
-		// FIXME: cascading deletes
-		$stmt = $conn->prepare('DELETE FROM spiel where id = ?');
-		if (!$stmt->execute([$anzuzeigendesSpielID])) {
-			http_response_code(500);
-			var_dump($stmt->errorInfo());
-			die();
-		}
-	}
-	if (!$conn->commit()) {
-		http_response_code(500);
-		header('Retry-After: 3');
-		die('Transaktion gescheitert');
-	}
-	if ($input['accept'] === true) {
-		http_response_code(205);
-		die();
-	} else {
-		http_response_code(200);
-		header('Location: /');
-		die();
-	}
+	require_once(__DIR__."/requestResponse.php");
 }else if($_SERVER['REQUEST_METHOD']=='POST'){
     require_once(__DIR__."/chooseCategory.php");
 }else{
     http_response_code(405);
+    die();
+}
+
+function handleError($stmt){
+    http_response_code(500);
+    var_dump($stmt->errorInfo());
     die();
 }
 
