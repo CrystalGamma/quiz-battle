@@ -4,6 +4,7 @@
 		document.body.appendChild($changepw);
 		$changepw.addEventListener('click', ev => {
 			const newpw = prompt("Neues Passwort:");
+			if (!newpw) {return}
 			const trySet = attempt => makeXHR('PUT', login.player_||login.player[''], {Authorization:login.token, 'Content-Type':'application/json'}, xhr => {
 				if (xhr.status >= 200 && xhr.status < 300) {
 					localStorage.setItem('login', xhr.responseText);
