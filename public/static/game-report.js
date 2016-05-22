@@ -6,9 +6,6 @@ const renderGame = (refPlayer, game) => {
 	game.questions.forEach(question => question && question.answers && question.answers.forEach((status, player) => scores[player]+=0|(status === 0)));
 	let bestPlayer = null, bestScore = -1;
 	scores.forEach((score, idx) => {if (score > bestScore && idx != selfPlayer) {bestPlayer = idx;bestScore=score}});
-	const title = game.players.length > 2
-		? [game.players[bestPlayer].name]
-		: [{'':'span.player', c:game.players[bestPlayer].name}, ` und ${game.players.length-2} weitere`];
 	const score = {'':'span.game-points'+(
 		scores[selfPlayer] > bestScore ? '.winning' :
 		scores[selfPlayer] < bestScore ? '.losing'
@@ -19,5 +16,7 @@ const renderGame = (refPlayer, game) => {
 		x === null ? '-'
 		: 'b'
 	);
-	return [...title, score, {'':'ul.game-report', c:game.questions.filter(x => !!x.answers).map(({answers}) => ({'':'li.'+lookup(answers[selfPlayer])+lookup(answers[bestPlayer])}))}];
+	return game.players.length === 2
+		? [{'':'span.player', c:game.players[bestPlayer].name}, score, {'':'ul.game-report', c:game.questions.filter(x => !!x.answers).map(({answers}) => ({'':'li.'+lookup(answers[selfPlayer])+lookup(answers[bestPlayer])}))}] 
+		: ["Beliebiger Spieler"];
 };
