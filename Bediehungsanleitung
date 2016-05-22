@@ -1,25 +1,26 @@
-Nach dem Aufruf der Startseite mit der URL "localhost" haben sie verschiedene Möglichkeiten
+Nach dem Aufruf der Startseite mit der URL "localhost" haben sie verschiedene Möglichkeiten:
 
-1. Sie können sich die Rangliste ansehen. Drücken Sie dafür auf den Button Rangliste(vgl Rangliste).
+1. Sie können sich die Rangliste ansehen. Drücken Sie dafür auf den Reiter "Rangliste" (vgl. Rangliste).
 
-2. Sie können einen Nutzer erstellen. Dafür geben Sie bitte einen Nutzernamen und ein Password in die Eingabefelder und setzen Sie den Hacken bei  "Neuen Account erstellen" bevor Sie die Enter-Taste betätigen oder auf anmelden drücken. Sofern sie einen bereits vergebenen Nutzernamen eingegeben haben erhalten Sie eine Fehlermeldung "Registration fehlgeschlagen: Username ist bereits vergeben."
-Bitte beachten Sie bei der Wahl Ihres Passwortes unsere Passwordregeln---TODO Die da wären
+2. Sie können einen Nutzer erstellen. Dafür geben Sie bitte einen Nutzernamen und ein Password in die Eingabefelder und setzen Sie den Hacken bei  "Neuen Account erstellen" bevor Sie die Enter-Taste betätigen oder auf anmelden drücken. Sofern sie einen bereits vergebenen Nutzernamen eingegeben haben, erhalten Sie eine Fehlermeldung "Registration fehlgeschlagen: Username ist bereits vergeben."
+Bitte beachten Sie bei der Wahl Ihres Nutzernamens, dass dieser kein '/' enthalten darf.
 
 3. Sie können sich mit Ihrem Nutzer anmelden. Geben Sie dafür bitte ihren Benutzernamen und Ihr Password in die zugehörigen Felder ein.
 Sofern sie sich bei Ihrem Nutzernamen bzw ihrem Passwort vertippen, erhalten Sie die Fehlermeldungen "Kein Account mit diesem Namen vorhanden" bzw. "Anmeldung fehlgeschlagen: Passwort ist inkorrekt"
-Bei erfolgreicher Anmeldung sehen Sie eine Übersicht(vgl. Startseite angemeldet)
+Bei erfolgreicher Anmeldung sehen Sie ihre Übersicht (vgl. Startseite angemeldet).
 
 Startseite angemeldet
 Auf dieser Seite sehen sie eine Übersicht Ihrer Punkte und ihres Ranges und können verschiedene Aktionen durchführen.
-Mit einem Klick auf "Neues Spiel" nehmen Sie an einem Spiel mit einem anderen zufälligen Spieler teil. Sofern ein Slot frei ist steigen Sie direkt ins Spiel ein(vgl Spielstart). 
-Sofern noch kein Slot frei ist, bleiben Sie auf Ihrer Startseite. Sobald sich ein andere Spieler gefunden hat, finden Sie diesen unter dem Punkt "Warten auf".
+Mit einem Klick auf "Neues Spiel" nehmen Sie an einem Spiel mit einem anderen zufälligen Spieler teil. Sofern ein Slot frei ist steigen Sie direkt ins Spiel ein (vgl Spielstart). 
+Sofern noch kein Slot frei ist, bleiben Sie auf Ihrer Startseite und sehen unter dem Punkt "Warten auf", dass Sie auf einen beliebigen Spieler warten. Sobald sich dieser gefunden hat, wird er in den Übersichten auftauchen.
 
-Unter der Box "herausforderungen von sehen" Sie eine Liste aller Herrausforderungen von anderen Spielern. Mit einem Klck die Einträge der Liste können Sie die Herrausforderungen annhemen oder ablehnen. Wenn Sie annehmen steigen Sie direkt in das Spiel ein(vgl Spielstart). Wenn sie ablehnen ---TODO was dann?
+Unter der Box "Herausforderungen von" sehen Sie, falls Sie noch offene Herausforderungen haben, eine Liste aller Herrausforderungen von anderen Spielern. Mit einem Klick die Einträge der Liste können Sie die Herrausforderungen annhemen oder ablehnen. Wenn Sie annehmen, steigen Sie direkt in das Spiel ein (vgl Spielstart). Wenn sie ablehnen ---TODO was dann?
 
-Unter der Box "Spiele gegen" sehen Sie eine liste aller --TODO aktuellen/abgelaufenen-? Spiele gegen verschiedene Mitspieler. Wenn sie auf diesen Button drücken, dann --TODO?
+Unter der Box "Spiele gegen" sehen Sie eine liste aller aktuellen Spiele gegen verschiedene Mitspieler. Wenn sie auf diesen Button drücken, dann können Sie bei der Frage weitermachen, wo sie aufgehört haben.
 
-In der letzten Box "Warten auf ..." sehen Sie alle Spiele wo Sie gerade auf die Antwort des Mitspielers warten müssen. Mit einem Klick auf einen Eintrag --TODO
+In der letzten Box "Warten auf ..." sehen Sie alle Spiele wo Sie gerade auf die Antwort des Mitspielers warten müssen. Mit einem Klick auf einen Eintrag kommen Sie zu dem Spiel. Bedenken Sie aber, dass sie erst weitermachen können wenn Ihr Mitspieler geantwortet hat.
 
+Zuletzt können Sie auf dieser Seite noch Ihr Passwort ändern, indem Sie auf den Button "Password ändern" am unteren linken Rand des Fensters klicken.
 
 Rangliste
 Diese Seite ermöglicht zeigt Ihnen die aktuelle Rangliste allen Spielern und deren Punkten.
