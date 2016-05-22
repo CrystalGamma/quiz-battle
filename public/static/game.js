@@ -60,6 +60,7 @@
 		}
 		const reloadUnknown = () => Promise.all(Array.from($main.querySelectorAll('a.answer.unknown')).map($answer => new Promise((resolve, reject) => {
 			makeXHR('GET', $answer.href, {Accept:'application/json', Authorization: login.token}, xhr => {
+				if (xhr.status === 403) {resolve([json, $answer]);return}
 				if (xhr.status < 200 || xhr.status >= 300) {return}
 				if (!xhr.getResponseHeader('Content-Type').startsWith('application/json')) {return}
 				const json = JSON.parse(xhr.responseText);
