@@ -72,8 +72,8 @@ button.answer:hover {background:#ccc}
 a.answer {display:inline-block;height:1.5em;width:3em;margin:.3em;border-radius:.3em}
 a.answer:first-of-type {margin-left:2em}
 a.answer:last-of-type {margin-right:2em}
-.correct.answer {background:#0c3}
-.unknown.answer {background:#555}
+.correct.answer {background:#0c3;color:black}
+.unknown.answer {background:#555;color:black}
 .incorrect.answer {background:#c30}
 .correct.answer:hover {background:#0f5}
 .unknown.answer:hover {background:#777}
