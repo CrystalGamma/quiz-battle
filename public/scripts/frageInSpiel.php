@@ -54,7 +54,6 @@ function frageInSpiel(){
     $stmt->execute(['gid' => $anzuzeigendesSpielID, 'qid' => $anzuzeigendeFragennr]);
     $RueckgabeDaten=$stmt->fetchall();
     $antwort=array();
-    error_log("DBa".print_r($RueckgabeDaten, true));
     foreach ($RueckgabeDaten as $value){
             if($value['antwort']==="x"){
             $tmp="";
@@ -84,7 +83,6 @@ function frageInSpiel(){
         ],    
         "answers"=>$antwort
     ];
-    //error_log("Wichtig".print_r($antwort, true));
     $json= json_encode($array);
     if($contentType==="application/json"){
         header('Content-Type: application/json; charset=UTF-8');
