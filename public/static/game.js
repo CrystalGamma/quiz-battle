@@ -97,19 +97,19 @@
 					$correct.classList.remove('incorrect');
 					$correct.classList.add('correct');
 					if (json.explanation) {$dialog.appendChild(buildDom({'':'p.explanation', c:json.explanation}))}
-					reloadUnknown();
+					reloadUnknown().then(unanswered => {
+						const filtered = unanswered.filter(x => !!x);
+						if (filtered.length > 0) {
+							$dialog.appendChild(buildDom({'':'a.askme.start-game', href: filtered[0].href, c:"Nächste Frage"}));
+						} else {
+							$dialog.appendChild(buildDom({'':'a.start-game', href: '/', c:"Zur Startseite"}));
+						}
+					});
 				}
 				if (xhr.status >= 200 && xhr.status < 300) {
 					onTheClock = false;
-					const nextQuestion = xhr.getResponseHeader('Location');
-					if (xhr.getResponseHeader('Location')) {
-						$dialog.appendChild(buildDom({'':'a.askme.start-game', href: nextQuestion, c:"Nächste Frage"}));
-					}
 				} else if (xhr.status === 403) {
 					alert("Die Zeit ist abgelaufen");
-					const $button = buildDom({'':'button.start-game', c: "Weiter"});
-					$button.addEventListener('click', () => location.reload());
-					$dialog.appendChild($button);
 				} else if (attempt < 10 && xhr.status >= 500 && xhr.status < 600) {
 					setTimeout(tryAnswer.bind(null, attempt+1, answer), (xhr.getResponseHeader('Retry-After')|0)*1000);
 				} else {
